@@ -66,12 +66,13 @@ class RegisterUser(models.Model):
     first_name =models.CharField(max_length=225)
     last_name =models.CharField(max_length=225)
     address=models.CharField(max_length=225)
-    phone_number=PhoneNumberField(null=False, blank=False, unique=True)
+    phone_number=models.IntegerField(null=False, blank=False, unique=True)
     position=models.CharField(max_length=225)
     department=models.CharField(max_length=225)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=True)
-    file = models.ImageField(upload_to='pics', blank=True)
+    file = models.FileField(upload_to='pics', blank=True)
+    photo = models.ImageField(upload_to='pics', blank=True)
 
     def __str__(self):
         return self.first_name
