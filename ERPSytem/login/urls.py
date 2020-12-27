@@ -20,12 +20,15 @@ from . import views
 
 
 router = DefaultRouter()
-router.register('hello-viewset', views.HelloViewSet, basename='hello-viewset')
+
+router.register('department',views.DeptViewSet)
 router.register('profile',views.UserProfileViewSet)
+router.register('attendance',views.AttendanceViewSet)
+router.register('salary', views.SalaryReportApiView)
 
 urlpatterns = [
-    path('hello-view/', views.HelloApiView.as_view()),
-    path('login/',views.UserLoginApiView.as_view()),
+    # path('hello-view/', views.HelloApiView.as_view()),
+    # path('login/',views.UserLoginApiView.as_view()),
     path('', include(router.urls)),
 
 
