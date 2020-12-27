@@ -24,6 +24,7 @@ router = DefaultRouter()
 router.register('departmanet',views.DeptViewSet)
 router.register('profile',views.UserProfileViewSet)
 router.register('attendance',views.AttendanceViewSet)
+router.register('salary-report', views.SalaryReportApiView)
 
 urlpatterns = [
     # path('hello-view/', views.HelloApiView.as_view()),

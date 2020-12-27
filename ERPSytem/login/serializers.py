@@ -29,6 +29,13 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model= models.Attendance
         fields='__all__'
     
+class SalaryReportSerializer(serializers.ModelSerializer):
+    """Serializes a user profile object"""
+
+    class Meta:
+        model = models.Salary
+        fields = '__all__'
+
 
 
 # ('id', 'email', 'name', 'password')

@@ -44,3 +44,9 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     
    
+  
+   
+class SalaryReportApiView(viewsets.ModelViewSet):
+    """Handli ccreating, updating salary field"""
+    serializer_class = serializers.SalaryReportSerializer
+    queryset = models.User.objects.all()

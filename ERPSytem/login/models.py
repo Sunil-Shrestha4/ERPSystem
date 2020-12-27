@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
-
+from djmoney.models.fields import MoneyField
 
 
 class UserProfileManager(BaseUserManager):
@@ -75,4 +75,9 @@ class Attendance(models.Model):
     
     class Meta:
         ordering = ['checkin','checkout']
+
+
+class Salary(models.Model):
+    emp_id = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
 
