@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
-
+from djmoney.models.fields import MoneyField
 
 class UserProfileManager(BaseUserManager):
     """Manager for user profiles"""
@@ -56,3 +56,9 @@ class User(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         """Return string representation of user"""
         return self.email
+
+
+class Salary(models.Model):
+    emp_id = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
+
