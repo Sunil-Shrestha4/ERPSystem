@@ -5,6 +5,7 @@ from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 
 
+
 class UserProfileManager(BaseUserManager):
     """Manager for user profiles"""
 
@@ -37,8 +38,11 @@ class User(AbstractBaseUser,PermissionsMixin):
     """Database model for users in the system"""
     email =models.EmailField(max_length=225,unique=True)
     name =models.CharField(max_length=225)
+    created = models.DateTimeField(auto_now_add=True)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
+    # salary=models.PositiveIntegerField(_("salary"))
+    
 
     objects = UserProfileManager()
 
@@ -56,3 +60,19 @@ class User(AbstractBaseUser,PermissionsMixin):
     def __str__(self):
         """Return string representation of user"""
         return self.email
+    class Meta:
+        ordering = ['created']
+
+class Department(models.Model):
+      users=models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+      dept_name = models.CharField(max_length=30)
+    
+class Attendance(models.Model):
+    emp_name =models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    
+    checkin = models.DateTimeField(null=True)
+    checkout = models.DateTimeField()
+    
+    class Meta:
+        ordering = ['checkin','checkout']
+
