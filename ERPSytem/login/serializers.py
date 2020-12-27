@@ -2,6 +2,8 @@ from rest_framework import serializers
 from login import models
 
 
+# class HelloSerailizer(serializers.Serializer):
+#     name = serializers.CharField(max_length=10)
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
@@ -28,6 +30,21 @@ class AttendanceSerializer(serializers.ModelSerializer):
     class Meta:
         model= models.Attendance
         fields='__all__'
+
+class RegisterSerializer(serializers.ModelSerializer):
+    """Serializes a user profile object"""
+
+    class Meta:
+        model = models.RegisterUser
+        fields = '__all__'
+    
+
+class LeaveSerializer(serializers.ModelSerializer):
+    """Serializes a user profile object"""
+
+    class Meta:
+        model = models.Leave
+        fields = '__all__'
     
 class SalaryReportSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
