@@ -13,7 +13,7 @@ from rest_framework.settings import api_settings
 class HelloApiView(APIView):
 
     """ Test API View """
-    serializer_class = serializers.HelloSerailizer
+    # serializer_class = serializers.HelloSerailizer
 
 
     def get(self, request,format=None):
@@ -50,24 +50,24 @@ class HelloApiView(APIView):
         return Response({'method':'DELETE'})
 
 
-class HelloViewSet(viewsets.ViewSet):
-    """Test API viewset"""
+# class HelloViewSet(viewsets.ViewSet):
+#     """Test API viewset"""
 
-    def list(self,reqiuest):
-        """Return a hello message"""
+#     def list(self,reqiuest):
+#         """Return a hello message"""
 
-        a_viewset=[
-            'Uses action (list,create,retrieve, update,partial_update)',
-            'Automatically maps  to a URLs Using Routers',
-            'Provides more functionality with less code'
+#         a_viewset=[
+#             'Uses action (list,create,retrieve, update,partial_update)',
+#             'Automatically maps  to a URLs Using Routers',
+#             'Provides more functionality with less code'
 
         
 
 
 
 
-        ]
-        return Response({'message':'Hello','a_viewset':a_viewset})
+#         ]
+#         return Response({'message':'Hello','a_viewset':a_viewset})
     
 
 class UserProfileViewSet(viewsets.ModelViewSet):
@@ -83,4 +83,16 @@ class UserLoginApiView(ObtainAuthToken):
 
    """Handle creating user authentication tokens"""
    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class RegisterViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.RegisterSerializer
+    queryset = models.RegisterUser.objects.all()
+
+class LeaveViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.LeaveSerializer
+    queryset = models.Leave.objects.all()
+   
    
