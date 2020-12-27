@@ -79,5 +79,5 @@ class Attendance(models.Model):
 
 class Salary(models.Model):
     emp_id = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
-    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='USD')
+    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR')
 
