@@ -1,2 +1,2 @@
-django-money==1.2.1
+django-mey==1.2.1
 pillow==8.0.1

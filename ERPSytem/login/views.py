@@ -10,12 +10,13 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
   
 
+
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
-    queryset = models.User.objects.all()
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (permissions.UpdateOwnProfile,)
+    queryset = models.User.objects.all()    # authentication_classes = (TokenAuthentication,)
+    permission_classes =[permissions.IsAuthenticated]
+
 
 
 class UserLoginApiView(ObtainAuthToken):
