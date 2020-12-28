@@ -1,24 +1,37 @@
 from rest_framework import serializers
 from login import models
+from .models import User
 
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     """Serializes a user profile object"""
 
     class Meta:
         model = models.User
-        fields = '__all__'
+        fields = ['url','id','email','name','password','is_active','is_staff','is_superuser']
 
+    # def create(self, validated_data):
+    #     """Create and return a new user"""
+    #     user = models.User.objects.create_user(
+    #         email=validated_data['email'],
+    #         name=validated_data['name'],
+    #         password=validated_data['password']
+    #     )
+    #     return user
     def create(self, validated_data):
-        """Create and return a new user"""
-        user = models.User.objects.create_user(
-            email=validated_data['email'],
-            name=validated_data['name'],
-            password=validated_data['password']
-        )
-
+        user = super().create(validated_data)
+        user.set_password(validated_data['password'])
+        user.save()
         return user
+
+
+# class LoginSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = models.User
+#         fields = ['email','password',]
+
+
 class DeptSerializer(serializers.ModelSerializer):
     class Meta:
         model= models.Department

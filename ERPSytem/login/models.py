@@ -11,6 +11,7 @@ class UserProfileManager(BaseUserManager):
 
     def create_user(self,email,name,password=None):
         """ Create new user profile"""
+
         if not email:
             raise ValueError('USer must have email address')
         
@@ -19,6 +20,7 @@ class UserProfileManager(BaseUserManager):
 
         user.set_password(password)
         user.save(using=self._db)
+        
 
         return user
 
@@ -39,9 +41,11 @@ class User(AbstractBaseUser,PermissionsMixin):
     email =models.EmailField(max_length=225,unique=True)
     name =models.CharField(max_length=225)
     created = models.DateTimeField(auto_now_add=True)
+    
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
     # salary=models.PositiveIntegerField(_("salary"))
+    
     
 
     objects = UserProfileManager()
@@ -53,31 +57,61 @@ class User(AbstractBaseUser,PermissionsMixin):
         """Retrive full name of user"""
         return self.name
     
-    def get_short_name(self):
-        """Retrive short name of user"""
-        return self.name
+    # def get_short_name(self):
+    #     """Retrive short name of user"""
+    #     return self.name
 
     def __str__(self):
         """Return string representation of user"""
-        return self.email
+        return self.name
     class Meta:
         ordering = ['created']
+    
+class Login(models.Model) :
+     email=models.ForeignKey(User,on_delete=models.CASCADE)
+     
+
+
 
 class Department(models.Model):
-      users=models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
       dept_name = models.CharField(max_length=30)
+
+      def __str__(self):
+        """Return string representation of user"""
+        return self.dept_name
+
+    
+      
     
 class Attendance(models.Model):
-    emp_name =models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    emp_name = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    TYPE = (
+        ('CI', 'checkin'),
+        ('CO', 'checkout'),
+    )
+    choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
+        
+
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.choices
     
-    checkin = models.DateTimeField(null=True)
-    checkout = models.DateTimeField()
     
-    class Meta:
-        ordering = ['checkin','checkout']
+    
+    # if checkin ==False:
+    #     checkin = models.DateTimeField(null=True)
+    # else: pass
+    # checkout = models.DateTimeField(auto_now_add=True)
+    
+    
+    # class Meta:
+    #     ordering = ['checkin','checkout']
 
 
 class Salary(models.Model):
-    emp_id = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
     amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR')
+    department =models.ForeignKey(Department,on_delete=models.CASCADE,default=0)
 

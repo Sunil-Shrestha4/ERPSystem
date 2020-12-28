@@ -17,19 +17,23 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+# from rest_framework.authtoken.views import obtain_auth_token
 
 
 router = DefaultRouter()
+
 
 router.register('department',views.DeptViewSet)
 router.register('profile',views.UserProfileViewSet)
 router.register('attendance',views.AttendanceViewSet)
 router.register('salary', views.SalaryReportApiView)
+# router.register('login', views.UserLoginApiView)
 
 urlpatterns = [
     # path('hello-view/', views.HelloApiView.as_view()),
     # path('login/',views.UserLoginApiView.as_view()),
-    path('', include(router.urls)),
+    path('api/', include(router.urls)),
+    path('api-auth/',include('rest_framework.urls')),
 
 
 
