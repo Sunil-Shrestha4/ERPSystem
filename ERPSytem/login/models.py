@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from djmoney.models.fields import MoneyField
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class UserProfileManager(BaseUserManager):
@@ -114,4 +115,36 @@ class Salary(models.Model):
     employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
     amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR')
     department =models.ForeignKey(Department,on_delete=models.CASCADE,default=0)
+    def __str__(self):
+        return self.email
+    
+
+class RegisterUser(models.Model):
+    """Database model for users in the system"""
+    emp_id=models.IntegerField()
+    email =models.EmailField(max_length=225,unique=True)
+    first_name =models.CharField(max_length=225)
+    last_name =models.CharField(max_length=225)
+    address=models.CharField(max_length=225)
+    phone_number=models.IntegerField(null=False, blank=False, unique=True)
+    position=models.CharField(max_length=225)
+    department=models.CharField(max_length=225)
+    is_active=models.BooleanField(default=True)
+    is_staff =models.BooleanField(default=True)
+    file = models.FileField(upload_to='pics', blank=True)
+    photo = models.ImageField(upload_to='pics', blank=True)
+
+    def __str__(self):
+        return self.first_name
+
+class Leave(models.Model):
+    emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    leave_status=models.BooleanField(default=False)
+    number_of_days=models.IntegerField(default=0)
+    emp_name=models.CharField(max_length=225)
+    reason=models.TextField(max_length=500, blank=False)
+    
+
+    def __str__(self):
+        return self.emp_name
 

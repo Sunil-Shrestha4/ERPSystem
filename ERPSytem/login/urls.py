@@ -27,6 +27,8 @@ router.register('department',views.DeptViewSet)
 router.register('profile',views.UserProfileViewSet)
 router.register('attendance',views.AttendanceViewSet)
 router.register('salary', views.SalaryReportApiView)
+router.register('registeruser',views.RegisterViewSet)
+router.register('leave',views.LeaveViewSet)
 # router.register('login', views.UserLoginApiView)
 
 urlpatterns = [

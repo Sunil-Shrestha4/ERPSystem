@@ -90,7 +90,16 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         
 
     
-   
+
+class RegisterViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.RegisterSerializer
+    queryset = models.RegisterUser.objects.all()
+
+class LeaveViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.LeaveSerializer
+    queryset = models.Leave.objects.all()   
   
    
 class SalaryReportApiView(viewsets.ModelViewSet):
