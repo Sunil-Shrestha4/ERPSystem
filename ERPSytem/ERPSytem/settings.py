@@ -125,3 +125,20 @@ STATIC_URL = '/static/'
 AUTH_USER_MODEL='login.User'
 
 
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.BasicAuthentication',
+#         'rest_framework.authentication.SessionAuthentication',
+#         'rest_framework.permissions.IsAdminUser', # <- commenting out solves the problem!
+#     ),
+
+# }
+
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sunilsta010@gmail.com'
+EMAIL_HOST_PASSWORD = 'linus716751'
+EMAIL_PORT = 587
+
+

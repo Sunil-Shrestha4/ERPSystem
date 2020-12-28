@@ -4,10 +4,13 @@ from rest_framework import status
 from login import serializers
 from rest_framework import viewsets
 from login import models
-from rest_framework.authentication import TokenAuthentication
-from login import permissions
+from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication
+# from login import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
+from rest_framework import permissions
+from django.core.mail import send_mail
+from django .conf import settings
+
 
 
 class HelloApiView(APIView):
@@ -74,21 +77,26 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all()
-    authentication_classes = (TokenAuthentication,)
-    permission_classes = (permissions.UpdateOwnProfile,)
+    authentication_classes = (TokenAuthentication,BasicAuthentication,SessionAuthentication)
+    permission_classes = [permissions.IsAuthenticated  , permissions.IsAdminUser]
 
 
-class UserLoginApiView(ObtainAuthToken):
+# class UserLoginApiView(ObtainAuthToken):
     
 
-   """Handle creating user authentication tokens"""
-   renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+#    """Handle creating user authentication tokens"""
+#    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
 
 
 class RegisterViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.RegisterSerializer
     queryset = models.RegisterUser.objects.all()
+
+    def perform_create(self, serializer):
+        created_object = serializer.save()
+        send_mail('User Profile created','You have sucessfully register','sunilsta010@gmail.com', 
+            [created_object.email],  fail_silently=False,)
 
 class LeaveViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""

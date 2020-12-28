@@ -27,10 +27,14 @@ router.register('leave',views.LeaveViewSet)
 
 urlpatterns = [
     # path('hello-view/', views.HelloApiView.as_view()),
-    path('login/',views.UserLoginApiView.as_view()),
+    # path('login/',views.UserLoginApiView.as_view()),
     path('', include(router.urls)),
 
 
 
 
+]
+
+urlpatterns +=[
+    path('api-auth/',include('rest_framework.urls'))
 ]

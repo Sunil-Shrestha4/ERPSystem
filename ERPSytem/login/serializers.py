@@ -4,12 +4,13 @@ from login import models
 # class HelloSerailizer(serializers.Serializer):
 #     name = serializers.CharField(max_length=10)
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     """Serializes a user profile object"""
 
     class Meta:
         model = models.User
-        fields = '__all__'
+        fields = ['url', 'id', 'email', 'name','password',
+                  'is_active', 'is_staff','is_superuser']
 
     def create(self, validated_data):
         """Create and return a new user"""

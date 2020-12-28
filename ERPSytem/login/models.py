@@ -63,6 +63,7 @@ class RegisterUser(models.Model):
     """Database model for users in the system"""
     emp_id=models.IntegerField()
     email =models.EmailField(max_length=225,unique=True)
+    password=models.CharField(max_length=225,null=False, blank=False)
     first_name =models.CharField(max_length=225)
     last_name =models.CharField(max_length=225)
     address=models.CharField(max_length=225)
@@ -71,11 +72,12 @@ class RegisterUser(models.Model):
     department=models.CharField(max_length=225)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=True)
-    file = models.FileField(upload_to='pics', blank=True)
+    userfile = models.FileField(upload_to='pics', blank=True)
     photo = models.ImageField(upload_to='pics', blank=True)
 
     def __str__(self):
         return self.first_name
+
 
 class Leave(models.Model):
     emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)
