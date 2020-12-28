@@ -4,8 +4,6 @@ from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
 from django.contrib.auth.models import BaseUserManager
 from djmoney.models.fields import MoneyField
-from phonenumber_field.modelfields import PhoneNumberField
-
 
 class UserProfileManager(BaseUserManager):
     """Manager for user profiles"""

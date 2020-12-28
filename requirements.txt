@@ -1,2 +1,3 @@
 django-mey==1.2.1
 pillow==8.0.1
+django-phonenumber-field==5.0.0

@@ -5,7 +5,8 @@ from login import serializers
 from rest_framework import viewsets
 from login import models
 from rest_framework.authentication import TokenAuthentication
-from login import permissions
+# from login import permissions
+from rest_framework import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.settings import api_settings
   
