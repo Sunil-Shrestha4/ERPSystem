@@ -22,6 +22,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '^)%h1ug!#(e0id6tbn55#5g222mwihci@g5jkt@u4=+@vn8)h0'
+SECRET_KEY = '@6p-h7#oy4unyb4+(@i&3eq(knbkvjkeyv&@*8+a%f45b@mfm1'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -41,7 +42,7 @@ INSTALLED_APPS = [
     'login',
     'rest_framework',
     'rest_framework.authtoken',
-    'djmoney'
+    'djmoney',
 ]
 
 MIDDLEWARE = [
@@ -121,12 +122,26 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
-
+JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 STATIC_URL = '/static/'
 AUTH_USER_MODEL='login.User'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
-    # 'DEFAULT_AUTHENTICATION_CLASSES': ['rest_framework.authentication.TokenAuthentication',]
+    'NON_FIELD_ERRORS_KEYS':'error',
+    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+
 }
+
+LOGIN_REDIRECT_URL = '/api'
+
+
+EMAIL_USE_TLS =True
+EMAIL_HOST ='smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
+EMAIL_HOST_PASSWORD = 'rockson123'
+
+
 

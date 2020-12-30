@@ -16,26 +16,32 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from . import views
+from . import views 
+# from rest_framework_simplejwt import views as jwt_views
+
 # from rest_framework.authtoken.views import obtain_auth_token
 
 
 router = DefaultRouter()
 
+# router.register('login',views.LoginAPIView.,basename='login')
+router.register('profilelist',views.UserProfileViewSet)
+# router.register('register',views.RegisterViewSet)
+# router.register('email-verify',views.VerifyEmail,name='email-verify')
 
-router.register('department',views.DeptViewSet)
-router.register('profile',views.UserProfileViewSet)
 router.register('attendance',views.AttendanceViewSet)
+router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
-router.register('registeruser',views.RegisterViewSet)
 router.register('leave',views.LeaveViewSet)
-# router.register('login', views.UserLoginApiView)
 
 urlpatterns = [
-    # path('hello-view/', views.HelloApiView.as_view()),
-    # path('login/',views.UserLoginApiView.as_view()),
-    path('api/', include(router.urls)),
-    path('api-auth/',include('rest_framework.urls')),
+    path('', include(router.urls)),
+    # path('api-auth/',include('rest_framework.urls')),
+    # path('api-token-auth/', views.CustomAuthToken.as_view())
+    # path('api/register/',RegisterViewSet.as_view({'get': 'list'}),name='register')
+    path('register/',views.RegisterViewSet.as_view({'get': 'list'}),name ='register'),
+    path('login/',views.LoginAPIView.as_view(),name = 'login' ),
+    path('logout/', views.LogoutAPIView.as_view(), name="logout"),
 
 
 
