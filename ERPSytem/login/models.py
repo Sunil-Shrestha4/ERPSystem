@@ -25,7 +25,7 @@ from django.contrib.auth.models import (
     #     user.save(using=self._db)
         
 
-class UserManager(BaseUserManager):
+class UserProfileManager(BaseUserManager):
 
     def create_user(self, username, email, password=None):
         if username is None:
@@ -70,7 +70,7 @@ class User(AbstractBaseUser,PermissionsMixin):
         null=False, default=AUTH_PROVIDERS.get('email'))
     
     USERNAME_FIELD ='email'
-    REQUIRED_FIELDS=['name']
+    REQUIRED_FIELDS=['username']
 
     objects = UserProfileManager()
 

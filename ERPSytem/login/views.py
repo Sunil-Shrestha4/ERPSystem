@@ -17,11 +17,12 @@ from rest_framework import generics, status, views, permissions
 from .models import User
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .utils import Util
+from .utils import Util , EmailThread
 from django.urls import reverse
 import jwt
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
+
 
 
 class RegisterView(generics.GenericAPIView):
@@ -220,8 +221,8 @@ class RegisterViewSet(viewsets.ModelViewSet):
     
         absurl ='http://'+current_site+relativeLink+"?token="+str(token)
         email_body='HI '+user.username+'Use link below to verify ypur email \n'+absurl
-        data ={'email_body':email_body,'to_email':user.email, 'subject':'Verify your email'}
-        Utils.send_email(data)
+        data ={'email_body':email_body,'to_email':user.email, 'email_subject':'Verify your email'}
+        Util.send_email(data)
         return Response(user_data,status=status.HTTP_201_CREATED)
 
 # class VerifyEmail(viewsets.ModelViewSet):
