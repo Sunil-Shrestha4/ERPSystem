@@ -10,93 +10,62 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
+from .serializers import RegisterSerializer,EmailVerificationSerializer
+
+from rest_framework import generics, status, views, permissions
+from .models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .utils import Util
+from django.urls import reverse
+import jwt
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
 
 
+class RegisterView(generics.GenericAPIView):
 
-class HelloApiView(APIView):
+    serializer_class = RegisterSerializer
 
-    """ Test API View """
-    # serializer_class = serializers.HelloSerailizer
+    def post(self, request):
+        user = request.data
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user_data = serializer.data
+        user = User.objects.get(email=user_data['email'])
+        token = RefreshToken.for_user(user).access_token
+        # import pdb;pdb.set_trace()
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('email-verify')
+        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        email_body = 'Hi '+user.username + \
+            ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': email_body, 'to_email': user.email,
+                'email_subject': 'Verify your email'}
+        Util.send_email(data)
+        return Response(user_data, status=status.HTTP_201_CREATED)
 
+class VerifyEmail(views.APIView):
+    serializer_class = EmailVerificationSerializer
 
-    def get(self, request,format=None):
-        """"Returns a list of APIVIew features"""
-        an_apiview=[
-            'Uses Http as function (get,post,patch, delete)'
-            'Is similar to traditional django view',
-            
-        ]
-
-        return Response({'message':'Hello0','an_apiview':an_apiview})
-
-    def post(self,request):
-        serializer=self.serializer_class(data=request.data)
-
-        if serializer.is_valid():
-            name=serializer.validated_data.get('name')
-            message=f'Hello {name}'
-            return Response({'message':message})
-        else:
-            return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
-
-
-    def put(self,request,pk=None):
-        """ Handle updating object"""
-        return Response({'method':'PUT'})
-
-    def patch(self,request,pk=None):
-        """Handle a partial update of an object"""
-        return Response({'method':'PATCh'})
-
-    def delete(self,request,pk=None):
-        """Delete an object"""
-        return Response({'method':'DELETE'})
-
-
-# class HelloViewSet(viewsets.ViewSet):
-#     """Test API viewset"""
-
-#     def list(self,reqiuest):
-#         """Return a hello message"""
-
-#         a_viewset=[
-#             'Uses action (list,create,retrieve, update,partial_update)',
-#             'Automatically maps  to a URLs Using Routers',
-#             'Provides more functionality with less code'
-
-        
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            user = User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
 
-#         ]
-#         return Response({'message':'Hello','a_viewset':a_viewset})
-    
-
-class UserProfileViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.UserProfileSerializer
-    queryset = models.User.objects.all()
-    authentication_classes = (TokenAuthentication,BasicAuthentication,SessionAuthentication)
-    permission_classes = [permissions.IsAuthenticated  , permissions.IsAdminUser]
-
-
-# class UserLoginApiView(ObtainAuthToken):
-    
-
-#    """Handle creating user authentication tokens"""
-#    renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
-
-class RegisterViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.RegisterSerializer
-    queryset = models.RegisterUser.objects.all()
-
-    def perform_create(self, serializer):
-        created_object = serializer.save()
-        send_mail('User Profile created','You have sucessfully register','sunilsta010@gmail.com', 
-            [created_object.email],  fail_silently=False,)
 
 class LeaveViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""

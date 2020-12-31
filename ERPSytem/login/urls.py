@@ -17,19 +17,21 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views
+from .views import RegisterView, VerifyEmail
 
 
 router = DefaultRouter()
 # router.register('hello-viewset', views.HelloViewSet, basename='hello-viewset')
-router.register('profile',views.UserProfileViewSet)
-router.register('registeruser',views.RegisterViewSet)
-router.register('leave',views.LeaveViewSet)
+# router.register('profile',views.UserProfileViewSet)
+# router.register('registeruser',views.RegisterViewSet)
+# router.register('leave',views.LeaveViewSet)
 
 urlpatterns = [
     # path('hello-view/', views.HelloApiView.as_view()),
     # path('login/',views.UserLoginApiView.as_view()),
     path('', include(router.urls)),
-
+    path('register/',RegisterView.as_view(),name="register"),
+    path('email-verify/', VerifyEmail.as_view(), name="email-verify"),
 
 
 

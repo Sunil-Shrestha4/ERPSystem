@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="ffb24e0f-40fa-456d-ad54-965898943b8b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/ERPSytem/ERPSytem/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/ERPSytem/settings.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/db.sqlite3" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/db.sqlite3" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0001_initial.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/migrations/0001_initial.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0002_registeruser.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0003_auto_20201227_1253.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0004_leave.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0005_leave_reason.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0006_auto_20201227_1317.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0007_auto_20201227_1327.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0008_remove_leave_emp_name.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0009_leave_emp_name.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0010_registeruser_file.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0011_auto_20201227_1443.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0012_auto_20201227_1536.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0013_auto_20201227_1539.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0014_auto_20201227_1540.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0015_auto_20201228_1306.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0016_auto_20201228_1334.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/migrations/0017_registeruser_password.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ERPSytem/login/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/ERPSytem/login/views.py" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="770" />
+    <option name="y" value="10" />
+    <option name="width" value="1070" />
+    <option name="height" value="1050" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scope" />
+      <pane id="ProjectPane" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="ffb24e0f-40fa-456d-ad54-965898943b8b" name="Default Changelist" comment="" />
+      <created>1609312444647</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1609312444647</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-7" y="33" width="1550" height="838" extended-state="6" />
+    <layout>
+      <window_info id="Favorites" side_tool="true" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.24966975" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Version Control" />
+      <window_info anchor="bottom" id="Python Console" />
+      <window_info active="true" anchor="bottom" id="Terminal" visible="true" weight="0.32956153" />
+      <window_info anchor="bottom" id="Event Log" side_tool="true" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" />
+      <window_info anchor="bottom" id="Run" order="2" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+  </component>
+</project>
