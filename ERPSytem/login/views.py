@@ -5,23 +5,65 @@ from rest_framework import status
 from login import serializers
 from rest_framework import viewsets
 from login import models
-from rest_framework.authentication import TokenAuthentication
+from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication
 # from login import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework.settings import api_settings
 from rest_framework import permissions
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-from rest_framework.decorators import api_view
-from rest_framework.authtoken.models import Token
-from django.conf import settings
-from django.contrib import auth
-import jwt
-from rest_framework_simplejwt.tokens import RefreshToken
-from .utils import Utils
-from django.contrib.sites.shortcuts import get_current_site
-from django.urls import reverse
+from django.core.mail import send_mail
+from django .conf import settings
+from .serializers import RegisterSerializer,EmailVerificationSerializer
+
 from rest_framework import generics, status, views, permissions
 from .models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+
+from .utils import Util , EmailThread
+from django.urls import reverse
+import jwt
+from django.contrib.sites.shortcuts import get_current_site
+from django.conf import settings
+
+
+
+class RegisterView(generics.GenericAPIView):
+
+    serializer_class = RegisterSerializer
+
+    def post(self, request):
+        user = request.data
+        serializer = self.serializer_class(data=user)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        user_data = serializer.data
+        user = User.objects.get(email=user_data['email'])
+        token = RefreshToken.for_user(user).access_token
+        # import pdb;pdb.set_trace()
+        current_site = get_current_site(request).domain
+        relativeLink = reverse('email-verify')
+        absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+        email_body = 'Hi '+user.username + \
+            ' Use the link below to verify your email \n' + absurl
+        data = {'email_body': email_body, 'to_email': user.email,
+                'email_subject': 'Verify your email'}
+        Util.send_email(data)
+        return Response(user_data, status=status.HTTP_201_CREATED)
+
+class VerifyEmail(views.APIView):
+    serializer_class = EmailVerificationSerializer
+
+    def get(self, request):
+        token = request.GET.get('token')
+        try:
+            payload = jwt.decode(token, settings.SECRET_KEY)
+            user = User.objects.get(id=payload['user_id'])
+            if not user.is_verified:
+                user.is_verified = True
+                user.save()
+            return Response({'email': 'Successfully activated'}, status=status.HTTP_200_OK)
+        except jwt.ExpiredSignatureError as identifier:
+            return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
+        except jwt.exceptions.DecodeError as identifier:
+            return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
@@ -31,7 +73,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all()
-    permission_classes = [permissions.IsAuthenticated , permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAuthenticated , permissions.IsAdminUser]
+
+
     # for user in models.User.objects.all():
     #     Token.objects.get_or_create(user=user)
     
@@ -58,7 +102,7 @@ class LoginAPIView(generics.GenericAPIView):
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class = serializers.LogoutSerializer
 
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
 
@@ -122,14 +166,7 @@ class LogoutAPIView(generics.GenericAPIView):
 #         }
 #         return Response(content)
 #     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
-
-# class HelloView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-
-#     def get(self, request):
-#         content = {'message': 'Hello, World!'}
-#         return Response(content)    
+   
    
 # class CustomAuthToken(ObtainAuthToken):
 
@@ -148,12 +185,12 @@ class LogoutAPIView(generics.GenericAPIView):
 class DeptViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DeptSerializer
     queryset = models.Department.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
-    permission_classes = [permissions.IsAuthenticated ]
+    # permission_classes = [permissions.IsAuthenticated ]
     
 
 class RegisterViewSet(viewsets.ModelViewSet):
@@ -184,8 +221,8 @@ class RegisterViewSet(viewsets.ModelViewSet):
     
         absurl ='http://'+current_site+relativeLink+"?token="+str(token)
         email_body='HI '+user.username+'Use link below to verify ypur email \n'+absurl
-        data ={'email_body':email_body,'to_email':user.email, 'subject':'Verify your email'}
-        Utils.send_email(data)
+        data ={'email_body':email_body,'to_email':user.email, 'email_subject':'Verify your email'}
+        Util.send_email(data)
         return Response(user_data,status=status.HTTP_201_CREATED)
 
 # class VerifyEmail(viewsets.ModelViewSet):
@@ -204,7 +241,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
     serializer_class = serializers.SalaryReportSerializer 
     queryset = models.Salary.objects.all()
-    permission_classes = [permissions.IsAuthenticated ]
+    # permission_classes = [permissions.IsAuthenticated ]
 
     def get(self, request, format=None):
         content = {

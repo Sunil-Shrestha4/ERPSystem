@@ -42,8 +42,12 @@ urlpatterns = [
     path('register/',views.RegisterViewSet.as_view({'get': 'list'}),name ='register'),
     path('login/',views.LoginAPIView.as_view(),name = 'login' ),
     path('logout/', views.LogoutAPIView.as_view(), name="logout"),
+    path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
 
 
 
+]
 
+urlpatterns +=[
+    path('api-auth/',include('rest_framework.urls'))
 ]

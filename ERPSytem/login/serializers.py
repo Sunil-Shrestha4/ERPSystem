@@ -11,7 +11,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['url','id','email','name','password','is_active','is_staff','is_superuser']
+        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
 
     # def create(self, validated_data):
     #     """Create and return a new user"""
@@ -123,36 +123,70 @@ class AttendanceSerializer(serializers.ModelSerializer):
         model= models.Attendance
         fields='__all__'
 
-class RegisterSerializer(serializers.HyperlinkedModelSerializer):
+# class RegisterSerializer(serializers.HyperlinkedModelSerializer):
+#     password = serializers.CharField(
+#         max_length=70,
+#         min_length= 6,
+#         write_only=True,
+#         required=True,
+#         style = {'input_type': 'password','placeholder':'password'},
+#     )
+
+#     class Meta:
+#         model = models.User
+#         fields = ( 'username', 'email', 'password')
+#         # extra_kwargs = {'password': {'write_only': True}}
+#     def validate(self, attrs):
+#         email = attrs.get('email', '')
+#         username =attrs.get('username','')
+#         if User.objects.filter(email=email).exists():
+#             raise serializers.ValidationError(
+#                 {'email': ('Email is already in use')})
+#         return attrs
+
+#     def create(self, validated_data):
+#         # user = super().create_user(**validated_data)
+#         # user.set_password(validated_data['password'])
+#         # user.save()
+#         return User.objects.create_user(**validated_data)
+#     # def create(self, validated_data):
+#     #     user = models.User.objects.create_user(validated_data['name'], validated_data['email'], validated_data['password'])
+
+#     #     return user
+class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
-        max_length=70,
-        min_length= 6,
-        write_only=True,
-        required=True,
-        style = {'input_type': 'password','placeholder':'password'},
-    )
+        max_length=68, min_length=6, write_only=True)
+
+    default_error_messages = {
+        'username': 'The username should only contain alphanumeric characters'}
 
     class Meta:
-        model = models.User
-        fields = ( 'username', 'email', 'password')
-        # extra_kwargs = {'password': {'write_only': True}}
+        model = User
+        fields = ['email', 'username', 'password']
+
     def validate(self, attrs):
         email = attrs.get('email', '')
-        username =attrs.get('username','')
-        if User.objects.filter(email=email).exists():
+        username = attrs.get('username', '')
+
+        if not username.isalnum():
             raise serializers.ValidationError(
-                {'email': ('Email is already in use')})
+                self.default_error_messages)
         return attrs
 
     def create(self, validated_data):
-        # user = super().create_user(**validated_data)
-        # user.set_password(validated_data['password'])
-        # user.save()
         return User.objects.create_user(**validated_data)
-    # def create(self, validated_data):
-    #     user = models.User.objects.create_user(validated_data['name'], validated_data['email'], validated_data['password'])
 
-    #     return user
+class EmailVerificationSerializer(serializers.Serializer):
+    token = serializers.CharField(max_length=555)
+
+    class Meta:
+        model = User
+        fields = ['token']
+
+
+
+
+
     
 
 class LeaveSerializer(serializers.ModelSerializer):
@@ -171,5 +205,5 @@ class SalaryReportSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Salary
         fields = ('employee_name','amount','department',)
-        extra_kwargs={'amount':{'write_only':True}}
-        
+        # extra_kwargs={'amount':{'write_only':True}}
+         

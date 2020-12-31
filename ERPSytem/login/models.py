@@ -8,36 +8,52 @@ from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
 
 
+from django.contrib.auth.models import (
+    AbstractBaseUser, BaseUserManager, PermissionsMixin)
+
+    # def create_user(self,email,username,password=None):
+    #     """ Create new user profile"""
+
+    #     if not email:
+    #         raise ValueError('USer must have email address')
+        
+    #     email = self.normalize_email(email)
+    #     user =self.model(email=email,username=username)
+
+
+    #     user.set_password(password)
+    #     user.save(using=self._db)
+        
+
 class UserProfileManager(BaseUserManager):
-    """Manager for user profiles"""
 
-    def create_user(self,email,username,password=None):
-        """ Create new user profile"""
+    def create_user(self, username, email, password=None):
+        if username is None:
+            raise TypeError('Users should have a username')
+        if email is None:
+            raise TypeError('Users should have a Email')
 
-        if not email:
-            raise ValueError('USer must have email address')
-        
-        email = self.normalize_email(email)
-        user =self.model(email=email,username=username)
-
-
+        user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
-        user.save(using=self._db)
-        
-
+        user.save()
         return user
-
 
     def create_superuser(self,email,username,password):
         """Create and save a new super user with given details"""
         user=self.create_user(email,username,password)
+    # def create_superuser(self, username, email, password=None):
+    #     if password is None:
+    #         raise TypeError('Password should not be none')
 
-        user.is_superuser=True
-        user.is_staff=True
-        user.save(using=self._db)
+        user = self.create_user(username, email, password)
+        user.is_superuser = True
+        user.is_staff = True
+        user.save()
         return user
 
 
+AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
+                  'twitter': 'twitter', 'email': 'email'}
 
 class User(AbstractBaseUser,PermissionsMixin):
     """Database model for users in the system"""
@@ -49,9 +65,12 @@ class User(AbstractBaseUser,PermissionsMixin):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now =True)
     # salary=models.PositiveIntegerField(_("salary"))
+    auth_provider = models.CharField(
+        max_length=255, blank=False,
+        null=False, default=AUTH_PROVIDERS.get('email'))
     
     USERNAME_FIELD ='email'
-    REQUIRED_FIELDS=['name']
+    REQUIRED_FIELDS=['username']
 
     objects = UserProfileManager()
 
