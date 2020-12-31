@@ -31,7 +31,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all()
-    permission_classes = [permissions.IsAuthenticated , permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAuthenticated , permissions.IsAdminUser]
+
+
     # for user in models.User.objects.all():
     #     Token.objects.get_or_create(user=user)
     
@@ -58,7 +60,7 @@ class LoginAPIView(generics.GenericAPIView):
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class = serializers.LogoutSerializer
 
-    permission_classes = (permissions.IsAuthenticated,)
+    # permission_classes = (permissions.IsAuthenticated,)
 
     def post(self, request):
 
@@ -122,14 +124,7 @@ class LogoutAPIView(generics.GenericAPIView):
 #         }
 #         return Response(content)
 #     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-
-
-# class HelloView(APIView):
-#     permission_classes = (permissions.IsAuthenticated,)
-
-#     def get(self, request):
-#         content = {'message': 'Hello, World!'}
-#         return Response(content)    
+   
    
 # class CustomAuthToken(ObtainAuthToken):
 
@@ -148,12 +143,12 @@ class LogoutAPIView(generics.GenericAPIView):
 class DeptViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.DeptSerializer
     queryset = models.Department.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
 
 class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
-    permission_classes = [permissions.IsAuthenticated ]
+    # permission_classes = [permissions.IsAuthenticated ]
     
 
 class RegisterViewSet(viewsets.ModelViewSet):
@@ -204,7 +199,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
     serializer_class = serializers.SalaryReportSerializer 
     queryset = models.Salary.objects.all()
-    permission_classes = [permissions.IsAuthenticated ]
+    # permission_classes = [permissions.IsAuthenticated ]
 
     def get(self, request, format=None):
         content = {

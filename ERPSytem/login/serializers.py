@@ -11,7 +11,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['url','id','email','name','password','is_active','is_staff','is_superuser']
+        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
 
     # def create(self, validated_data):
     #     """Create and return a new user"""
@@ -171,5 +171,5 @@ class SalaryReportSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = models.Salary
         fields = ('employee_name','amount','department',)
-        extra_kwargs={'amount':{'write_only':True}}
-        
+        # extra_kwargs={'amount':{'write_only':True}}
+         
