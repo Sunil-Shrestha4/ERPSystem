@@ -26,6 +26,10 @@ router = DefaultRouter()
 
 # router.register('login',views.LoginAPIView.,basename='login')
 router.register('profilelist',views.UserProfileViewSet)
+
+
+
+
 # router.register('register',views.RegisterViewSet)
 # router.register('email-verify',views.VerifyEmail,name='email-verify')
 

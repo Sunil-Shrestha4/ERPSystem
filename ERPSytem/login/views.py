@@ -22,6 +22,10 @@ from django.urls import reverse
 import jwt
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
+from django.http import JsonResponse
+from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
+from .permissions import IsOwner
 
 
 
@@ -73,8 +77,25 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all()
+    permission_classes=[IsOwner]
     # permission_classes = [permissions.IsAuthenticated , permissions.IsAdminUser]
 
+    
+
+    
+
+    def get_permissions(self):
+    
+        if self.request.method == 'GET':
+            permission_classes = [permissions.IsAuthenticated]
+        else:
+            permission_classes = [permissions.IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+
+
+   
+        
 
     # for user in models.User.objects.all():
     #     Token.objects.get_or_create(user=user)
@@ -96,8 +117,11 @@ class LoginAPIView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class = serializers.LogoutSerializer
@@ -244,7 +268,21 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     # permission_classes = [permissions.IsAuthenticated ]
 
     def get(self, request, format=None):
+        salary = Salary.objects.all()
+        serializer = SalaryReportSerializer(salary,many=True)
         content = {
             'status': 'request was permitted'
         }
-        return Response(content)
+        return JSONResponse(serializer.data,safe= False)
+    
+    def post(self,request):
+        data = JSONParser().parse(request)
+        serializer=self.get_serializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+
+
+
