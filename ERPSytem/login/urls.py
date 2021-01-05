@@ -37,16 +37,20 @@ router.register('attendance',views.AttendanceViewSet)
 router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
 router.register('leave',views.LeaveViewSet)
-
+router.register('userdetails',views.UserDetailViewSet)
+# router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     # path('api-auth/',include('rest_framework.urls')),
     # path('api-token-auth/', views.CustomAuthToken.as_view())
     # path('api/register/',RegisterViewSet.as_view({'get': 'list'}),name='register')
-    path('register/',views.RegisterViewSet.as_view({'get': 'list'}),name ='register'),
+    # path('register/',views.RegisterViewSet.as_view({'get': 'list'}),name ='register'),
+    path('register/',views.RegisterView.as_view(),name ='register'),
+    path('userdetail/',views.UserDetailView.as_view(),name ='userdetail'),
     path('login/',views.LoginAPIView.as_view(),name = 'login' ),
     path('logout/', views.LogoutAPIView.as_view(), name="logout"),
     path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
+    path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
 
 
 

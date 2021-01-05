@@ -27,16 +27,19 @@ from django.contrib.auth.models import (
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self, username, email, password=None):
+    def create_user(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
             raise TypeError('Users should have a Email')
 
-        user = self.model(username=username, email=self.normalize_email(email))
+        user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
+
+
+    
 
     def create_superuser(self,email,username,password):
         """Create and save a new super user with given details"""
@@ -55,10 +58,28 @@ class UserProfileManager(BaseUserManager):
 AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
                   'twitter': 'twitter', 'email': 'email'}
 
+class Department(models.Model):
+    #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+      dept_name = models.CharField(max_length=30)
+
+      def __str__(self):
+        """Return string representation of user"""
+        return self.dept_name
+
 class User(AbstractBaseUser,PermissionsMixin):
     """Database model for users in the system"""
     email =models.EmailField(max_length=225,unique=True,db_index=True)
     username =models.CharField(max_length=225,db_index=True)
+    password=models.CharField(max_length=225,default=1234)
+    first_name =models.CharField(max_length=225,default='abc')
+    last_name =models.CharField(max_length=225,default='abc')
+    address=models.CharField(max_length=225,default='abc')
+    phone_number=models.IntegerField(null=True, blank=True)
+    position=models.CharField(max_length=225,default='Trainee')
+    date_joined=models.DateField(null=True)
+    department=models.CharField(max_length=225,default='IT')
+    document = models.FileField(upload_to='pics', blank=True)
+    photo = models.ImageField(upload_to='pics', blank=True)
     is_verified = models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
@@ -104,13 +125,13 @@ class User(AbstractBaseUser,PermissionsMixin):
 
 
 
-class Department(models.Model):
-    #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
-      dept_name = models.CharField(max_length=30)
+# class Department(models.Model):
+#     #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+#       dept_name = models.CharField(max_length=30)
 
-      def __str__(self):
-        """Return string representation of user"""
-        return self.dept_name
+#       def __str__(self):
+#         """Return string representation of user"""
+#         return self.dept_name
 
     
       
@@ -140,24 +161,27 @@ class Salary(models.Model):
         return self.email
     
 
-# class RegisterUser(models.Model):
-#     """Database model for users in the system"""
-#     emp_id=models.IntegerField()
-#     email =models.EmailField(max_length=225,unique=True)
-#     first_name =models.CharField(max_length=225)
-#     last_name =models.CharField(max_length=225)
-#     address=models.CharField(max_length=225)
-#     phone_number=models.IntegerField(null=False, blank=False, unique=True)
-#     position=models.CharField(max_length=225)
-#     department=models.ForeignKey(Department,on_delete=models.CASCADE, max_length=225)
-#     is_active=models.BooleanField(default=True)
-#     is_staff =models.BooleanField(default=True)
-#     file = models.FileField(upload_to='pics', blank=True)
-#     photo = models.ImageField(upload_to='pics', blank=True)
+class UserDetails(models.Model):
+    """Database model for users in the system"""
+    
+    username =models.CharField(max_length=225,db_index=True,unique=True)
+    email =models.EmailField(max_length=225,unique=True)
+    password=models.CharField(max_length=225,default=1234)
+    first_name =models.CharField(max_length=225)
+    last_name =models.CharField(max_length=225)
+    address=models.CharField(max_length=225)
+    phone_number=models.IntegerField(null=True, blank=False, unique=True)
+    position=models.CharField(max_length=225)
+    date_joined=models.DateField(auto_now_add=True)
+    department=models.ForeignKey(Department,on_delete=models.CASCADE, max_length=225)
+    is_active=models.BooleanField(default=True)
+    is_staff =models.BooleanField(default=True)
+    document = models.FileField(upload_to='pics', blank=True)
+    photo = models.ImageField(upload_to='pics', blank=True)
 
 
-#     def __str__(self):
-#         return self.first_name
+    def __str__(self):
+        return self.first_name
 
 class Leave(models.Model):
     emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)

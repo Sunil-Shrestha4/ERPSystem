@@ -1,17 +1,17 @@
 from rest_framework import serializers
 from login import models
-from .models import User
+from .models import User,UserDetails
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 
 
 
-class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
+class UserProfileSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
 
     class Meta:
         model = models.User
-        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
+        fields = ['id','email','username','password','is_active','is_staff','is_superuser','first_name','last_name','address','phone_number','department','date_joined','document','photo']
 
     # def create(self, validated_data):
     #     """Create and return a new user"""
@@ -162,8 +162,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password']
-
+        fields =['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
     def validate(self, attrs):
         email = attrs.get('email', '')
         username = attrs.get('username', '')
@@ -206,4 +205,37 @@ class SalaryReportSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Salary
         fields = ('employee_name','amount','department',)
         # extra_kwargs={'amount':{'write_only':True}}
-         
+        
+
+
+class UserDetailSerializer(serializers.ModelSerializer):
+    password = serializers.CharField(
+        max_length=68, min_length=6, write_only=True)
+
+    default_error_messages = {
+        'username': 'The username should only contain alphanumeric characters'}
+
+    class Meta:
+        model = UserDetails
+        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
+
+    # def validate(self, attrs):
+    #     email = attrs.get('email', '')
+    #     username = attrs.get('username', '')
+
+    #     if not username.isalnum():
+    #         raise serializers.ValidationError(
+    #             self.default_error_messages)
+    #     return attrs
+
+    # def create(self, validated_data):
+    #     return UserDetails.objects.create_user(**validated_data)
+
+class EmailVerificationSerializeruserDetail(serializers.Serializer):
+    token = serializers.CharField(max_length=555)
+
+    class Meta:
+        model = UserDetails
+        fields = ['token']
+
+
