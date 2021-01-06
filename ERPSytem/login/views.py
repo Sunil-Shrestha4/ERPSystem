@@ -5,13 +5,13 @@ from rest_framework import status
 from login import serializers
 from rest_framework import viewsets
 from login import models
-from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication
+from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication 
 # from login import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer,UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
 
 from rest_framework import generics, status, views, permissions
 from .models import User,UserDetails
@@ -25,7 +25,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
-from .permissions import IsOwner
+
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
@@ -126,13 +126,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     
 
-    def get_permissions(self):
+    # def get_permissions(self): 
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
 
 
 
@@ -141,8 +141,9 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
     def viewuserdetail(self,request,pk=None):
+        # import pdb;pdb.set_trace()
         user=request.user
-        serializer=serializers.UserProfileSerializer(user)
+        serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
 
 

@@ -6,12 +6,13 @@ from rest_framework.exceptions import AuthenticationFailed
 
 
 
-class UserProfileSerializer(serializers.ModelSerializer):
+class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     """Serializes a user profile object"""
+    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = models.User
-        fields = ['id','email','username','password','is_active','is_staff','is_superuser','first_name','last_name','address','phone_number','department','date_joined','document','photo']
+        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
 
     # def create(self, validated_data):
     #     """Create and return a new user"""
@@ -162,7 +163,8 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields =['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
+        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
+
     def validate(self, attrs):
         email = attrs.get('email', '')
         username = attrs.get('username', '')
@@ -205,8 +207,6 @@ class SalaryReportSerializer(serializers.HyperlinkedModelSerializer):
         model = models.Salary
         fields = ('employee_name','amount','department',)
         # extra_kwargs={'amount':{'write_only':True}}
-        
-
 
 class UserDetailSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -237,5 +237,4 @@ class EmailVerificationSerializeruserDetail(serializers.Serializer):
     class Meta:
         model = UserDetails
         fields = ['token']
-
-
+         
