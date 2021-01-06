@@ -27,13 +27,14 @@ from django.contrib.auth.models import (
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password=None):
+    def create_user(self, username, email, password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
             raise TypeError('Users should have a Email')
 
-        user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
+        # user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
+        user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
