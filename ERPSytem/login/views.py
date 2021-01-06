@@ -5,13 +5,13 @@ from rest_framework import status
 from login import serializers
 from rest_framework import viewsets
 from login import models
-from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication
+from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication 
 # from login import permissions
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer,UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
 
 from rest_framework import generics, status, views, permissions
 from .models import User,UserDetails
@@ -22,6 +22,10 @@ from django.urls import reverse
 import jwt
 from django.contrib.sites.shortcuts import get_current_site
 from django.conf import settings
+from django.http import JsonResponse
+from rest_framework.parsers import JSONParser
+from django.views.decorators.csrf import csrf_exempt
+
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
@@ -118,11 +122,28 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 
 
 
+    
+
+    
+
+    # def get_permissions(self): 
+    
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+
+
+
+   
+        
 
     @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
     def viewuserdetail(self,request,pk=None):
+        # import pdb;pdb.set_trace()
         user=request.user
-        serializer=serializers.UserProfileSerializer(user)
+        serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
 
 
@@ -181,8 +202,11 @@ class LoginAPIView(generics.GenericAPIView):
 
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        try:
+            serializer.is_valid(raise_exception=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except:
+            return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
 
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class = serializers.LogoutSerializer
@@ -334,10 +358,25 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     permission_classes = [permissions.IsAdminUser] 
 
     def get(self, request, format=None):
+        salary = Salary.objects.all()
+        serializer = SalaryReportSerializer(salary,many=True)
         content = {
             'status': 'request was permitted'
         }
-        return Response(content)
+        return JSONResponse(serializer.data,safe= False)
+    
+    def post(self,request):
+        data = JSONParser().parse(request)
+        serializer=self.get_serializer(data = request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+
+
+
+
+
 
 
 
