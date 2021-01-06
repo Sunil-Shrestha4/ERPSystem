@@ -42,8 +42,7 @@ INSTALLED_APPS = [
     'login',
     'rest_framework',
     'rest_framework.authtoken',
-    'djmoney',
-    'oauth2_provider',
+    'djmoney'
 ]
 
 MIDDLEWARE = [
@@ -123,7 +122,7 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':'error',
      'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication','rest_framework_simplejwt.authentication.JWTAuthentication','oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication','rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
