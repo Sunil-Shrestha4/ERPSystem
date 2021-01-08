@@ -3,6 +3,7 @@ from login import models
 from .models import User,UserDetails
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
+from django.db import IntegrityError
 
 
 
@@ -52,6 +53,8 @@ class LoginSerializer(serializers.ModelSerializer):
         max_length=68, min_length=6, write_only=True)
     username = serializers.CharField(
         max_length=255, min_length=3, read_only=True)
+    is_superuser = serializers.BooleanField(read_only=True)
+    # role = serializers.CharField(source='User.is_superuser',read_only=True)
 
     tokens = serializers.SerializerMethodField()
 
@@ -65,7 +68,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'tokens']
+        fields = ['email', 'password', 'username', 'tokens','is_superuser']
+        # read_only_fields=['is_superuser',]
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -87,7 +91,9 @@ class LoginSerializer(serializers.ModelSerializer):
         return {
             'email': user.email,
             'username': user.username,
-            'tokens': user.tokens
+            'tokens': user.tokens,
+            'is_superuser':user.is_superuser,
+            
         }
 
         return super().validate(attrs)
@@ -120,9 +126,12 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
         fields=('url','dept_name')
 
 class AttendanceSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='emp_name.first_name',read_only=True)
+    
     class Meta:
         model= models.Attendance
-        fields='__all__'
+        fields=['emp_name','choices','time','name']
+        read_only_fields = ['emp_name']
 
 # class RegisterSerializer(serializers.HyperlinkedModelSerializer):
 #     password = serializers.CharField(
@@ -200,12 +209,15 @@ class LeaveSerializer(serializers.ModelSerializer):
 
 
     
-class SalaryReportSerializer(serializers.HyperlinkedModelSerializer):
+class SalaryReportSerializer(serializers.ModelSerializer):
+    username=serializers.CharField(source='employee_name.first_name',read_only=True)
     """Serializes a user profile object"""
 
     class Meta:
         model = models.Salary
-        fields = ('employee_name','amount','department',)
+        fields = ('employee_name','amount','department','username')
+        read_only_fields=('employee_name',)
+
         # extra_kwargs={'amount':{'write_only':True}}
 
 class UserDetailSerializer(serializers.ModelSerializer):

@@ -145,6 +145,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    #This lets Django's collectstatic store our bundles
+    os.path.join(BASE_DIR, 'static'), )
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+    
+
 AUTH_USER_MODEL='login.User'
 
 REST_FRAMEWORK = {
