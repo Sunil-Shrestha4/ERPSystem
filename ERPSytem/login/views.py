@@ -336,8 +336,13 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [permissions.IsAdminUser]
     #     return [permission() for permission in permission_classes]
+<<<<<<< HEAD
 
 
+=======
+
+
+>>>>>>> 98e1f52ed0fac70e0628af560955fec5c0994a95
     
     
 
