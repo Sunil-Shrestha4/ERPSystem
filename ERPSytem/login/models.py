@@ -27,15 +27,13 @@ from django.contrib.auth.models import (
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self,email,username,first_name,last_name,address,phone_number,date_joined,department,document,photo, password=None ):
-        
+    def create_user(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
             raise TypeError('Users should have a Email')
 
         user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
-        # user = self.model(username=username, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
@@ -79,9 +77,9 @@ class User(AbstractBaseUser,PermissionsMixin):
     phone_number=models.IntegerField(null=True, blank=True)
     position=models.CharField(max_length=225,default='Trainee')
     date_joined=models.DateField(null=True)
-    department=models.CharField(max_length=225,default='IT')
-    document = models.FileField(upload_to='pics', blank=True)
-    photo = models.ImageField(upload_to='pics', blank=True)
+    department=models.CharField(max_length=225)
+    document = models.FileField(upload_to='media', blank=True)
+    photo = models.ImageField(upload_to='media', blank=True)
     is_verified = models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
