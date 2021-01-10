@@ -12,7 +12,7 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
+        fields = ['url','id','email','username','password','first_name','is_active','last_name','address','phone_number','position','date_joined','department','document','photo','created_at','updated_at','is_staff','is_superuser']
 
     # def create(self, validated_data):
     #     """Create and return a new user"""
@@ -54,7 +54,7 @@ class LoginSerializer(serializers.ModelSerializer):
         max_length=255, min_length=3, read_only=True)
 
     tokens = serializers.SerializerMethodField()
-
+    is_superuser = serializers.BooleanField(read_only=True)
     def get_tokens(self, obj):
         user = User.objects.get(email=obj['email'])
 
@@ -65,7 +65,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['email', 'password', 'username', 'tokens']
+        fields = ['email', 'password', 'username', 'tokens', 'is_superuser']
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -83,11 +83,12 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Account disabled, contact admin')
         # if not user.is_verified:
         #     raise AuthenticationFailed('Email is not verified')
-
+        print(user.is_superuser)
         return {
             'email': user.email,
             'username': user.username,
-            'tokens': user.tokens
+            'tokens': user.tokens,
+            'is_superuser':user.is_superuser,
         }
 
         return super().validate(attrs)
