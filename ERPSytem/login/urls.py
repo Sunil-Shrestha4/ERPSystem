@@ -1,5 +1,4 @@
 """ERPSytem URL Configuration
-
 The `urlpatterns` list routes URLs to views. For more information please see:
     https://docs.djangoproject.com/en/3.1/topics/http/urls/
 Examples:
@@ -24,16 +23,22 @@ from . import views
 
 router = DefaultRouter()
 
+# router.register('login',views.LoginAPIView.,basename='login')
+router.register('profilelist',views.UserProfileViewSet)
+
+
+
+
+# router.register('register',views.RegisterViewSet)
+# router.register('email-verify',views.VerifyEmail,name='email-verify')
+
 router.register('attendance',views.AttendanceViewSet)
 router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
-router.register('profile',views.UserProfileViewSet)
-router.register('registeruser',views.RegisterViewSet)
 router.register('leave',views.LeaveViewSet)
-
+router.register('userdetails',views.UserDetailViewSet)
+# router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [
-    # path('hello-view/', views.HelloApiView.as_view()),
-    # path('login/',views.UserLoginApiView.as_view()),
     path('', include(router.urls)),
     # path('api-auth/',include('rest_framework.urls')),
     # path('api-token-auth/', views.CustomAuthToken.as_view())
