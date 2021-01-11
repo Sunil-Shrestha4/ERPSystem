@@ -14,7 +14,7 @@ from django .conf import settings
 from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails
+from .models import User,UserDetails,Attendance
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -29,6 +29,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
 
 
@@ -92,13 +94,13 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAssigned]
 
 
-    def get_permissions(self):
+    # def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
 
     # def get_permissions(self):
         
@@ -139,7 +141,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
    
         
 
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
+    @action(detail=False,methods=['GET'])
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
         user=request.user
@@ -200,6 +202,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = serializers.LoginSerializer
 
+
     def post(self, request):
         serializer = self.serializer_class(data=request.data)
         try:
@@ -207,6 +210,10 @@ class LoginAPIView(generics.GenericAPIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except:
             return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
+    
+    def perform_create(self, serializer):
+
+        serializer.save(is_superuser=self.request.user)
 
 class LogoutAPIView(generics.GenericAPIView):
     serializer_class = serializers.LogoutSerializer
@@ -302,42 +309,69 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['emp_name']
+    
+    
+    # @action(detail=False,methods=['GET'])
+    # def view(self,request,pk=None):
+    #     user=request.user.filter(user.emp_name)
+    #     serializer=serializers.AttendanceSerializer(user)
+    #     return Response(serializer.data, status=200)
+
+    @action(detail=False, methods=['GET'])
+    # def view(self, request, **kwargs):
+    #     # filter_backends = [DjangoFilterBackend]
+        # filterset_fields = ['emp_name']
+    
+        # user=request.user.filter('emp_name')
+        # serializer = serializers.AttendanceSerializer(user, many=True) 
+        # return Response(serializer.data)
+
+    def view(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user)
+        serializer = serializers.AttendanceSerializer(queryset, many=True) 
+        return Response(serializer.data)
+        
+
+   
+
+     
+    # def post(self,request):
+    #      user = request.data
+    #      serializer = self.serializer(data=user)
+    #      try:
+    #         serializer.is_valid(raise_exception=True)
+    #         user = serializer.save()
+    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
+    #      except:
+    #         return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
+    
+    # def create(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    def perform_create(self, serializer):
+        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+        
+
+        serializer.save(emp_name=self.request.user)
+    # def get_permissions(self):
+    
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+
+
+    
     
 
-# class RegisterViewSet(viewsets.ModelViewSet):
-#     """Handle creating, creating and updating profiles"""
-#     serializer_class = serializers.RegisterSerializer
-#     queryset = models.User.objects.all()
 
-#     # def post(self, request, *args, **kwargs):
-#     #     serializer = self.get_serializer(data=request.data)
-#     #     serializer.is_valid(raise_exception=True)
-#     #     user = serializer.save()
-#     #     return Response({
-#     #     "user": UserProfileSerializer(user, context=self.get_serializer_context()).data,
-#     #     "token": AuthToken.objects.create(user)[1]
 
-#     #     })
-#     def post(self,request):
-#         user = request.data
-#         serializer = self.serializer_class(data=user)
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.save()
-#         user_data =serializer.data
-#         user = User.objects.get(email=user_data['email'])
-#         token =RefreshToken.for_user(user).access_token
-
-#         current_site = get_current_site(request).domain
-#         relativeLink=reverse('email-verify')
-    
-#         absurl ='http://'+current_site+relativeLink+"?token="+str(token)
-#         email_body='HI '+user.username+'Use link below to verify ypur email \n'+absurl
-#         data ={'email_body':email_body,'to_email':user.email, 'email_subject':'Verify your email'}
-#         Util.send_email(data)
-#         return Response(user_data,status=status.HTTP_201_CREATED)
-
-# class VerifyEmail(viewsets.ModelViewSet):
-#     ''
 
 
     
@@ -357,21 +391,27 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     # 
     permission_classes = [permissions.IsAdminUser] 
 
-    def get(self, request, format=None):
-        salary = Salary.objects.all()
-        serializer = SalaryReportSerializer(salary,many=True)
-        content = {
-            'status': 'request was permitted'
-        }
-        return JSONResponse(serializer.data,safe= False)
+    def perform_create(self, serializer):
+        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+        
+
+        serializer.save(employee_name=self.request.user)
+
+    # def get(self, request, format=None):
+    #     salary = Salary.objects.all()
+    #     serializer = SalaryReportSerializer(salary,many=True)
+    #     content = {
+    #         'status': 'request was permitted'
+    #     }
+    #     return JSONResponse(serializer.data,safe= False)
     
-    def post(self,request):
-        data = JSONParser().parse(request)
-        serializer=self.get_serializer(data = request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+    # def post(self,request):
+    #     data = JSONParser().parse(request)
+    #     serializer=self.get_serializer(data = request.data)
+    #     if serializer.is_valid():
+    #         serializer.save()
+    #         return Response(serializer.data)
+    #     return Response(serializer.errors)
 
 
 
@@ -446,13 +486,13 @@ class UserDetailViewSet(viewsets.ModelViewSet):
     # permission_classes = [IsAssigned]
 
 
-    def get_permissions(self):
+    # def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
 
     # def get_permissions(self):
         

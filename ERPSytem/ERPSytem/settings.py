@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djmoney',
-    'oauth2_provider',
+    'django_filters',
+    
 ]
 
 MIDDLEWARE = [
@@ -123,7 +124,7 @@ AUTH_PASSWORD_VALIDATORS = [
 REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':'error',
      'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication','rest_framework_simplejwt.authentication.JWTAuthentication','oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+        'rest_framework.authentication.SessionAuthentication','rest_framework_simplejwt.authentication.JWTAuthentication',
     )
 }
 
@@ -145,6 +146,17 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 JWT_SECRET_KEY = os.environ.get('JWT_SECRET_KEY')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = (
+    #This lets Django's collectstatic store our bundles
+    os.path.join(BASE_DIR, 'static'), )
+
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
+
+
+    
+
 AUTH_USER_MODEL='login.User'
 
 REST_FRAMEWORK = {
@@ -162,11 +174,11 @@ REST_FRAMEWORK = {
 LOGIN_REDIRECT_URL = '/api'
 
 
-EMAIL_USE_TLS =True
-EMAIL_HOST ='smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
-EMAIL_HOST_PASSWORD = 'rockson123'
+# EMAIL_USE_TLS =True
+# EMAIL_HOST ='smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
+# EMAIL_HOST_PASSWORD = 'rockson123'
 
 
 
