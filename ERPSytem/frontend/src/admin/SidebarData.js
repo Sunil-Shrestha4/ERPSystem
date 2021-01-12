@@ -3,6 +3,7 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import * as AiOutline from 'react-icons/io';
+import * as ImIcons from 'react-icons/im';
 export const SidebarData = [
   {
     title: 'Home',
@@ -37,7 +38,22 @@ export const SidebarData = [
   {
     title: 'Add Employee',
     path: '/employee',
-    icon: <IoIcons.IoMdHelpCircle />,
+    icon: <AiIcons.AiOutlineUserAdd />,
+    cName: 'nav-text'
+  },
+
+  {
+    title: 'Attendance',
+    path: '/own',
+    icon: <FaIcons.FaFistRaised />,
+    cName: 'nav-text'
+  },
+
+  {
+    title: 'Leave',
+    path: '/own',
+    icon: <ImIcons.ImExit />,
     cName: 'nav-text'
   }
+
 ];

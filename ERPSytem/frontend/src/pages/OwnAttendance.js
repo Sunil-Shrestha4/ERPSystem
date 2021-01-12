@@ -1,8 +1,12 @@
 import React from 'react';
 import  { useState, useEffect } from 'react';
-import { Container ,Row ,Col} from 'react-bootstrap';
+import { Container ,Row ,Col,Card,CardGroup} from 'react-bootstrap';
 import "./User.css";
-import Navbar from "../admin/Dashboard"
+import Navbar from "../admin/Dashboard";
+import './Attendance.css';
+import { Dropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap';
+import PostAttendance from './PostAttendance';
+
 
 
 
@@ -12,7 +16,7 @@ import Navbar from "../admin/Dashboard"
 // import Row from 'react-bootstrap/Row';
 
 function OwnAttendance() {
-    const [user, setUser] = useState( {
+    const [attendance, setAttendance] = useState([ {
         id:'',
         choices:'',
         time:'',
@@ -21,14 +25,13 @@ function OwnAttendance() {
 
 
         
-    });
+    }]);
     // const [data, setData] = useState( [] );
     
 
     useEffect(async () => {
-        
         const token= localStorage.getItem('access')
-        let res = await fetch(`http://127.0.0.1:8000/api/attendance/?emp_name=${}`, {
+        let res = await fetch('http://127.0.0.1:8000/api/attendance/view/', {
             method: 'GET',
             headers: {
               'Accept': 'application/json',
@@ -42,8 +45,9 @@ function OwnAttendance() {
           res = await res.json();
           console.log(res);
      
-        setUser(res);
-        console.log(user.name)
+        setAttendance(res);
+        
+        
       }, []);
 
     
@@ -51,24 +55,33 @@ function OwnAttendance() {
     return (
         <div>
             <Navbar />
-            <Container className="container">
-                <Row className="row">
-                
-                
-                <Col className="column">
-                    <ul className="detail">
-                        <h2>USER DETAILS</h2>
-                        <li>{user.name}</li>
-
-                        {/* <li>{user.is_active}</li>
-                        <li>{user.is_admin}</li>
-                        <li>{user.is_superuser}</li> */}
-                    </ul>     
-                        
-                </Col>
+            <br/>
+            <br/>
+            <PostAttendance/>
+            <br/>
+            <br/>
+            <h1>Your Attendance History</h1>
+            <ul>{attendance.map((item)=>(
+               <CardGroup className="card">
+               <Card style={{ width: '18rem' }} border="success">
+                <Row>
+                <Col>Attendance-ID:{item.id}</Col>
+                <Col>USER NAME:{item.name}</Col>
+                <Col>STATUS:{item.choices}</Col>
+                <Col>TIME:{item.time}</Col>
+                <br/>
                 </Row>
-                </Container>
-        </div>
+                </Card> 
+                </CardGroup>
+            )
+            )}
+            </ul> 
+
+
+
+            {/* {attendance.map((item) =>(<li>{item.name}</li>)) } */}
+            
+           </div>
 
             
      

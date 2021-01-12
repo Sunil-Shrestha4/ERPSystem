@@ -16,7 +16,7 @@ export default function Signup() {
     password: ""
   });
   const history = useHistory();
-  const [newUser, setNewUser] = useState(null);
+  // const [newUser, setNewUser] = useState(null);
 
   function validateForm() {
     return (

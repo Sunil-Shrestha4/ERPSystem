@@ -50,11 +50,11 @@ export default function Routes(){
             <Route exact path="/details/:id" component={Detail}>
             {/* <Detail name="samman"/> */}
           </Route>
-          <Route exact path="/own" component={Detail}>
-            {/* <Detail name="samman"/> */}
-          <OwnAttendance/>
-          </Route>
-             
+          
+          <Route exact path="/own">
+                <OwnAttendance/>
+            </Route>
+
 
             <Route>
                 <NotFound/>
