@@ -1,17 +1,13 @@
 import React from 'react';
 import  { useState, useEffect } from 'react';
-import { Container ,Row ,Col} from 'react-bootstrap';
+import { Container ,Row ,Col, ListGroup} from 'react-bootstrap';
 import "./User.css";
-import Navbar from "../admin/Dashboard"
+import Navbar from "../admin/Dashboard";
+import Card from 'react-bootstrap/Card';
+import Button from 'react-bootstrap/Button';
+import Nav from 'react-bootstrap/Nav';
 
-
-
-// import Card from 'react-bootstrap/Card';
-// // import Button from 'react-bootstrap/Button';
-// import Container from 'react-bootstrap/Container';
-// import Row from 'react-bootstrap/Row';
-
-function User() {
+export default function User() {
     const [user, setUser] = useState( {
         email:'',
         username:'',
@@ -25,14 +21,8 @@ function User() {
         photo:'' ,
         is_active:'',
         is_superuser:'',
-        is_staff:'',
-
-
-
-        
-    });
-    // const [data, setData] = useState( [] );
-    
+        is_staff:'',       
+    });    
 
     useEffect(async () => {
         const token= localStorage.getItem('access')
@@ -42,11 +32,8 @@ function User() {
               'Accept': 'application/json',
               'Content-type': 'application/json',
               'Authorization': `Bearer ${token}`,
-            },
-            // body: JSON.stringify(user)
-      
+            },      
           })
-        //   console.log(res);
           res = await res.json();
           console.log(res);
      
@@ -56,39 +43,53 @@ function User() {
 
     
     
-    return (
+    return (              
         <div>
-            <Navbar />
-            <Container className="container">
-                <Row className="row">
-                <Col className='column'><img src={'http://127.0.0.1:8000'+user.photo} width='300' height='360' />
-                </Col>
-                <Col className="column">
-                    <ul className="detail">
-                        <h2>USER DETAILS</h2>
-                        <li>{user.email}</li>
-                        <li>{user.username}</li>
-                        <li>first name:     {user.first_name}</li>
-                        <li>last name:     {user.last_name}</li>
-                        <li>Address:     {user.address}</li>
-                        <li>phone number:      {user.phone_number}</li>
-                        <li>Departmant:   {user.department}</li>
-                        <li>Date joined:      {user.date_joined}</li>
-                        
-                        
-                        <a href={'http://127.0.0.1:8000'+user.document} >Documents</a>
-                        {/* <li>{user.is_active}</li>
-                        <li>{user.is_admin}</li>
-                        <li>{user.is_superuser}</li> */}
-                    </ul>     
-                        
-                </Col>
-                </Row>
-                </Container>
-        </div>
+        <Navbar /> 
+        <Container className="container">
+          <Row >
+            <Col >
+              <img src={'file://home/bimarsha/Pictures/72BCT612 (1).jpg' + '{user.photo}'} width='200' height='200' />
+            </Col>
+            <Col xs={8}>
+                
+            </Col>
+          </Row>
 
-            
-     
+          <Row>
+            <Col>
+            </Col>
+            <Col xs={8}>
+            <Card>
+                <Card.Header>
+                  <Nav variant="tabs" defaultActiveKey="#first">
+                    <Nav.Item>
+                      <Nav.Link href="#first">About</Nav.Link>
+                    </Nav.Item>
+                  </Nav>
+                </Card.Header>
+                <Card.Body>
+                  {/* <Card.Title>Special title treatment</Card.Title> */}
+                  <Card.Text>
+                    <ListGroup>
+                      <ListGroup.Item>Email: {user.email}</ListGroup.Item>
+                      <ListGroup.Item>Username: {user.username}</ListGroup.Item>
+                      <ListGroup.Item>first name:     {user.first_name}</ListGroup.Item>
+                      <ListGroup.Item>last name:     {user.last_name}</ListGroup.Item>
+                      <ListGroup.Item>Address:     {user.address}</ListGroup.Item>
+                      <ListGroup.Item>phone number:      {user.phone_number}</ListGroup.Item>
+                      <ListGroup.Item>Departmant:   {user.department}</ListGroup.Item>
+                      <ListGroup.Item>Date joined:      {user.date_joined}</ListGroup.Item>
+                    </ListGroup>
+                  </Card.Text>
+                  <Button variant="primary">Go somewhere</Button>
+                </Card.Body>
+                </Card>
+            </Col>
+
+          </Row>
+
+        </Container>   
+      </div> 
     );
   }
-export default User;

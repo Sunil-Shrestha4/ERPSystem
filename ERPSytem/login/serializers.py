@@ -172,7 +172,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
+        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','position','date_joined','document','photo' ]
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -210,13 +210,19 @@ class LeaveSerializer(serializers.ModelSerializer):
 
     
 class SalaryReportSerializer(serializers.ModelSerializer):
-    username=serializers.CharField(source='employee_name.first_name',read_only=True)
+    # first_name=serializers.CharField(source='emp_name.first_name',read_only=True)
+    # last_name = serializers.CharField(source='emp_name.last_name', read_only=True)
+    # # last_name = first_name.
+    # email = serializers.EmailField(source='emp_name.email', read_only=True)
+    # departments = serializers.CharField(source='department.dept_name')
     """Serializes a user profile object"""
-
+    # email =serializers.EmailField(source='emp_id.email',read_only=True) 
     class Meta:
         model = models.Salary
-        fields = ('employee_name','amount','department','username')
-        read_only_fields=('employee_name',)
+        # fields = ('first_name','last_name','email','department','month', 'amount','allowance')
+        # fields = ['id','department','month', 'amount','allowance','emp']
+        fields = '__all__'
+        # read_only_fields=('employee_name',)
 
         # extra_kwargs={'amount':{'write_only':True}}
 

@@ -1,0 +1,22 @@
+
+.container{
+    
+    padding-top:30px;
+    margin: auto;
+    
+    background-color: #f7f8fc;
+    }
+
+        .column{
+        border: 5px solid rgb(65, 66, 65);
+        padding: 50px;
+        margin: 20px;
+        
+        }
+
+        
+            .detail{
+            text-align: left;
+            }
+
+

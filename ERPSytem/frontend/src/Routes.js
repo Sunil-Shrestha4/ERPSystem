@@ -11,7 +11,8 @@ import User from "./pages/User"
 import AddEmployee from "./pages/AddEmployee"
 import Attendance from "./pages/Attendance"
 import SalaryReport from "./pages/SalaryReport";
-
+import Userlist from "./pages/Userlist";
+import Userdetails from "./pages/details";
 
 
 export default function Routes(){
@@ -36,6 +37,8 @@ export default function Routes(){
             <Route exact path="/User">
                 <User />
             </Route>
+            <Route exact path="/team"><Userlist/></Route>
+            <Route exact path="/details/:id" component={Userdetails}/>
             <GuardedRoute exact path="/employee"  component={AddEmployee}  />
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />

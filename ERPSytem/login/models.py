@@ -6,7 +6,7 @@ from django.contrib.auth.models import BaseUserManager
 from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
-
+import datetime as dt
 
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
@@ -27,7 +27,7 @@ from django.contrib.auth.models import (
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password=None):
+    def create_user(self, username, email,first_name,last_name,address,phone_number,position,date_joined,department,document,photo,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
@@ -37,33 +37,48 @@ class UserProfileManager(BaseUserManager):
         user.set_password(password)
         user.save()
         return user
+    # def create_user(self, username, email, password=None):
+    #    if username is None:
+    #        raise TypeError('Users should have a username')
+    #    if email is None:
+    #        raise TypeError('Users should have a Email')
+ 
+    #    # user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
+    #    user = self.model(username=username, email=self.normalize_email(email))
+    #    user.set_password(password)
+    #    user.save()
+    #    return user
+   
 
-
-    
-
-    def create_superuser(self,email,username,password):
+    def create_superuser(self, username, email, password):
         """Create and save a new super user with given details"""
-        user=self.create_user(email,username,password)
+        user=self.create_user(username, email, password)
     # def create_superuser(self, username, email, password=None):
     #     if password is None:
     #         raise TypeError('Password should not be none')
 
-        user = self.create_user(username, email, password)
+        # user = self.create_user(username, email, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
         return user
 
-
 AUTH_PROVIDERS = {'facebook': 'facebook', 'google': 'google',
                   'twitter': 'twitter', 'email': 'email'}
 
 class Department(models.Model):
-    #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
-      dept_name = models.CharField(max_length=30)
+    #users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    # DEPT_NAMES = (
+    #     ('IT', 'IT'),
+    #     ('SD', "sadd"),
+    #     ('HHJ', "hjjj"),
+    #     ('DEN', "daat"),
+    #     ('ADMIN', "administration"),
+    #     ('STF', "staff"),
+    # )
+    dept_name = models.CharField(max_length=30)
 
-      def __str__(self):
-        """Return string representation of user"""
+    def __str__(self):
         return self.dept_name
 
 class User(AbstractBaseUser,PermissionsMixin):
@@ -154,11 +169,29 @@ class Attendance(models.Model):
 
 
 class Salary(models.Model):
-    employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
-    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR')
-    department =models.ForeignKey(Department,on_delete=models.CASCADE,default=0)
+    # DEPT_NAMES = (
+    #     ('IT', 'IT'),
+    #     ('sad', "sadd"),
+    #     ('hjhj', "hjjj"),
+    #     ('Dentist', "daat"),
+    #     ('Admin', "administration"),
+    #     ('Staff', "staff"),
+    # )
+    # employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default="None")
+    amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
+    department = models.ForeignKey(Department, on_delete=models.CASCADE,default=0)
+
+    # email = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    emp=models.ForeignKey(User,on_delete=models.CASCADE)
+    # amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
+    allowance = MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
+    # email = models.EmailField(max_length=225,unique=True,db_index=True, default=0)
+    month = models.CharField(max_length=225, default=0)
+    received_date = models.DateField(default=dt.date.today)
+    # position = models.ForeignKey(User, on_delete=models.CASCADE, default="Trainee")
+    
     def __str__(self):
-        return self.email
+        return str(self.amount)
     
 
 class UserDetails(models.Model):

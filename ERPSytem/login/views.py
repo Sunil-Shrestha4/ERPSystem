@@ -29,7 +29,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
-
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
 
 class RegisterView(generics.GenericAPIView):
@@ -307,7 +308,9 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
-     
+    
+    
+    
     # def post(self,request):
     #      user = request.data
     #      serializer = self.serializer(data=user)
@@ -324,11 +327,11 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     self.perform_create(serializer)
     #     headers = self.get_success_headers(serializer.data)
     #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    def perform_create(self, serializer):
-        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+    # def perform_create(self, serializer):
+    #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
         
 
-        serializer.save(emp_name=self.request.user)
+    #     serializer.save(emp_name=self.request.user)
     # def get_permissions(self):
     
     #     if self.request.method == 'GET':
@@ -336,13 +339,8 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [permissions.IsAdminUser]
     #     return [permission() for permission in permission_classes]
-<<<<<<< HEAD
 
 
-=======
-
-
->>>>>>> 98e1f52ed0fac70e0628af560955fec5c0994a95
     
     
 
@@ -358,20 +356,67 @@ class LeaveViewSet(viewsets.ModelViewSet):
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
      
-  
    
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
-    serializer_class = serializers.SalaryReportSerializer 
-    queryset = models.Salary.objects.all()
+    # serializer_class = serializers.SalaryReportSerializer 
+    # queryset = models.Salary.objects.all()
     # 
-    permission_classes = [permissions.IsAdminUser] 
+    queryset = models.Salary.objects.all()
+    serializer_class = serializers.SalaryReportSerializer
+    
+    permission_classes = [permissions.IsAuthenticated ]
 
-    def perform_create(self, serializer):
-        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+    # def get_permissions(self):
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+
+    @action(detail=False,methods=['GET'], permission_classes = [IsAssigned,])
+    def salary_report(self,request):
+        #import pdb;pdb.set_trace()
+        user= request.user 
+        salary=models.Salary.objects.filter(emp=user)
+        print(salary)
+        serializer=serializers.SalaryReportSerializer(salary,many=True)   
+        print(serializer.data)
+        return Response(serializer.data, status=200)
+ 
+    # queryset = User.objects.all()
+    # permission_classes = [permissions.IsAdminUser]
+
+    # serializer_class = RegisterSerializer
+    # def get(self, request, format=None):
+    #     users = User.objects.all()
+    #     serializer = RegisterSerializer(users, many=True)
+    #     return Response(serializer.data)
+
+    # def post(self, request):
+    #     salary = request.data
+    #     serializer = self.serializer_class(data=salary)
+    #     serializer.is_valid(raise_exception=True)
+    #     serializer.save()
+    #     salary_data = serializer.data
+    #     salary = models.Salary.objects.get(email=salary_data['email'])
+    #     # token = RefreshToken.for_user(user).access_token
+    #     # import pdb;pdb.set_trace()
+    #     # current_site = get_current_site(request).domain
+    #     # relativeLink = reverse('email-verify')
+    #     # absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
+    #     # email_body = 'Hi '+user.username + \
+    #     #     ' Use the link below to verify your email \n' + absurl
+    #     # data = {'email_body': email_body, 'to_email': user.email,
+    #     #         'email_subject': 'Verify your email'}
+    #     # Util.send_email(data)
+    #     return Response(salary_data, status=status.HTTP_201_CREATED)
+
+    # def perform_create(self, serializer):
+    #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
         
 
-        serializer.save(employee_name=self.request.user)
+    #     serializer.save(employee_name=self.request.user)
 
     # def get(self, request, format=None):
     #     salary = Salary.objects.all()
