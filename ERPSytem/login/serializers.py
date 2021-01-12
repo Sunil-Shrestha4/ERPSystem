@@ -200,17 +200,20 @@ class EmailVerificationSerializer(serializers.Serializer):
     
 
 class LeaveSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='employee.first_name',read_only=True)
     """Serializes a user profile object"""
 
     class Meta:
         model = models.Leave
-        fields = '__all__'
+        fields=['id','leave_status','start','end','number_of_days','reason','name']
+        # read_only_fields=('employee',)
 
+        
 
 
     
 class SalaryReportSerializer(serializers.ModelSerializer):
-    username=serializers.CharField(source='employee_name.first_name',read_only=True)
+    username=serializers.CharField(source='employee.first_name',read_only=True)
     """Serializes a user profile object"""
 
     class Meta:

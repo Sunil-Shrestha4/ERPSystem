@@ -381,6 +381,25 @@ class LeaveViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LeaveSerializer
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['employee']
+
+    def perform_create(self,serializer):
+        serializer.save(employee=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    # def view(self, request, **kwargs):
+    #     # filter_backends = [DjangoFilterBackend]
+        # filterset_fields = ['emp_name']
+    
+        # user=request.user.filter('emp_name')
+        # serializer = serializers.AttendanceSerializer(user, many=True) 
+        # return Response(serializer.data)
+
+    def viewleave(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
+        serializer = serializers.LeaveSerializer(queryset, many=True) 
+        return Response(serializer.data)
      
   
    

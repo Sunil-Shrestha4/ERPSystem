@@ -58,19 +58,25 @@ export default function PostAttendance() {
                 {/* <p>your selected status is :{attend}</p> */}
 
 
-                <label>Checkin:</label>
-                <input type="radio" id="choices" name="choices" value="CI"
+                
+                <button type="submit" id="choices" name="choices" value="CI"
+                    onClick ={handleChange} > Checkin</button>
+                    <br/>
+                    <br/>
+                <button type="submit" id="choices" name="choices" value="CO"
+                    onClick ={handleChange} > Checkout</button>
+                {/* <input type="radio" id="choices" name="choices" value="CI"
                     onChange ={handleChange} />
                 <label>Checkout:</label>
                 <input type="radio" id="choices" name="choices" value="CO"
                     onChange ={handleChange} />
-                {/* <select value={attend} onChange={handleChange}>
-                    <option name="checkin" value={attend.checkin}>Checkin</option>
+                {/* <select value={attend} onChange={handleChange}> */}
+                    {/* <option name="checkin" value={attend.checkin}>Checkin</option>
                     <option name="checkout" value={attend.checkout}>Checkout</option>
                     </select> */}
-                    <Button block size="lg" type="submit" >
+                    {/* <Button block size="lg" type="submit" >
                 Submit
-                    </Button>
+                    </Button> */} 
 
             </form>
         </div>

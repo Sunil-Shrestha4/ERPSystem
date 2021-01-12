@@ -41,14 +41,14 @@ class UserProfileManager(BaseUserManager):
 
     
 
-    def create_superuser(self,email,username,password):
+    def create_superuser(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password):
         """Create and save a new super user with given details"""
-        user=self.create_user(email,username,password)
+        user=self.create_user(email,username,first_name,last_name,address,phone_number,date_joined,department,document,photo,password)
     # def create_superuser(self, username, email, password=None):
     #     if password is None:
     #         raise TypeError('Password should not be none')
 
-        user = self.create_user(username, email, password)
+        user = self.create_user(username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -154,7 +154,7 @@ class Attendance(models.Model):
 
 
 class Salary(models.Model):
-    employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
+    emp_name = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
     amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR')
     department =models.ForeignKey(Department,on_delete=models.CASCADE,default=0)
     def __str__(self):
@@ -184,12 +184,12 @@ class UserDetails(models.Model):
         return self.first_name
 
 class Leave(models.Model):
-    emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    employee=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
     leave_status=models.BooleanField(default=False)
     start = models.DateTimeField(null=True)
     end = models.DateTimeField(null=True)
     number_of_days=models.IntegerField(default=0)
-    emp_name=models.CharField(max_length=225)
+    
     reason=models.TextField(max_length=500, blank=False)
     
 

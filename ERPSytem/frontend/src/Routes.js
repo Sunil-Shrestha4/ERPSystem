@@ -41,6 +41,8 @@ export default function Routes(){
             <GuardedRoute exact path="/employee"  component={AddEmployee}  />
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
+            <GuardedRoute exact path="/team"  component={Userlist}  />
+            
             {/* <GuardedRoute exact path="/team"  component={Userlist}  /> */}
 
             <Route exact path="/team">
