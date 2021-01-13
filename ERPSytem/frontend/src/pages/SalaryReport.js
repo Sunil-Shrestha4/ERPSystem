@@ -8,8 +8,8 @@ export default function SalaryReport() {
     const [salary,setSalary]=useState([
         {
         username:'',
-        department:'',
         amount:'',
+        department:'',
         }
 
 
@@ -37,9 +37,9 @@ export default function SalaryReport() {
                     <CardGroup className="card">
                     <Card style={{ width: '18rem' }} border="success">
                     <Row>
-                    <Col>EMP-ID:{sal.username}</Col>
-                    <Col>NAME:{sal.amount}</Col>
-                    <Col>STATUS:{sal.department}</Col>
+                    <Col>EMP-NAME:   {sal.username}</Col>
+                    <Col>NAME:   {sal.amount}</Col>
+                    <Col>STATUS:   {sal.department}</Col>
                     
                     <br/>
                     </Row>

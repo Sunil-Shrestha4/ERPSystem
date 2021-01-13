@@ -216,7 +216,7 @@ class SalaryReportSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Salary
         fields = ('employee_name','amount','department','username')
-        read_only_fields=('employee_name',)
+        # read_only_fields=('employee_name',)
 
         # extra_kwargs={'amount':{'write_only':True}}
 

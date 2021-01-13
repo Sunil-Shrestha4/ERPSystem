@@ -46,6 +46,9 @@ export default function Login() {
         Auth.login(()=>{
           localStorage.setItem('access', res.tokens.access)
           localStorage.setItem('refresh', res.tokens.refresh)
+          sessionStorage.setItem('access', res.tokens.access)
+          sessionStorage.setItem('refresh', res.tokens.refresh)
+          // sessionStorage.save('refresh')
           localStorage.setItem('is_superuser',res.is_superuser)
           
           if (localStorage.getItem('is_superuser')=="true"){

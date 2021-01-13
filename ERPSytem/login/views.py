@@ -362,11 +362,11 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     # 
     permission_classes = [permissions.IsAdminUser] 
 
-    def perform_create(self, serializer):
-        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+    # def perform_create(self, serializer):
+    #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
         
 
-        serializer.save(employee_name=self.request.user)
+    #     serializer.save(employee_name=self.request.user)
 
     # def get(self, request, format=None):
     #     salary = Salary.objects.all()

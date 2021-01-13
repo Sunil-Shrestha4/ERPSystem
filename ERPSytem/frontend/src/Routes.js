@@ -33,9 +33,10 @@ export default function Routes(){
             </Route> */}
             {/* <GuardedRoute /> */}
             <GuardedRoute exact path="/profile"  component={Dashboard}  />
-            <Route exact path="/User">
+            {/* <Route exact path="/User">
                 <User />
-            </Route>
+            </Route> */}
+            <GuardedRoute exact path="/user"  component={User}  />
             <GuardedRoute exact path="/employee"  component={AddEmployee}  />
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
