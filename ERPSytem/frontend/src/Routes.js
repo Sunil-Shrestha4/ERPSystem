@@ -23,9 +23,7 @@ export default function Routes(){
               <Home/>  
             </Route> */}
             
-            <Route exact path="/">
-                <Login/>
-            </Route>
+            <Route exact path="/" component={Login} />
             <Route exact path="/signup">
                 <Signup/>
             </Route>
@@ -33,7 +31,7 @@ export default function Routes(){
                 <Dashboard/>
             </Route> */}
             {/* <GuardedRoute /> */}
-            <GuardedRoute exact path="/profile"  component={Dashboard}  />
+            <GuardedRoute exact path="/dashboard"  component={Dashboard}  />
             <Route exact path="/User">
                 <User />
             </Route>

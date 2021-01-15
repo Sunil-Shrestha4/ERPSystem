@@ -49,11 +49,11 @@ export default function Login() {
           localStorage.setItem('is_superuser',res.is_superuser)
           
           if (localStorage.getItem('is_superuser')=="true"){
-            history.push("/profile")
+            history.push("/dashboard")
             
           }
           else{
-            history.push('/profile')
+            history.push('/signup')
           }
         })
         

@@ -355,35 +355,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.LeaveSerializer
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
-     
    
-class SalaryReportApiView(viewsets.ModelViewSet):
-    """Handli ccreating, updating salary field"""
-    # serializer_class = serializers.SalaryReportSerializer 
-    # queryset = models.Salary.objects.all()
-    # 
-    queryset = models.Salary.objects.all()
-    serializer_class = serializers.SalaryReportSerializer
-    
-    permission_classes = [permissions.IsAuthenticated ]
-
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         permission_classes = [permissions.IsAuthenticated]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return [permission() for permission in permission_classes]
-
-    @action(detail=False,methods=['GET'], permission_classes = [IsAssigned,])
-    def salary_report(self,request):
-        #import pdb;pdb.set_trace()
-        user= request.user 
-        salary=models.Salary.objects.filter(emp=user)
-        print(salary)
-        serializer=serializers.SalaryReportSerializer(salary,many=True)   
-        print(serializer.data)
-        return Response(serializer.data, status=200)
- 
     # queryset = User.objects.all()
     # permission_classes = [permissions.IsAdminUser]
 
@@ -432,7 +404,78 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     #     if serializer.is_valid():
     #         serializer.save()
     #         return Response(serializer.data)
-    #     return Response(serializer.errors)
+    #     return Response(serializer.errors)  
+# class IsSuperUser(permissions.BasePermission):
+
+#     def has_permission(self, request, view):
+#         return request.user and request.user.is_superuser
+
+class IsOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user:
+            if request.user.is_superuser:
+                return True
+            else:
+                return obj.owner == request.user
+        else:
+            return False
+        # if obj == (request.user): 
+        #     return True
+        # else:
+        #     return False
+        # return obj.owner == request.user
+class IsOwnerOrAdmin(permissions.IsAuthenticated):
+    def has_object_permission(self, request, view, obj):
+        # if request.method in permissions.SAFE_METHODS:
+        #     return True
+        return obj.owner == request.user or request.user.is_superuser
+
+class SalaryReportApiView(viewsets.ModelViewSet):
+    """Handlig creating, updating salary field"""
+    queryset = models.Salary.objects.all()
+    serializer_class = serializers.SalaryReportSerializer
+    permission_classes = [IsAdminUser]
+    
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            queryset=models.Salary.objects.all()
+            return queryset
+
+        queryset = self.queryset
+        query_set =  queryset.filter(emp=self.request.user)
+        print(query_set)
+        return query_set
+
+    def get_permissions(self):
+        if self.request.method == 'GET':
+            permission_classes = [IsOwnerOrAdmin,]
+        # elif self.action =='list':
+        #     permission_classes=[IsAdminUser,]
+        # elif self.action=='retrieve': 
+        #     permission_classes = [IsOwnerOrAdmin,]
+        else:
+            permission_classes=[IsAdminUser]
+        return [permission() for permission in permission_classes]
+    # def get_permissions(self):
+    #     if self.request.method == 'GET':
+    #         permission_classes =[IsOwnerOrAdmin]
+    #     elif self.action == 'list':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+    #     elif self.action == 'retrieve':
+    #         self.permission_classes = [IsOwnerOrAdmin]
+    #     else:
+    #         self.permission_classes=[IsAdminUser]
+    #     return super(self.__class__, self).get_permissions()
+
+    @action(detail=False,methods=['GET'])
+    def salary_report(self,request):
+        #import pdb;pdb.set_trace()
+        user= request.user
+        print(user) 
+        salary=models.Salary.objects.filter(emp=user)
+        serializer=serializers.SalaryReportSerializer(salary,many=True)   
+        return Response(serializer.data, status=200)
 
 
 
