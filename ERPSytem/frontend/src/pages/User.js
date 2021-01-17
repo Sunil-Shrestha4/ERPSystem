@@ -46,6 +46,7 @@ function User() {
             // body: JSON.stringify(user)
       
           })
+          
         //   console.log(res);
           res = await res.json();
           console.log(res);

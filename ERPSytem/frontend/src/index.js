@@ -5,10 +5,14 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter as Router } from 'react-router-dom';
 
+import { LoggedInContextProvider } from "./context/IsSuperUserContext";
+
 ReactDOM.render(
   <React.StrictMode>
      <Router>
-      <App />
+       <LoggedInContextProvider>
+         <App />
+       </LoggedInContextProvider>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')

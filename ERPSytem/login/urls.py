@@ -36,7 +36,7 @@ router.register('profilelist',views.UserProfileViewSet)
 router.register('attendance',views.AttendanceViewSet)
 router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
-router.register('leave',views.LeaveViewSet)
+# router.register('leave',views.LeaveViewSet)
 router.register('userdetails',views.UserDetailViewSet)
 # router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [

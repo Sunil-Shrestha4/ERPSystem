@@ -5,6 +5,10 @@ import { Link } from 'react-router-dom';
 import { SidebarData } from './SidebarData';
 import './Dashboard.css';
 import { IconContext } from 'react-icons';
+import {Button} from "react-bootstrap";
+import Auth from '../component/auth';
+import Cookies from 'js-cookie'
+
 
 // import Login from '../containers/Login'
 
@@ -14,6 +18,19 @@ function Dashboard() {
   const [sidebar, setSidebar] = useState(false);
 
   const showSidebar = () => setSidebar(!sidebar);
+
+  async function handleSubmit(){
+    Auth.logout(()=>{
+        localStorage.removeItem('access');
+        localStorage.removeItem('refresh');
+        Cookies.remove('auth');
+        
+
+    })
+    window.location.href = '/';
+    // history.push('/');
+
+}
 
   return (
     <>
@@ -52,7 +69,10 @@ function Dashboard() {
                 </li>
               );
             })}
+          <Button onClick={handleSubmit}>Logout</Button>
+
           </ul>
+          
        
         </nav>
         

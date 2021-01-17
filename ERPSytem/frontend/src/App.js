@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from "react-bootstrap/Navbar";
 import './App.css';
 import Routes from "./Routes";
@@ -7,7 +7,12 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useState } from "react";
 
 function App(){
-  
+  useEffect(() => {
+    console.log("App has rendered")
+    // return () => {
+    //   cleanup
+    // }
+  }, [])
   
   return (
     <div className="App container py-3">

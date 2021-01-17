@@ -29,6 +29,8 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
+from django_filters.rest_framework import DjangoFilterBackend
+from django_filters import rest_framework as filters
 
 
 
@@ -307,16 +309,17 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['emp_name','date']
      
-    # def post(self,request):
-    #      user = request.data
-    #      serializer = self.serializer(data=user)
-    #      try:
-    #         serializer.is_valid(raise_exception=True)
-    #         user = serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
-    #      except:
-    #         return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
+    @action(detail=False, methods=['GET'])
+    
+
+    def view(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user)
+        serializer = serializers.AttendanceSerializer(queryset, many=True) 
+        return Response(serializer.data)
+        
     
     # def create(self, request, *args, **kwargs):
     #     serializer = self.get_serializer(data=request.data)
@@ -325,9 +328,6 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     headers = self.get_success_headers(serializer.data)
     #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     def perform_create(self, serializer):
-        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
-        
-
         serializer.save(emp_name=self.request.user)
     # def get_permissions(self):
     
@@ -347,11 +347,11 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
     
  
-class LeaveViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.LeaveSerializer
-    queryset = models.Leave.objects.all() 
-    permission_classes = [permissions.IsAuthenticated ]
+# class LeaveViewSet(viewsets.ModelViewSet):
+#     """Handle creating, creating and updating profiles"""
+#     serializer_class = serializers.LeaveSerializer
+#     queryset = models.Leave.objects.all() 
+#     permission_classes = [permissions.IsAuthenticated ]
      
   
    
@@ -361,6 +361,16 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     queryset = models.Salary.objects.all()
     # 
     permission_classes = [permissions.IsAdminUser] 
+
+    @action(detail=False,methods=['GET'], permission_classes = [IsAssigned,])
+    def salary_report(self,request):
+        #import pdb;pdb.set_trace()
+        user= request.user 
+        salary=models.Salary.objects.filter(employee_name=user)
+        print(salary)
+        serializer=serializers.SalaryReportSerializer(salary,many=True)   
+        print(serializer.data)
+        return Response(serializer.data, status=200)
 
     # def perform_create(self, serializer):
     #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)

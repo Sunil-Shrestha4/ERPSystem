@@ -5,6 +5,7 @@ import Navbar from "../admin/Dashboard"
 import './Attendance.css'
 
 export default function Attendance() {
+    
     const [attendance, setAttendance] = useState([
         {
             emp_name:'',

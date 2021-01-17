@@ -127,11 +127,16 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
 
 class AttendanceSerializer(serializers.ModelSerializer):
     name=serializers.CharField(source='emp_name.first_name',read_only=True)
+    # choices = SerializerMethodField('choices_by_order')
+    
     
     class Meta:
         model= models.Attendance
-        fields=['emp_name','choices','time','name']
-        read_only_fields = ['emp_name']
+        fields=['id','choices','date','time','name']
+        # read_only_fields = ['emp_name']
+    
+    # def choices_by_order(self,obj):
+
 
 # class RegisterSerializer(serializers.HyperlinkedModelSerializer):
 #     password = serializers.CharField(
@@ -199,12 +204,12 @@ class EmailVerificationSerializer(serializers.Serializer):
 
     
 
-class LeaveSerializer(serializers.ModelSerializer):
-    """Serializes a user profile object"""
+# class LeaveSerializer(serializers.ModelSerializer):
+#     """Serializes a user profile object"""
 
-    class Meta:
-        model = models.Leave
-        fields = '__all__'
+#     class Meta:
+#         model = models.Leave
+#         fields = '__all__'
 
 
 
