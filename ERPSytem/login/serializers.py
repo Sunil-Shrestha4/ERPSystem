@@ -133,36 +133,7 @@ class AttendanceSerializer(serializers.ModelSerializer):
         fields=['emp_name','choices','time','name']
         read_only_fields = ['emp_name']
 
-# class RegisterSerializer(serializers.HyperlinkedModelSerializer):
-#     password = serializers.CharField(
-#         max_length=70,
-#         min_length= 6,
-#         write_only=True,
-#         required=True,
-#         style = {'input_type': 'password','placeholder':'password'},
-#     )
 
-#     class Meta:
-#         model = models.User
-#         fields = ( 'username', 'email', 'password')
-#         # extra_kwargs = {'password': {'write_only': True}}
-#     def validate(self, attrs):
-#         email = attrs.get('email', '')
-#         username =attrs.get('username','')
-#         if User.objects.filter(email=email).exists():
-#             raise serializers.ValidationError(
-#                 {'email': ('Email is already in use')})
-#         return attrs
-
-#     def create(self, validated_data):
-#         # user = super().create_user(**validated_data)
-#         # user.set_password(validated_data['password'])
-#         # user.save()
-#         return User.objects.create_user(**validated_data)
-#     # def create(self, validated_data):
-#     #     user = models.User.objects.create_user(validated_data['name'], validated_data['email'], validated_data['password'])
-
-#     #     return user
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
@@ -192,12 +163,7 @@ class EmailVerificationSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ['token']
-
-
-
-
-
-    
+  
 
 class LeaveSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
@@ -206,25 +172,13 @@ class LeaveSerializer(serializers.ModelSerializer):
         model = models.Leave
         fields = '__all__'
 
-
-
     
 class SalaryReportSerializer(serializers.ModelSerializer):
-    # first_name=serializers.CharField(source='emp_name.first_name',read_only=True)
-    # last_name = serializers.CharField(source='emp_name.last_name', read_only=True)
-    # # last_name = first_name.
-    # email = serializers.EmailField(source='emp_name.email', read_only=True)
-    # departments = serializers.CharField(source='department.dept_name')
-    """Serializes a user profile object"""
-    # email =serializers.EmailField(source='emp_id.email',read_only=True) 
+    email = serializers.EmailField(source='emp.username', read_only=True)
     class Meta:
         model = models.Salary
-        # fields = ('first_name','last_name','email','department','month', 'amount','allowance')
-        # fields = ['id','department','month', 'amount','allowance','emp']
-        fields = '__all__'
-        # read_only_fields=('employee_name',)
+        fields = ['amount','allowance','month','received_date','emp','email']
 
-        # extra_kwargs={'amount':{'write_only':True}}
 
 class UserDetailSerializer(serializers.ModelSerializer):
     password = serializers.CharField(

@@ -83,9 +83,6 @@ class VerifyEmail(views.APIView):
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-
-
-
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
@@ -100,46 +97,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAdminUser]
         return [permission() for permission in permission_classes]
-
-    # def get_permissions(self):
-        
-    #     if self.request.method == 'POST':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PUT':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'DELETE':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PATCH':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'HEAD':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-
-
-    #     else:
-    #         self.permission_classes = [IsAuthenticated, ]
-        
-
-    #     return super(UserProfileViewSet, self).get_permissions()
-
-
-
-    
-
-    
-
-    # def get_permissions(self): 
-    
-    #     if self.request.method == 'GET':
-    #         permission_classes = [permissions.IsAuthenticated]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return [permission() for permission in permission_classes]
-
-
-
-   
-        
-
+       
     @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
@@ -147,57 +105,6 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
 
-
-    
-    
-# class UserProfileViewSet(viewsets.ViewSet):
-#     serializer_class = serializers.UserProfileSerializer
-#     permission_classes = [IsAuthenticated]
-#     """
-#     A simple ViewSet for listing or retrieving users.
-#     """
-#     def list(self, request):
-#         queryset = models.User.objects.all()
-#         serializer = serializers.UserProfileSerializer(queryset, many=True)
-#         return Response(serializer.data)
-
-#     def retrieve(self, request, pk=None):
-#         queryset = models.User.objects.all()
-#         user = get_object_or_404(queryset, pk=pk)
-#         serializer = serializers.UserProfileSerializer(user)
-#         return Response(serializer.data)
-    
-#     def get_permissions(self):
-#         if self.action == 'list':
-#             permission_classes = [permissions.IsAuthenticated ]
-        
-#         # elif self.action == 'retrieve':
-#         #     self.permission_classes = [permissions.IsAuthenticated]
-#         else:
-#             permission_classes =[permissions.IsAdminUser]
-#         return [permission() for permission in permission_classes]
-    
-
-
-    # Your logic should be all here
-
-    
-
-    # for user in models.User.objects.all():
-    #     Token.objects.get_or_create(user=user)
-    
-    # permission_classes = (permissions.UpdateOwnProfile,)
-    # def get(self, request, format=None):
-    #     content = {
-    #         'user': unicode(request.user),  # `django.contrib.auth.User` instance.
-    #         'auth': unicode(request.auth),  # None
-    #     }
-    #     return Response(content)
-    # @api_view(['GET'])
-    # def api_root(request, format=None):
-    #     return Response({
-    #         'users': reverse('user-list', request=request, format=format),
-    #     })
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = serializers.LoginSerializer
 
@@ -227,75 +134,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
         return Response(status=status.HTTP_204_NO_CONTENT)   
     
-# class LoginViewSet(mixins.ListModelMixin,
-#                      viewsets.GenericViewSet):
-                     
-#     # permission_classes = [permissions.IsAuthenticated]
-#     serializer_class = serializers.LoginSerializer
-#     queryset = models.User.objects.all()
-#     # def post(self,request):
-#     #     data = request.data
-#     #     username= data.get('email',)
-#     #     password= data.get('password',)
-#     #     user = auth.authenticate(username=username,password=password)
-#     #     # print(user)
-        
-#     #     if user:
-            
-#     #         auth_token = jwt.encode(
-#     #             {'username': user.email}, settings.JWT_SECRET_KEY)
 
-#     #         serializer = UserProfileSerializer(user)
-
-#     #         data = {'username': serializer.data, 'token': auth_token}
-
-#     #         return Response(data, status=status.HTTP_200_OK)
-
-#     #         # SEND RES
-#     #     return Response({'detail': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
-#     #     pass
-
-#     # def post(self, request, *args, **kwargs):
-#     #     serializer = self.serializer_class(data=request.data,
-#     #                                        context={'request': request})
-#     #     serializer.is_valid(raise_exception=True)
-#     #     user = serializer.validated_data['email']
-#     #     token, created = Token.objects.get_or_create(user=user)
-#     #     return Response({
-#     #         'token': token.key,
-#     #         # 'name': user.pk,
-#     #         'email': user.email
-#     #     })
-#     # 
-#     # def create(self,request):
-#     #     data = request.data
-#     #     username= data.get('email',)
-#     #     password= data.get('password',)
-#     #     user = auth.authenticate(username=username,password=password)
-#     #     print(user)
-    
-#     def create(self, request, format=None):
-#         content = {
-#             'email': unicode(request.user),  # `django.contrib.auth.User` instance.
-#             'auth': unicode(request.auth),  # None
-#         }
-#         return Response(content)
-#     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
-   
-   
-# class CustomAuthToken(ObtainAuthToken):
-
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(data=request.data,
-#                                            context={'request': request})
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         token, created = Token.objects.get_or_create(user=user)
-#         return Response({
-#             'token': token.key,
-#             'user_id': user.pk,
-#             'email': user.email
-#         })
 
 class DeptViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -356,60 +195,6 @@ class LeaveViewSet(viewsets.ModelViewSet):
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
    
-    # queryset = User.objects.all()
-    # permission_classes = [permissions.IsAdminUser]
-
-    # serializer_class = RegisterSerializer
-    # def get(self, request, format=None):
-    #     users = User.objects.all()
-    #     serializer = RegisterSerializer(users, many=True)
-    #     return Response(serializer.data)
-
-    # def post(self, request):
-    #     salary = request.data
-    #     serializer = self.serializer_class(data=salary)
-    #     serializer.is_valid(raise_exception=True)
-    #     serializer.save()
-    #     salary_data = serializer.data
-    #     salary = models.Salary.objects.get(email=salary_data['email'])
-    #     # token = RefreshToken.for_user(user).access_token
-    #     # import pdb;pdb.set_trace()
-    #     # current_site = get_current_site(request).domain
-    #     # relativeLink = reverse('email-verify')
-    #     # absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
-    #     # email_body = 'Hi '+user.username + \
-    #     #     ' Use the link below to verify your email \n' + absurl
-    #     # data = {'email_body': email_body, 'to_email': user.email,
-    #     #         'email_subject': 'Verify your email'}
-    #     # Util.send_email(data)
-    #     return Response(salary_data, status=status.HTTP_201_CREATED)
-
-    # def perform_create(self, serializer):
-    #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
-        
-
-    #     serializer.save(employee_name=self.request.user)
-
-    # def get(self, request, format=None):
-    #     salary = Salary.objects.all()
-    #     serializer = SalaryReportSerializer(salary,many=True)
-    #     content = {
-    #         'status': 'request was permitted'
-    #     }
-    #     return JSONResponse(serializer.data,safe= False)
-    
-    # def post(self,request):
-    #     data = JSONParser().parse(request)
-    #     serializer=self.get_serializer(data = request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors)  
-# class IsSuperUser(permissions.BasePermission):
-
-#     def has_permission(self, request, view):
-#         return request.user and request.user.is_superuser
-
 class IsOwner(permissions.BasePermission):
 
     def has_object_permission(self, request, view, obj):
@@ -449,7 +234,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
 
     def get_permissions(self):
         if self.request.method == 'GET':
-            permission_classes = [IsOwnerOrAdmin,]
+            permission_classes = [IsAuthenticated,]
         # elif self.action =='list':
         #     permission_classes=[IsAdminUser,]
         # elif self.action=='retrieve': 
@@ -468,7 +253,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     #         self.permission_classes=[IsAdminUser]
     #     return super(self.__class__, self).get_permissions()
 
-    @action(detail=False,methods=['GET'])
+    @action(detail=False,methods=['GET'], permission_classes=[IsAuthenticated])
     def salary_report(self,request):
         #import pdb;pdb.set_trace()
         user= request.user

@@ -169,29 +169,14 @@ class Attendance(models.Model):
 
 
 class Salary(models.Model):
-    # DEPT_NAMES = (
-    #     ('IT', 'IT'),
-    #     ('sad', "sadd"),
-    #     ('hjhj', "hjjj"),
-    #     ('Dentist', "daat"),
-    #     ('Admin', "administration"),
-    #     ('Staff', "staff"),
-    # )
-    # employee_name = models.ForeignKey(User, on_delete=models.CASCADE, default="None")
     amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
-    department = models.ForeignKey(Department, on_delete=models.CASCADE,default=0)
-
-    # email = models.ForeignKey(User, on_delete=models.CASCADE, default=0)
     emp=models.ForeignKey(User,on_delete=models.CASCADE)
-    # amount =  MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
     allowance = MoneyField(max_digits=14, decimal_places=2, default_currency='NPR', default=0)
-    # email = models.EmailField(max_length=225,unique=True,db_index=True, default=0)
     month = models.CharField(max_length=225, default=0)
     received_date = models.DateField(default=dt.date.today)
-    # position = models.ForeignKey(User, on_delete=models.CASCADE, default="Trainee")
-    
+
     def __str__(self):
-        return str(self.amount)
+        return str(self.emp.username)+str(self.amount)
     
 
 class UserDetails(models.Model):
