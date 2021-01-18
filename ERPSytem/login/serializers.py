@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from login import models
-from .models import User,UserDetails
+from .models import User,UserDetails, Leave
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
@@ -199,14 +199,38 @@ class EmailVerificationSerializer(serializers.Serializer):
 
     
 
-class LeaveSerializer(serializers.ModelSerializer):
+class AdminLeaveSerializer(serializers.ModelSerializer):
     name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
     """Serializes a user profile object"""
 
     class Meta:
-        model = models.Leave
-        fields=['id','leave_status','start','end','number_of_days','reason','name']
-        # read_only_fields=('employee',)
+        model=Leave
+        fields=['id','is_approved','is_notapproved','is_verified','is_notverified','start','end','number_of_days','reason','name','email']
+        # read_only_fields=('employee','emails')
+       
+class ManagerLeaveSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
+    """Serializes a user profile object"""
+    class Meta:
+        model=Leave
+        fields=['id','is_approved','is_notapproved','start','end','number_of_days','reason','name','email']
+
+        
+        read_only_fields=['is_verified','is_notverified']
+
+
+class UserLeaveSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
+    """Serializes a user profile object"""
+    class Meta:
+        model=Leave
+        fields=['id','is_approved','is_verified','start','end','number_of_days','reason','name','email']
+
+        
+        read_only_fields=['is_approved','is_verified']
 
         
 

@@ -83,6 +83,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_verified = models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
+    is_manager =models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now =True)
     # salary=models.PositiveIntegerField(_("salary"))
@@ -176,6 +177,8 @@ class UserDetails(models.Model):
     department=models.ForeignKey(Department,on_delete=models.CASCADE, max_length=225)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=True)
+    is_manager =models.BooleanField(default=False)
+
     document = models.FileField(upload_to='pics', blank=True)
     photo = models.ImageField(upload_to='pics', blank=True)
 
@@ -185,13 +188,16 @@ class UserDetails(models.Model):
 
 class Leave(models.Model):
     employee=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    leave_status=models.BooleanField(default=False)
-    start = models.DateTimeField(null=True)
-    end = models.DateTimeField(null=True)
+    is_approved=models.BooleanField(default=False)
+    is_notapproved=models.BooleanField(default=False)
+    is_verified=models.BooleanField(default=False)
+    is_notverified=models.BooleanField(default=False)
+    start = models.DateField(null=True)
+    end = models.DateField(null=True)
     number_of_days=models.IntegerField(default=0)
     
     reason=models.TextField(max_length=500, blank=False)
     
 
     def __str__(self):
-        return self.emp_name
+        return str(self.employee)

@@ -11,10 +11,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails,Attendance
+from .models import User,UserDetails,Attendance,Leave
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -31,6 +31,9 @@ from .overide import IsAssigned
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from django.core.mail import EmailMessage
+from django.core.mail import send_mass_mail
+
 
 
 
@@ -59,7 +62,10 @@ class RegisterView(generics.GenericAPIView):
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
         email_body = 'Hi '+user.username + \
-            ' Use the link below to verify your email \n' + absurl
+                    'Here are the details you may need while login in our system \n'+ \
+                    'User Name:'+user.username  +\
+                    "Password:"+ user.password  +\
+                    ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         Util.send_email(data)
@@ -373,33 +379,156 @@ class AttendanceViewSet(viewsets.ModelViewSet):
 
 
 
+# def send_email():
+#     serializer = serializers.LeaveSerializer(data=request.data)
+#     if serializer.is_valid():
+#         serializer.save()
+#         email = serializer.data['start']
+
+#     email = EmailMessage(
+#         'Leave',
+#         (serializers.LeaveSerializer.data['start']),
+#         'EMAIL_HOST_USER',
+#         ['serializers.LeaveSerializer.email']
+#     )
+    
+#     email.send()
 
     
  
 class LeaveViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.LeaveSerializer
+    serializer_class = serializers.AdminLeaveSerializer
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
     filter_backends = [DjangoFilterBackend]
     filterset_fields = ['employee']
 
+    queryset=Leave.objects.all()
+
+
+    def get_serializer_class(self):
+        if self.request.user.is_manager:
+            return ManagerLeaveSerializer
+        elif self.request.user.is_superuser:
+            return AdminLeaveSerializer
+        else:
+            return UserLeaveSerializer
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
     def perform_create(self,serializer):
-        serializer.save(employee=self.request.user)
+       
+        
+        user=serializer.save(employee=self.request.user)
+       
+        serializer.data
+            
+        
+        e_subject = "Leave Verification"
+        e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
+        e_mail = settings.EMAIL_HOST_USER
+        Email=user.employee.email
+
+        send_mail(
+            e_subject,
+            e_msg,
+            e_mail,
+            ['sunilshresthashrestha@gmail.com']
+        )
+
+
+    def perform_update(self, serializer):
+        user=serializer.save()
+       
+        
+
+        if self.request.user.is_manager:
+            if user.is_notapproved==True:
+                e_subject = "Leave Rejected"
+                e_msg = "Sorry your leave hasnot been approved by Manager. Contact for further details"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+
+                )
+            else:
+                
+                e_subject = "Leave Approval"
+                e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    ['sunilsta010@gmail.com']
+
+                )
+
+                
+        elif self.request.user.is_superuser:
+
+            if user.is_notverified==True:
+                e_subject = " Leave Rejected"
+                e_msg = "Your leave is approved but not verified. Please contact for further details"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+
+                )
+            
+            else:
+
+
+
+            # import pdb;pdb.set_trace()
+                e_subject = " Leave Approved"
+                e_msg = "Your leave is approved"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+
+                )
+        return Response(serializer.data)
+    
+
 
     @action(detail=False, methods=['GET'])
-    # def view(self, request, **kwargs):
-    #     # filter_backends = [DjangoFilterBackend]
-        # filterset_fields = ['emp_name']
-    
-        # user=request.user.filter('emp_name')
-        # serializer = serializers.AttendanceSerializer(user, many=True) 
-        # return Response(serializer.data)
+    def MyLeaveHistory(self, request, **kwargs):
 
-    def viewleave(self, request, **kwargs):
         queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
-        serializer = serializers.LeaveSerializer(queryset, many=True) 
+        serializer = serializers.UserLeaveSerializer(queryset, many=True) 
         return Response(serializer.data)
+
      
   
    
@@ -407,7 +536,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
     serializer_class = serializers.SalaryReportSerializer 
     queryset = models.Salary.objects.all()
-    # 
+    
     permission_classes = [permissions.IsAdminUser] 
 
     def perform_create(self, serializer):
@@ -541,6 +670,9 @@ class UserDetailViewSet(viewsets.ModelViewSet):
         user=request.user
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
+
+
+
 
 
     

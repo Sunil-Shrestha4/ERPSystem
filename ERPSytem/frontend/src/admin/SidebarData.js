@@ -51,7 +51,7 @@ export const SidebarData = [
 
   {
     title: 'Leave',
-    path: '/own',
+    path: '/leave',
     icon: <ImIcons.ImExit />,
     cName: 'nav-text'
   }

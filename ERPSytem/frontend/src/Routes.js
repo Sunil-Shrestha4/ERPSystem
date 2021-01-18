@@ -14,6 +14,9 @@ import SalaryReport from "./pages/SalaryReport";
 import Userlist from "./containers/Userlist";
 import Detail from './pages/Detail';
 import OwnAttendance from './pages/OwnAttendance';
+import Leave from "./pages/leave";
+import PostLeave from "./pages/PostLeave";
+
 
 
 export default function Routes(){
@@ -42,6 +45,7 @@ export default function Routes(){
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
             <GuardedRoute exact path="/team"  component={Userlist}  />
+            <GuardedRoute exact path="/leave"  component={PostLeave}  />
             
             {/* <GuardedRoute exact path="/team"  component={Userlist}  /> */}
 
