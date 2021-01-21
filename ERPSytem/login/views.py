@@ -25,13 +25,15 @@ from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
-
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
-
+from rest_framework.throttling import UserRateThrottle,ScopedRateThrottle
+from rest_framework.exceptions import Throttled, PermissionDenied
+import datetime
+from .throttling import CheckInThrottle, CheckOutThrottle
 
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
@@ -143,78 +145,74 @@ class DeptViewSet(viewsets.ModelViewSet):
     queryset = models.Department.objects.all()
     # permission_classes = [permissions.IsAdminUser]
 
-class AttendanceViewSet(viewsets.ModelViewSet):
-    serializer_class = serializers.AttendanceSerializer
-    queryset = models.Attendance.objects.all()
-    permission_classes = [permissions.IsAuthenticated ]
-    
-    
-    
-    # def post(self,request):
-    #      user = request.data
-    #      serializer = self.serializer(data=user)
-    #      try:
-    #         serializer.is_valid(raise_exception=True)
-    #         user = serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
-    #      except:
-    #         return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
-    
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
-    # def perform_create(self, serializer):
-    #     # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
-        
-
-    #     serializer.save(emp_name=self.request.user)
-    # def get_permissions(self):
-    
-    #     if self.request.method == 'GET':
-    #         permission_classes = [permissions.IsAuthenticated]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return [permission() for permission in permission_classes]
-
-
-    
-    
-
-
-
-
-
-    
+class CustomExcpetion(PermissionDenied):
+    status_code = status.HTTP_400_BAD_REQUEST
+    default_detail = "Duplicate Request"
+    default_code = "invalid"
  
+    def __init__(self, detail, status_code=None):
+        self.detail = detail
+        if status_code is not None:
+            self.status_code = status_code  
+
+class CheckInViewSet(viewsets.ModelViewSet):
+    queryset = models.Attendance.objects.all()
+    serializer_class = serializers.CheckInSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    throttle_classes =  [CheckInThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['emp_name','date']
+    
+    
+    def throttled(self, request,wait):
+        raise Throttled(detail={"Messages": "No more check-In allowed.",
+                            "AvailableIn": f"{wait} seconds"})
+
+    def perform_create(self, serializer):
+        serializer.save(emp_name=self.request.user)
+
+class CheckoutViewSet(viewsets.ModelViewSet):
+    queryset = models.Attendance.objects.all()
+    serializer_class = serializers.CheckOutSerializer
+    permission_classes = [permissions.IsAuthenticated ]
+    throttle_classes = [CheckOutThrottle]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['emp_name','date']
+
+    def throttled(self, request,wait):
+        raise Throttled(detail={"Messages": "Time's up. Wait for ",
+                                "AvailableIn": f"{wait} seconds"})
+
+    def perform_create(self, serializer):
+        CheckedIn = models.Attendance.objects.filter(emp_name=self.request.user.id,date=datetime.date.today(),checkin=True,checkout=False)
+        print(CheckedIn)
+        print(self.request.user.id)
+        if not CheckedIn:
+            raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
+        serializer.save(emp_name=self.request.user)
+
 class LeaveViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.LeaveSerializer
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
    
-class IsOwner(permissions.BasePermission):
+# class IsOwner(permissions.BasePermission):
 
-    def has_object_permission(self, request, view, obj):
-        if request.user:
-            if request.user.is_superuser:
-                return True
-            else:
-                return obj.owner == request.user
-        else:
-            return False
-        # if obj == (request.user): 
-        #     return True
-        # else:
-        #     return False
-        # return obj.owner == request.user
-class IsOwnerOrAdmin(permissions.IsAuthenticated):
-    def has_object_permission(self, request, view, obj):
-        # if request.method in permissions.SAFE_METHODS:
-        #     return True
-        return obj.owner == request.user or request.user.is_superuser
+#     def has_object_permission(self, request, view, obj):
+#         if request.user:
+#             if request.user.is_superuser:
+#                 return True
+#             else:
+#                 return obj.owner == request.user
+#         else:
+#             return False
+
+# class IsOwnerOrAdmin(permissions.IsAuthenticated):
+#     def has_object_permission(self, request, view, obj):
+#         # if request.method in permissions.SAFE_METHODS:
+#         #     return True
+#         return obj.owner == request.user or request.user.is_superuser
 
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
@@ -262,13 +260,6 @@ class SalaryReportApiView(viewsets.ModelViewSet):
         serializer=serializers.SalaryReportSerializer(salary,many=True)   
         return Response(serializer.data, status=200)
 
-
-
-
-
-
-
-
 class UserDetailView(generics.GenericAPIView):
 
     serializer_class = serializers.UserDetailSerializer
@@ -283,15 +274,6 @@ class UserDetailView(generics.GenericAPIView):
         user=request.user
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
-
-
-
-    # def get(self, request, format=None):
-    #     userdetails = UserDetails.objects.all()
-    #     serializer = UserDetailSerializer(userdetails, many=True)
-    #     return Response(serializer.data)
-
-
      
     def post(self, request):
         user = request.data
@@ -342,29 +324,6 @@ class UserDetailViewSet(viewsets.ModelViewSet):
         else:
             permission_classes = [permissions.IsAdminUser]
         return [permission() for permission in permission_classes]
-
-    # def get_permissions(self):
-        
-    #     if self.request.method == 'POST':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PUT':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'DELETE':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PATCH':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'HEAD':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-
-
-    #     else:
-    #         self.permission_classes = [IsAuthenticated, ]
-        
-
-    #     return super(UserProfileViewSet, self).get_permissions()
-
-
-
 
     @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
     def userdetail(self,request,pk=None):

@@ -152,18 +152,19 @@ class User(AbstractBaseUser,PermissionsMixin):
       
     
 class Attendance(models.Model):
-    emp_name = models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+    emp_name = models.ForeignKey(User,on_delete=models.CASCADE,default=1)
     TYPE = (
         ('CI', 'checkin'),
         ('CO', 'checkout'),
     )
-    choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
-        
-
-    time = models.DateTimeField(auto_now_add=True)
+    # choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
+    checkin = models.BooleanField(default=False)
+    checkout = models.BooleanField(default=False)    
+    date = models.DateField(auto_now=True)
+    time = models.TimeField(auto_now=True)
 
     def __str__(self):
-        return self.choices
+        return "Checkin: "+str(self.checkin)+" Checkout: "+str(self.checkout)
     
 
 
@@ -176,7 +177,7 @@ class Salary(models.Model):
     received_date = models.DateField(default=dt.date.today)
 
     def __str__(self):
-        return str(self.emp.username)+str(self.amount)
+       return str(self.emp.username)+str(self.amount)
     
 
 class UserDetails(models.Model):

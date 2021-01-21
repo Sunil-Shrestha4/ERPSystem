@@ -31,8 +31,8 @@ router.register('profilelist',views.UserProfileViewSet)
 
 # router.register('register',views.RegisterViewSet)
 # router.register('email-verify',views.VerifyEmail,name='email-verify')
-
-router.register('attendance',views.AttendanceViewSet)
+router.register('checkin',views.CheckInViewSet, basename='checkin')
+router.register('checkout', views.CheckoutViewSet, basename='checkout')
 router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
 router.register('leave',views.LeaveViewSet)

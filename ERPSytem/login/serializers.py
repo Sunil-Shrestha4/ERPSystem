@@ -4,8 +4,8 @@ from .models import User,UserDetails
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
-
-
+from django_filters import rest_framework as filters
+import datetime
 
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
     """Serializes a user profile object"""
@@ -15,37 +15,6 @@ class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
         model = models.User
         fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
 
-    # def create(self, validated_data):
-    #     """Create and return a new user"""
-    #     user = models.User.objects.create_user(
-    #         email=validated_data['email'],
-    #         name=validated_data['name'],
-    #         password=validated_data['password']
-    #     )
-    #     return user
-    # def validate(self, attrs):
-    #     email = attrs.get('email', '')
-    #     if User.objects.filter(email=email).exists():
-    #         raise serializers.ValidationError(
-    #             {'email': ('Email is already in use')})
-    #     return super().validate(attrs)
-
-    # def create(self, validated_data):
-    #     user = super().create(validated_data)
-    #     user.set_password(validated_data['password'])
-    #     user.save()
-    #     return user
-
-
-# class LoginSerializer(serializers.HyperlinkedModelSerializer):
-#     class Meta:
-#         model = models.User
-#         fields = ['email','password',]
-
-# # # class UserSerializer(serializers.ModelSerializer):
-# # #     class Meta:
-# # #         model = User
-# # #         fields = ('id', 'username', 'email')
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=3)
@@ -125,14 +94,21 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
         model= models.Department
         fields=('url','dept_name')
 
-class AttendanceSerializer(serializers.ModelSerializer):
-    name=serializers.CharField(source='emp_name.first_name',read_only=True)
+class CheckInSerializer(serializers.ModelSerializer):
+    email=serializers.EmailField(source='emp_name.email',read_only=True)
+    time = serializers.TimeField(format="%H:%M:%S", default=datetime.date.today(),read_only=True)
+
+    class Meta:
+        model = models.Attendance
+        fields = ['id','checkin','checkout','date','time','email']
+
+class CheckOutSerializer(serializers.ModelSerializer):
+    email=serializers.EmailField(source='emp_name.email',read_only=True) 
+    time = serializers.TimeField(format="%H:%M:%S", default=datetime.date.today(), read_only=True)
     
     class Meta:
         model= models.Attendance
-        fields=['emp_name','choices','time','name']
-        read_only_fields = ['emp_name']
-
+        fields=['id','checkin','checkout','date','time','email']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -174,10 +150,10 @@ class LeaveSerializer(serializers.ModelSerializer):
 
     
 class SalaryReportSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='emp.username', read_only=True)
+    username = serializers.EmailField(source='emp.username', read_only=True)
     class Meta:
         model = models.Salary
-        fields = ['amount','allowance','month','received_date','emp','email']
+        fields = ['id', 'amount','allowance','month','received_date','username']
 
 
 class UserDetailSerializer(serializers.ModelSerializer):
