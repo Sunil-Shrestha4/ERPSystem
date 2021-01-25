@@ -61,14 +61,8 @@ export default function Userlist(){
               </Card>
               </Col>
           </Row>
-            
-
-            </Container>
-                     
-              
-          </div>        
-
-                
+          </Container>        
+          </div>               
       
         )
 }

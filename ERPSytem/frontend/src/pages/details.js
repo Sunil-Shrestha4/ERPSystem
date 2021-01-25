@@ -7,6 +7,7 @@ import Nav from 'react-bootstrap/Nav';
 
 export default function Userdetails(props){
     console.log(props.location.param.user);
+    const user = props.location.param.user
    
     return (
         <div>
@@ -37,22 +38,22 @@ export default function Userdetails(props){
                   {/* <Card.Title>Special title treatment</Card.Title> */}
                   <Card.Text>
                     <ListGroup>
-                      <ListGroup.Item>Email: {props.location.param.user.email}</ListGroup.Item>
-                      <ListGroup.Item>Username: {props.location.param.user.username}</ListGroup.Item>
-                      <ListGroup.Item>first_name: {props.location.param.user.first_name}</ListGroup.Item>
-                      <ListGroup.Item>last_name: {props.location.param.user.last_name}</ListGroup.Item>
-                      <ListGroup.Item>address: {props.location.param.user.address}</ListGroup.Item>
-                      <ListGroup.Item>phone_number: {props.location.param.user.phone_number}</ListGroup.Item>
-                      <ListGroup.Item>position: {props.location.param.user.position}</ListGroup.Item>
-                      <ListGroup.Item>department: {props.location.param.user.department}</ListGroup.Item>
-                      <ListGroup.Item>date_joined: {props.location.param.user.date_joined}</ListGroup.Item>
-                      <ListGroup.Item>document: {props.location.param.user.document}</ListGroup.Item>
-                      <ListGroup.Item>photo: {props.location.param.user.photo}</ListGroup.Item>
-                      <ListGroup.Item>created_at: {props.location.param.user.created_at}</ListGroup.Item>
-                      <ListGroup.Item>updated_at: {props.location.param.user.updated_at}</ListGroup.Item>      
-                      <ListGroup.Item>Is Active:     {props.location.param.user.is_active+""}</ListGroup.Item>
-                      <ListGroup.Item>Is Staff:    {props.location.param.user.is_staff+""}</ListGroup.Item>
-                      <ListGroup.Item>Is Superuser:     {props.location.param.user.is_superuser+""}</ListGroup.Item>
+                      <ListGroup.Item>Email: {user.email}</ListGroup.Item>
+                      <ListGroup.Item>Username: {user.username}</ListGroup.Item>
+                      <ListGroup.Item>first_name: {user.first_name}</ListGroup.Item>
+                      <ListGroup.Item>last_name: {user.last_name}</ListGroup.Item>
+                      <ListGroup.Item>address: {user.address}</ListGroup.Item>
+                      <ListGroup.Item>phone_number: {user.phone_number}</ListGroup.Item>
+                      <ListGroup.Item>position: {user.position}</ListGroup.Item>
+                      <ListGroup.Item>department: {user.department}</ListGroup.Item>
+                      <ListGroup.Item>date_joined: {user.date_joined}</ListGroup.Item>
+                      <ListGroup.Item>document: {user.document}</ListGroup.Item>
+                      <ListGroup.Item>photo: {user.photo}</ListGroup.Item>
+                      <ListGroup.Item>created_at: {user.created_at}</ListGroup.Item>
+                      <ListGroup.Item>updated_at: {user.updated_at}</ListGroup.Item>      
+                      <ListGroup.Item>Is Active:     {user.is_active+""}</ListGroup.Item>
+                      <ListGroup.Item>Is Staff:    {user.is_staff+""}</ListGroup.Item>
+                      <ListGroup.Item>Is Superuser:     {user.is_superuser+""}</ListGroup.Item>
                     </ListGroup>
                   </Card.Text>
                   <Button variant="primary">Go somewhere</Button>

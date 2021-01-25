@@ -150,10 +150,18 @@ class LeaveSerializer(serializers.ModelSerializer):
 
     
 class SalaryReportSerializer(serializers.ModelSerializer):
-    username = serializers.EmailField(source='emp.username', read_only=True)
+    email = serializers.EmailField(source='emp.email', read_only=True)
+    first_name = serializers.CharField(source='emp.first_name', read_only=True)
+    last_name = serializers.CharField(source='emp.last_name', read_only=True)
+    year = serializers.SerializerMethodField()
+    
+    def get_year(self, obj):
+        year = obj.received_date.strftime('%Y')
+        return year
+
     class Meta:
         model = models.Salary
-        fields = ['id', 'amount','allowance','month','received_date','username']
+        fields = ['id', 'amount','emp','allowance','year','month','received_date','email','first_name','last_name']
 
 
 class UserDetailSerializer(serializers.ModelSerializer):

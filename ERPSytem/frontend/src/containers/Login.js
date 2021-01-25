@@ -2,14 +2,14 @@ import React ,{useEffect} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
-import { useFormFields } from "../libs/hooksLib"
+import { useFormFields } from "../libs/hooksLib";
 import "./Login.css";
-import Navbar from "react-bootstrap/Navbar";
-import { LinkContainer } from "react-router-bootstrap";
+// import Navbar from "react-bootstrap/Navbar";
+// import { LinkContainer } from "react-router-bootstrap";
 
-import {isAutheticated} from "../Routes"
-import Profile from "./Profile"
-import Dashboard from "../admin/Dashboard"
+// import {isAutheticated} from "../Routes";
+// import Profile from "./Profile";
+// import Dashboard from "../admin/Dashboard";
 import Auth from '../component/auth';
 
 
@@ -48,15 +48,19 @@ export default function Login() {
           localStorage.setItem('refresh', res.tokens.refresh)
           localStorage.setItem('is_superuser',res.is_superuser)
           
-          if (localStorage.getItem('is_superuser')=="true"){
-            history.push("/dashboard")
+          // if (localStorage.getItem('is_superuser')=="true"){
+            // history.push("/dashboard")
             
-          }
-          else{
-            history.push('/signup')
-          }
+          // }
+          // else if (localStorage.getItem('access')=="true"){
+            // history.push("/dashboard")
+            
+          // }
+          // else{
+            // history.push('/signup')
+          // }
         })
-        
+        history.push("/dashboard")
         // history.push("/profile")
         console.log(res)
       }catch(err){

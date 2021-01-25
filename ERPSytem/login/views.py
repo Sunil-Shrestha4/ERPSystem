@@ -14,6 +14,7 @@ from django .conf import settings
 from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
 
 from rest_framework import generics, status, views, permissions
+from rest_framework import filters as filterss
 from .models import User,UserDetails
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -219,15 +220,18 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     queryset = models.Salary.objects.all()
     serializer_class = serializers.SalaryReportSerializer
     permission_classes = [IsAdminUser]
+    filter_backends = [DjangoFilterBackend, filterss.SearchFilter]
+    filterset_fields = ['amount','month','emp']
+    search_fields = ['^emp__email','^month','^emp__first_name','^emp__last_name','year']
     
     def get_queryset(self):
         if self.request.user.is_superuser:
-            queryset=models.Salary.objects.all()
+            queryset=models.Salary.objects.all().order_by('-received_date')
             return queryset
 
         queryset = self.queryset
-        query_set =  queryset.filter(emp=self.request.user)
-        print(query_set)
+        query_set =  queryset.filter(emp=self.request.user).order_by('-received_date')
+        # print(query_set)
         return query_set
 
     def get_permissions(self):
@@ -253,9 +257,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
 
     @action(detail=False,methods=['GET'], permission_classes=[IsAuthenticated])
     def salary_report(self,request):
-        #import pdb;pdb.set_trace()
-        user= request.user
-        print(user) 
+        user= request.user 
         salary=models.Salary.objects.filter(emp=user)
         serializer=serializers.SalaryReportSerializer(salary,many=True)   
         return Response(serializer.data, status=200)

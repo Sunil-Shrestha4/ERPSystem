@@ -82,7 +82,7 @@ export default function User() {
                       <ListGroup.Item>Date joined:      {user.date_joined}</ListGroup.Item>
                     </ListGroup>
                   </Card.Text>
-                  <Button variant="primary">Go somewhere</Button>
+                  <Button variant="danger">Logout</Button>
                 </Card.Body>
                 </Card>
             </Col>
