@@ -31,12 +31,27 @@ from .overide import IsAssigned
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
+from rest_framework.throttling import UserRateThrottle ,ScopedRateThrottle
+from rest_framework.exceptions import Throttled ,PermissionDenied
+
+from rest_framework import throttling
+import datetime
+from rest_framework import filters
+
+
+class CheckinRateThrottle(throttling.UserRateThrottle):
+    scope = 'checkin'
+    rate = '1/min'
+
+class CheckoutRateThrottle(throttling.UserRateThrottle):
+    scope = 'checkout'
+    rate = '3/min'
 
 
 
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
-    permission_classes = [permissions.IsAdminUser]
+    # permission_classes = [permissions.IsAdminUser]
 
     serializer_class = RegisterSerializer
     def get(self, request, format=None):
@@ -283,20 +298,7 @@ class LogoutAPIView(generics.GenericAPIView):
 #         return Response(content)
 #     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
    
-   
-# class CustomAuthToken(ObtainAuthToken):
 
-#     def post(self, request, *args, **kwargs):
-#         serializer = self.serializer_class(data=request.data,
-#                                            context={'request': request})
-#         serializer.is_valid(raise_exception=True)
-#         user = serializer.validated_data['user']
-#         token, created = Token.objects.get_or_create(user=user)
-#         return Response({
-#             'token': token.key,
-#             'user_id': user.pk,
-#             'email': user.email
-#         })
 
 class DeptViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
@@ -309,26 +311,51 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['emp_name','date']
-     
-    @action(detail=False, methods=['GET'])
     
+    filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['emp_name','date']
+    search_fields=['^emp_name__first_name']
+    ordering_fields={'time','date'}
+    # import pdb; pdb.set_trace()
+    http_method_names = [u'get', u'delete', u'head', u'options', u'trace']
 
+    def filter_queryset(self, queryset):
+       
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+            
+            # if not queryset:
+            #     raise CustomExcpetion(detail={"ERROR": "Not found","NOTE": "Search by other valid names"})
+                
+            # import pdb; pdb.set_trace()
+        return queryset
+        
+
+        
+
+    
+    @action(detail=False, methods=['GET'])
     def view(self, request, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user)
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user )
         serializer = serializers.AttendanceSerializer(queryset, many=True) 
         return Response(serializer.data)
         
-    
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
     def perform_create(self, serializer):
         serializer.save(emp_name=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    def delete_by_empname(self, request):
+        # import pdb; pdb.set_trace()
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name_id=request.user.id)
+        
+        
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    
+    
+    
+
     # def get_permissions(self):
     
     #     if self.request.method == 'GET':
@@ -338,7 +365,54 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     #     return [permission() for permission in permission_classes]
 
 
+class CheckInViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CheckInSerializer
+    queryset=models.Attendance.objects.all()
+    throttle_scope='checkin'
+    throttle_classes=[CheckinRateThrottle]
+    def throttled(self, request, wait):
+        raise Throttled(detail={
+              "message":"kripaya aja lai chekin garna payinexaina tesaile checkout garnu hola",
+              "availableIn":f"{wait} seconds",
+        })
     
+    def perform_create(self, serializer):
+        serializer.save(emp_name=self.request.user)
+
+class CustomExcpetion(PermissionDenied):
+   status_code = status.HTTP_400_BAD_REQUEST
+   default_detail = "Duplicate Request"
+   default_code = "invalid"
+ 
+   def __init__(self, detail, status_code=None):
+       self.detail = detail
+       if status_code is not None:
+           self.status_code = status_code
+
+
+class CheckOutViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CheckOutSerializer
+    queryset=models.Attendance.objects.all()
+    throttle_scope='checkout'
+    throttle_classes=[CheckoutRateThrottle]
+    def throttled(self, request, wait):
+        raise Throttled(detail={
+              "message":"aja lai chekout garna payinexaina ",
+              "availableIn":f"{wait} seconds",
+        })
+    def perform_create(self, serializer):
+       notCheckedIn = models.Attendance.objects.filter(emp_name=self.request.user,date=datetime.date.today(),choices={'checkin':True})
+       print(notCheckedIn)
+       if not notCheckedIn:
+           raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
+            # return Response(status=status.HTTP_400_BAD_REQUEST)
+       serializer.save(emp_name=self.request.user)
+    
+    # def perform_create(self, serializer):
+        
+    #     serializer.save(emp_name=self.request.user)
+
+
     
 
 

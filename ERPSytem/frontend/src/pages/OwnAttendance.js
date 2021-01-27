@@ -5,7 +5,10 @@ import "./User.css";
 import Navbar from "../admin/Dashboard";
 import './Attendance.css';
 import { Dropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap';
-import PostAttendance from './PostAttendance';
+import PostAttendance from './PostAttendanceCI';
+import {Route, Switch} from "react-router-dom";
+import PostAttendanceCO from './PostAttendanceCO';
+import PostAttendanceCI from './PostAttendanceCI';
 
 
 
@@ -20,13 +23,14 @@ function OwnAttendance() {
         id:'',
         choices:'',
         time:'',
+        date:'',
         name:''
 
 
 
         
     }]);
-    // const [data, setData] = useState( [] );
+    
     
 
     useEffect(async () => {
@@ -57,7 +61,7 @@ function OwnAttendance() {
             <Navbar />
             <br/>
             <br/>
-            <PostAttendance/>
+            <PostAttendanceCI />
             <br/>
             <br/>
             <h1>Your Attendance History</h1>
@@ -65,10 +69,11 @@ function OwnAttendance() {
                <CardGroup className="card">
                <Card style={{ width: '18rem' }} border="success">
                 <Row>
-                <Col>Attendance-ID:{item.id}</Col>
+                <Col key={item.id}>Attendance-ID:{item.id}</Col>
                 <Col>USER NAME:{item.name}</Col>
                 <Col>STATUS:{item.choices}</Col>
                 <Col>TIME:{item.time}</Col>
+                <Col>DATE:{item.date}</Col>
                 <br/>
                 </Row>
                 </Card> 

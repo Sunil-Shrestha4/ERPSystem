@@ -14,14 +14,14 @@ from django.contrib.auth.models import (
     
 
 class UserProfileManager(BaseUserManager):
-    # def create_user(self, username, email, password=None):
+    # def create_user(self, email, username, password=None):
     #    if username is None:
     #        raise TypeError('Users should have a username')
     #    if email is None:
     #        raise TypeError('Users should have a Email')
  
     #    # user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
-    #    user = self.model(username=username, email=self.normalize_email(email))
+    #    user = self.model( email=self.normalize_email(email),username=username)
     #    user.set_password(password)
     #    user.save()
     #    return user
@@ -29,7 +29,7 @@ class UserProfileManager(BaseUserManager):
         
     
 
-    def create_user(self, username, email,first_name,last_name,address,phone_number,date_joined,department,document,photo,password=None):
+    def create_user(self,  email,username,first_name,last_name,address,phone_number,date_joined,department,document=None,photo=None,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
@@ -44,13 +44,9 @@ class UserProfileManager(BaseUserManager):
     
 
     def create_superuser(self,email,username,password):
-        """Create and save a new super user with given details"""
-        # user=self.create_user(email,username,password)
-    # def create_superuser(self, username, email, password=None):
-    #     if password is None:
-    #         raise TypeError('Password should not be none')
+        
 
-        user = self.create_user(username, email, password)
+        user = self.create_user(email, username, password)
         user.is_superuser = True
         user.is_staff = True
         user.save()
@@ -80,8 +76,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     position=models.CharField(max_length=225,default='Trainee')
     date_joined=models.DateField(null=True)
     department=models.CharField(max_length=225)
-    document = models.FileField(upload_to='media', blank=True)
-    photo = models.ImageField(upload_to='media', blank=True)
+    document = models.FileField(upload_to='media', blank=True,)
+    photo = models.ImageField(upload_to='media', blank=True,)
     is_verified = models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
@@ -120,9 +116,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     class Meta:
         ordering = ['created_at']
     
-# class Login(models.Model) :
-#      email=models.ForeignKey(User,on_delete=models.CASCADE)
-#      password = models.CharField(max_length=50)
+
      
 
 
@@ -145,6 +139,8 @@ class Attendance(models.Model):
         ('CO', 'checkout'),
     )
     choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
+    # checkin = models.BooleanField(default=True)
+    # checkout = models.BooleanField(default=False)
         
 
     time = models.TimeField(auto_now_add=True)
@@ -152,6 +148,9 @@ class Attendance(models.Model):
 
     def __str__(self):
         return self.choices
+    
+    class Meta:
+        ordering=['-date','-time']
     
 
 

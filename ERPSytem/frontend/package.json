@@ -11,6 +11,7 @@
     "bootstrap": "^4.5.3",
     "js-cookie": "^2.2.1",
     "react": "^17.0.1",
+    "react-admin": "^3.11.3",
     "react-bootstrap": "^1.4.0",
     "react-dom": "^17.0.1",
     "react-icons": "^3.11.0",

@@ -14,7 +14,8 @@ import SalaryReport from "./pages/SalaryReport";
 
 import appWrapper from "./component/appWrapper"
 import OwnAttendance from "./pages/OwnAttendance";
-import roleDash from "./component/roleDash";
+import OwnAttendanceCO from "./pages/OwnAttendanceCO";
+
 
 import { IsSuperUserContext } from "./context/IsSuperUserContext";
 
@@ -47,6 +48,7 @@ export default function Routes(){
             <GuardedRoute exact path="/attendance" auth={isSuperUser} component={()=><Attendance/>} redirectTo={"/own"} />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
             <GuardedRoute exact path="/own" auth={!isSuperUser} component = {()=><OwnAttendance/> } redirectTo={"/"} />
+            <GuardedRoute exact path="/owns" auth={!isSuperUser} component = {()=><OwnAttendanceCO/> } redirectTo={"/"} />
              
 
             <Route>

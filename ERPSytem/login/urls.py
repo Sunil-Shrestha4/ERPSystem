@@ -34,6 +34,7 @@ router.register('profilelist',views.UserProfileViewSet)
 # router.register('email-verify',views.VerifyEmail,name='email-verify')
 
 router.register('attendance',views.AttendanceViewSet)
+# router.register('checkin',views.CheckInViewSet)
 router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
 # router.register('leave',views.LeaveViewSet)
@@ -51,6 +52,8 @@ urlpatterns = [
     path('logout/', views.LogoutAPIView.as_view(), name="logout"),
     path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
     path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
+    path('checkin/', views.CheckInViewSet.as_view({'post': 'create'}), name="checkin"),
+    path('checkout/', views.CheckOutViewSet.as_view({'post': 'create'}), name="checkout"),
 
 
 
