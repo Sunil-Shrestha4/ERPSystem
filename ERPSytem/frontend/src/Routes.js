@@ -1,10 +1,10 @@
 import React from "react";
 import {Route, Switch} from "react-router-dom";
-import Home from "./containers/Home";
+// import Home from "./containers/Home";
 import Login from "./containers/Login";
 import NotFound from "./containers/NotFound";
 import Signup from "./containers/Signup";
-import Profile from "./containers/Profile";
+// import Profile from "./containers/Profile";
 import Dashboard from "./admin/Dashboard";
 import GuardedRoute from "./component/guardroute";
 import User from "./pages/User"
@@ -13,7 +13,7 @@ import Attendance from "./pages/Attendance"
 import SalaryReport from "./pages/SalaryReport";
 import Userlist from "./pages/Userlist";
 import Userdetails from "./pages/details";
-
+import Salary from "./pages/Salary";
 
 export default function Routes(){
     
@@ -39,9 +39,9 @@ export default function Routes(){
             <Route exact path="/details/:id" component={Userdetails}/>
             <GuardedRoute exact path="/employee"  component={AddEmployee}  />
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
-            <Route exact path="/salary"  component={SalaryReport}  />
+            <Route exact path="/salaryreport"  component={SalaryReport}  />
+            <Route exact path="/salary"  component={Salary} />
              
-
             <Route>
                 <NotFound/>
             </Route>

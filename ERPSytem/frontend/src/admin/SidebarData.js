@@ -29,8 +29,14 @@ export const SidebarData = [
     cName: 'nav-text'
   },
   {
-    title: 'Salary Report',
+    title: 'Salary',
     path: '/salary',
+    icon: <FaIcons.FaEnvelopeOpenText />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Salary Report',
+    path: '/salaryreport',
     icon: <FaIcons.FaEnvelopeOpenText />,
     cName: 'nav-text'
   },
