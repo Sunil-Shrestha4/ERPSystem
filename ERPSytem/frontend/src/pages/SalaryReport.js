@@ -58,7 +58,8 @@ export default function SalaryReport() {
                 <Table size='sm' responsive='sm' borderless hover>
                     <thead>
                         <tr>
-                        <th>Employee Id</th>
+                        <th>S.No.</th>
+                        <th>Emp_Id</th>
                         <th>Full Name</th>
                         <th>Email</th>
                         <th>Salary</th>
@@ -84,6 +85,7 @@ export default function SalaryReport() {
                     return (             
                         <tbody key={key}>
                             <tr>
+                            <td>{sal.id}</td>
                             <td>{sal.emp}</td>
                             <td>{sal.first_name}&nbsp;&nbsp;{sal.last_name}</td>
                             <td>{sal.email}</td>

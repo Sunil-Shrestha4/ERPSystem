@@ -233,7 +233,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
         query_set =  queryset.filter(emp=self.request.user).order_by('-received_date')
         # print(query_set)
         return query_set
-
+        
     def get_permissions(self):
         if self.request.method == 'GET':
             permission_classes = [IsAuthenticated,]
@@ -242,7 +242,7 @@ class SalaryReportApiView(viewsets.ModelViewSet):
         # elif self.action=='retrieve': 
         #     permission_classes = [IsOwnerOrAdmin,]
         else:
-            permission_classes=[IsAdminUser]
+            permission_classes=[IsAdminUser,]
         return [permission() for permission in permission_classes]
     # def get_permissions(self):
     #     if self.request.method == 'GET':
