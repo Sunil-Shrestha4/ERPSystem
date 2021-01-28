@@ -2,3 +2,4 @@
 db.s
 .vscode
 **/__pycache__
+ERPSytem/db.sqlite3
