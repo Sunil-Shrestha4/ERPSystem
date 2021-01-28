@@ -4,6 +4,8 @@ import {Container,Row,Col,ListGroup} from "react-bootstrap";
 import Navbar from "../admin/Dashboard";
 import Form from "react-bootstrap/Form";
 import Table from 'react-bootstrap/Table';
+import Button from 'react-bootstrap/Button';
+const axios = require('axios');
 
 export default function SalaryReport() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -19,6 +21,7 @@ export default function SalaryReport() {
         first_name:"",
         last_name:"",
     }]);
+
     const handleChange = event => {
         setSearchTerm(event.target.value);
       };
@@ -37,6 +40,24 @@ export default function SalaryReport() {
         setSearchResults(res);
     },[])
 
+    const removeData = async (id) =>{
+        if( window.confirm("Are you sure?")){
+            const access_token= localStorage.getItem('access')
+            let res = fetch(`http://127.0.0.1:8000/api/salary/${id}`,{
+                method: 'DELETE',
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-type': 'application/json',
+                    'Authorization': `Bearer ${access_token}`,
+                    },
+            }).then(res => {
+                console.log(res)
+                const del = searchResults.filter(sal => id !== sal.id)
+                setSearchResults(del)
+            })
+        }   
+    }
+        
     return (
         <div>
             <Navbar/>
@@ -55,7 +76,7 @@ export default function SalaryReport() {
             </Form>
                      
             <Container fluid="sm"> 
-                <Table size='sm' responsive='sm' borderless hover>
+                <Table size='md' responsive='xl' borderless hover>
                     <thead>
                         <tr>
                         <th>S.No.</th>
@@ -66,17 +87,19 @@ export default function SalaryReport() {
                         <th>Allowance</th>
                         <th>Year</th>
                         <th>Month</th>
-                        <th>Payment Date</th>                       
+                        <th>Payment Date</th>
+                        <th>Options</th>
                         </tr>
                     </thead>          
                     
-                {searchResults.filter((val) =>{
+                {searchResults && searchResults.filter((val) =>{
                     if (searchTerm==""){
                         return val
                     }else if ((val.email.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (val.month.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (val.first_name.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (val.last_name.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (val.id.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
                     (val.year.toString().toLowerCase().includes(searchTerm.toLowerCase()))
                     ) {
                         return val
@@ -93,7 +116,11 @@ export default function SalaryReport() {
                             <td>{sal.allowance}</td>
                             <td>{sal.year}</td>
                             <td>{sal.month}</td>
-                            <td>{sal.received_date}</td>                           
+                            <td>{sal.received_date}</td> 
+                            <td className='options'>
+                                <Button block size="sm" type="submit" variant="danger"
+                                onClick={() => removeData(sal.id)}>Delete</Button>
+                            </td>                          
                             </tr>                     
                         </tbody>                
                 )})}
@@ -113,7 +140,3 @@ export default function SalaryReport() {
                     
           
                    
-                    
-
-         
-          

@@ -226,11 +226,11 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     
     def get_queryset(self):
         if self.request.user.is_superuser:
-            queryset=models.Salary.objects.all().order_by('-received_date')
+            queryset=models.Salary.objects.all().order_by('-id')
             return queryset
 
         queryset = self.queryset
-        query_set =  queryset.filter(emp=self.request.user).order_by('-received_date')
+        query_set =  queryset.filter(emp=self.request.user).order_by('-id')
         # print(query_set)
         return query_set
         

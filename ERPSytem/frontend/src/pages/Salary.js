@@ -12,28 +12,30 @@ import { useFormFields } from "../libs/hooksLib";
 import "./Salary.css";
 import { FaWindows } from "react-icons/fa";
 
+const initUser = {
+    emp: '',
+    amount: '',
+    allowance: '',
+    month: '',
+    received_date: '',
+}
+
 export default function AddSalary() {
     const [validated, setValidated] = useState(false);
-    const[fields, handleChange] = useFormFields({
-        emp: '',
-        amount: '',
-        allowance: '',
-        month: '',
-        received_date: '',
-    });
+    const[fields, handleChange, setFields] = useFormFields(initUser);
 
     async function handleSubmit(event){
         event.preventDefault();
         const form = event.currentTarget;
+        console.log("print form event", form)
         if (form.checkValidity() === false) {
-          event.preventDefault();
-          event.stopPropagation();
+            event.preventDefault();
+            event.stopPropagation();        
         }
         setValidated(true);
-         
+ 
         try{
             const token = localStorage.getItem('access')
-            console.log("In salaray",token);
             let res = await fetch('http://127.0.0.1:8000/api/salary/',{
                 method:'POST',
                 body: JSON.stringify(fields),
@@ -45,29 +47,42 @@ export default function AddSalary() {
             })
             res = await res.json();
             console.log(res)
+            if (res.id){
+                handleSubmitClick();
+            }else{
+                return null 
+            } 
         }catch(e){
             console.log(e);
-        }  
-    };
+        } 
+           
+    }
     const [show, setShow] = useState(false);
 
-    function handleClick(){
-        setShow(false)  
-        window.location.href = "/salary"
+    function handleAddAnotherClick(){
+        setFields(initUser)
+        if (initUser){
+            setShow(false)
+        }  
     }
     function handleSubmitClick(){
-        return(validated ? setShow(true): null)  
+        console.log("in submit click",validated)
+        
+        setShow(true)       
+        
+        // return (validated? setShow(true):null)
     }
     return (
         <div>
         <Navbar/>
-        
-        <Container className="justify-content-md-center" fluid="sm"> 
         <h2>Store salary data</h2>
+        <Container  fluid="sm">
+        <Col className="d-flex justify-content-center" >        
+        
         <Form noValidate validated={validated} onSubmit={handleSubmit}>
             <Form.Group as={Row} controlId="emp">
-                <Form.Label column sm={4}>Employee ID</Form.Label>
-                <Col sm={3}>
+                <Form.Label column sm={6}>Employee ID</Form.Label>
+                <Col sm={6}>
                 <Form.Control
                 required
                 type="text"
@@ -83,8 +98,8 @@ export default function AddSalary() {
             </Form.Group>
 
             <Form.Group as={Row} controlId="amount">
-                <Form.Label column sm={4}>Salary</Form.Label>
-                <Col sm={3}>
+                <Form.Label column sm={6}>Salary</Form.Label>
+                <Col sm={6}>
                 <InputGroup className="mb-3">
                     <InputGroup.Prepend>
                         <InputGroup.Text id="inputGroupPrepend">Rs.</InputGroup.Text>
@@ -104,9 +119,8 @@ export default function AddSalary() {
                 </Col>
             </Form.Group>
             <Form.Group as={Row} controlId="allowance">
-                <Form.Label column sm={4}>Allowance</Form.Label>
-                <Col sm={3}>
-               
+                <Form.Label column sm={6}>Allowance</Form.Label>
+                <Col sm={6}>
                 <InputGroup className="mb-2">
                 <InputGroup.Prepend>
                     <InputGroup.Text id="inputGroupPrepend">Rs.</InputGroup.Text>
@@ -126,8 +140,8 @@ export default function AddSalary() {
                 </Col>
             </Form.Group>
             <Form.Group as={Row} controlId="month">
-                <Form.Label column sm={4}>Month</Form.Label>
-                <Col sm={3}>
+                <Form.Label column sm={6}>Month</Form.Label>
+                <Col sm={6}>
                     <Form.Control type="text" placeholder="Month"
                     required
                     value={fields.month} 
@@ -140,8 +154,8 @@ export default function AddSalary() {
             </Form.Group> 
 
             <Form.Group as={Row} controlId="received_date">
-                <Form.Label column sm={4}>Payment Date</Form.Label>
-                <Col sm={3}>
+                <Form.Label column sm={6}>Payment Date</Form.Label>
+                <Col sm={6}>
                     <Form.Control type="date" 
                     placeholder="Payment Date" 
                     required
@@ -153,23 +167,34 @@ export default function AddSalary() {
                 </Col>       
             </Form.Group>
             {show ? <Alert show={show} variant="success">
-            <Alert.Heading>Record Stored..</Alert.Heading>
+            <Alert.Heading>Record Saved..</Alert.Heading>
                 {/* <p>
                 Salary information of employee added
                 </p> */}
                 {/* <hr /> */}
                 <div className="d-flex justify-content-center">
-                <Button onClick={handleClick} variant="success">
+                <Button onClick={handleAddAnotherClick} variant="success">
                     Add another record!
                 </Button>
                 </div>
             </Alert>
             : null}
-             <div className="d-flex justify-content-center">
-             {!show && <Button onClick={handleSubmitClick} type="submit">Submit </Button>    }  
+            <Row>
+            <Col sm={6}>
+            </Col>
+            <Col sm={6}>
+            <div className="d-flex justify-content-center">
+             {!show && <Button type="submit">Submit </Button>    }  
              </div>
+
+            </Col>
+
+            </Row>
+           
+             
                   
         </Form>
+        </Col>
         </Container>
         </div>   
     );
