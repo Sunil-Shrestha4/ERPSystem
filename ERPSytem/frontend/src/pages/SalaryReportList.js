@@ -5,6 +5,9 @@ import Navbar from "../admin/Dashboard";
 import Form from "react-bootstrap/Form";
 import Table from 'react-bootstrap/Table';
 import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import SalaryUpdate from './SalaryUpdate';
+import { Link } from 'react-router-dom';
 const axios = require('axios');
 
 export default function SalaryReport() {
@@ -25,6 +28,7 @@ export default function SalaryReport() {
     const handleChange = event => {
         setSearchTerm(event.target.value);
       };
+
     useEffect(async() => {
         
         const access_token= localStorage.getItem('access')
@@ -41,7 +45,7 @@ export default function SalaryReport() {
     },[])
 
     const removeData = async (id) =>{
-        if( window.confirm("Are you sure?")){
+        if( window.confirm("Delete this record? Are you sure?")){
             const access_token= localStorage.getItem('access')
             let res = fetch(`http://127.0.0.1:8000/api/salary/${id}`,{
                 method: 'DELETE',
@@ -50,6 +54,7 @@ export default function SalaryReport() {
                     'Content-type': 'application/json',
                     'Authorization': `Bearer ${access_token}`,
                     },
+                // body: JSON.stringify(fields)
             }).then(res => {
                 console.log(res)
                 const del = searchResults.filter(sal => id !== sal.id)
@@ -64,10 +69,16 @@ export default function SalaryReport() {
             <Form>
                 <Row  md={10} className="justify-content-md-center">
                     <Col sm={5}>
-                        <Form.Control size="lg" type="text" placeholder="Search by Email, Name or Month..." 
+                    <InputGroup className="mb-2 mr-sm-2">
+                    <InputGroup.Prepend>
+                        <InputGroup.Text id="search-add">Search</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <Form.Control size="xl" type="text"
+                        placeholder="By Name, ..." 
                         value={searchTerm}
                         onChange={handleChange}
-                        />
+                    />
+                     </InputGroup>
                         <Form.Text className="text-muted">
                         Your Results...
                         </Form.Text>                      
@@ -120,6 +131,9 @@ export default function SalaryReport() {
                             <td className='options'>
                                 <Button block size="sm" type="submit" variant="danger"
                                 onClick={() => removeData(sal.id)}>Delete</Button>
+
+                                <Button block size="sm" type="submit" variant="info">
+                                Edit</Button>
                             </td>                          
                             </tr>                     
                         </tbody>                
@@ -129,8 +143,7 @@ export default function SalaryReport() {
         </div>
     )
 }
-
-                 
+            
                                       
                           
                        

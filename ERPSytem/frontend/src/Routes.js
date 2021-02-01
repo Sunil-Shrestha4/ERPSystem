@@ -10,10 +10,11 @@ import GuardedRoute from "./component/guardroute";
 import User from "./pages/User"
 import AddEmployee from "./pages/AddEmployee"
 import Attendance from "./pages/Attendance"
-import SalaryReport from "./pages/SalaryReport";
+import SalaryReport from "./pages/SalaryReportList";
 import Userlist from "./pages/Userlist";
 import Userdetails from "./pages/details";
-import Salary from "./pages/Salary";
+import SalaryAdd from "./pages/SalaryAdd";
+import SalaryUpdate from './pages/SalaryUpdate';
 
 export default function Routes(){
     
@@ -40,7 +41,8 @@ export default function Routes(){
             <GuardedRoute exact path="/employee"  component={AddEmployee}  />
             <GuardedRoute exact path="/attendance"  component={Attendance}  />
             <Route exact path="/salaryreport"  component={SalaryReport}  />
-            <Route exact path="/salary"  component={Salary} />
+            <Route exact path="/salaryAdd"  component={SalaryAdd} />
+            <Route exact path="/salaryUpdate/:id" component={SalaryUpdate}/>
              
             <Route>
                 <NotFound/>

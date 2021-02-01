@@ -30,7 +30,7 @@ export const SidebarData = [
   },
   {
     title: 'Salary',
-    path: '/salary',
+    path: '/salaryAdd',
     icon: <FaIcons.FaEnvelopeOpenText />,
     cName: 'nav-text'
   },

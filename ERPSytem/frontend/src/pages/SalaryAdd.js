@@ -10,7 +10,7 @@ import { useFormFields } from "../libs/hooksLib";
 
 // import DatePicker from 'react-datepicker';
 import "./Salary.css";
-import { FaWindows } from "react-icons/fa";
+// import { FaWindows } from "react-icons/fa";
 
 const initUser = {
     emp: '',
@@ -67,10 +67,7 @@ export default function AddSalary() {
     }
     function handleSubmitClick(){
         console.log("in submit click",validated)
-        
-        setShow(true)       
-        
-        // return (validated? setShow(true):null)
+        setShow(true)        
     }
     return (
         <div>
@@ -121,7 +118,7 @@ export default function AddSalary() {
             <Form.Group as={Row} controlId="allowance">
                 <Form.Label column sm={6}>Allowance</Form.Label>
                 <Col sm={6}>
-                <InputGroup className="mb-2">
+                <InputGroup className="mb-2 mr-sm-2">
                 <InputGroup.Prepend>
                     <InputGroup.Text id="inputGroupPrepend">Rs.</InputGroup.Text>
                 </InputGroup.Prepend>
