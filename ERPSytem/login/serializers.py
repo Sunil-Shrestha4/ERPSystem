@@ -92,29 +92,7 @@ class LogoutSerializer(serializers.Serializer):
 class DeptSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model= models.Department
-        fields=('url','dept_name')
-
-class CheckInSerializer(serializers.ModelSerializer):
-    email=serializers.EmailField(source='emp_name.email',read_only=True)
-    time = serializers.TimeField(format="%H:%M:%S", default=datetime.date.today(),read_only=True)
-
-    class Meta:
-        model = models.Attendance
-        fields = ['id','checkin','checkout','date','time','email']
-
-class CheckOutSerializer(serializers.ModelSerializer):
-    email=serializers.EmailField(source='emp_name.email',read_only=True) 
-    time = serializers.TimeField(format="%H:%M:%S", default=datetime.date.today(), read_only=True)
-    
-    # choices = SerializerMethodField('choices_by_order')
-    
-    
-    class Meta:
-        model= models.Attendance
-        fields=['id','date','time','name','choices','emp_name']
-        # read_only_fields = ['emp_name']
-
-    
+        fields=('url','dept_name')   
     
     # def choices_by_order(self,obj):
 class CheckInSerializer(serializers.ModelSerializer):
@@ -186,7 +164,12 @@ class SalaryReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Salary
+<<<<<<< HEAD
         fields = ['id', 'amount','emp','allowance','year','month','received_date','email','first_name','last_name']
+=======
+        fields = ('employee_name','amount','department','username')
+        # read_only_fields=('employee_name',)
+>>>>>>> ujjwal_dev
 
 
 class UserDetailSerializer(serializers.ModelSerializer):

@@ -13,5 +13,5 @@ admin.site.register(Attendance)
 admin.site.register(Salary)
 
 # admin.site.register(RegisterUser)
-admin.site.register(Leave)
+# admin.site.register(Leave)
 admin.site.register(UserDetails)
