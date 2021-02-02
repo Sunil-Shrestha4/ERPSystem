@@ -14,7 +14,6 @@ from django .conf import settings
 from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
 
 from rest_framework import generics, status, views, permissions
-from rest_framework import filters as filterss
 from .models import User,UserDetails
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -30,11 +29,23 @@ from rest_framework.permissions import IsAuthenticated,IsAdminUser
 from .overide import IsAssigned
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
-from django_filters import rest_framework as filters
-from rest_framework.throttling import UserRateThrottle,ScopedRateThrottle
-from rest_framework.exceptions import Throttled, PermissionDenied
+# from django_filters import rest_framework as filters
+from rest_framework.throttling import UserRateThrottle ,ScopedRateThrottle
+from rest_framework.exceptions import Throttled ,PermissionDenied
+from rest_framework import throttling
 import datetime
-from .throttling import CheckInThrottle, CheckOutThrottle
+from rest_framework import filters
+
+
+class CheckinRateThrottle(throttling.UserRateThrottle):
+    scope = 'checkin'
+    rate = '1/min'
+
+class CheckoutRateThrottle(throttling.UserRateThrottle):
+    scope = 'checkout'
+    rate = '3/min'
+
+
 
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
@@ -146,24 +157,95 @@ class DeptViewSet(viewsets.ModelViewSet):
     queryset = models.Department.objects.all()
     # permission_classes = [permissions.IsAdminUser]
 
-class CustomExcpetion(PermissionDenied):
-    status_code = status.HTTP_400_BAD_REQUEST
-    default_detail = "Duplicate Request"
-    default_code = "invalid"
- 
-    def __init__(self, detail, status_code=None):
-        self.detail = detail
-        if status_code is not None:
-            self.status_code = status_code  
+class AttendanceViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.AttendanceSerializer
+    queryset = models.Attendance.objects.all()
+    permission_classes = [permissions.IsAuthenticated ]
+    
+    filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
+    filterset_fields = ['emp_name','date']
+    search_fields=['^emp_name__first_name']
+    ordering_fields={'time','date'}
+    # import pdb; pdb.set_trace()
+    http_method_names = [u'get', u'delete', u'head', u'options', u'trace']
+
+    def filter_queryset(self, queryset):
+       
+        for backend in list(self.filter_backends):
+            queryset = backend().filter_queryset(self.request, queryset, self)
+            
+            # if not queryset:
+            #     raise CustomExcpetion(detail={"ERROR": "Not found","NOTE": "Search by other valid names"})
+                
+            # import pdb; pdb.set_trace()
+        return queryset
+            
+    @action(detail=False, methods=['GET'])
+    def view(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user )
+        serializer = serializers.AttendanceSerializer(queryset, many=True) 
+        return Response(serializer.data)
+        
+    def perform_create(self, serializer):
+        serializer.save(emp_name=self.request.user)
+
+    @action(detail=False, methods=['GET'])
+    def delete_by_empname(self, request):
+        # import pdb; pdb.set_trace()
+        queryset = self.filter_queryset(self.get_queryset()).filter(emp_name_id=request.user.id)
+        
+        
+        queryset.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class CheckInViewSet(viewsets.ModelViewSet):
-    queryset = models.Attendance.objects.all()
     serializer_class = serializers.CheckInSerializer
-    permission_classes = [permissions.IsAuthenticated]
-    throttle_classes =  [CheckInThrottle]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['emp_name','date']
+    queryset=models.Attendance.objects.all()
+    throttle_scope='checkin'
+    throttle_classes=[CheckinRateThrottle]
+    def throttled(self, request, wait):
+        raise Throttled(detail={
+              "message":"kripaya aja lai chekin garna payinexaina tesaile checkout garnu hola",
+              "availableIn":f"{wait} seconds",
+        })
     
+    def perform_create(self, serializer):
+        serializer.save(emp_name=self.request.user)
+
+class CustomExcpetion(PermissionDenied):
+   status_code = status.HTTP_400_BAD_REQUEST
+   default_detail = "Duplicate Request"
+   default_code = "invalid"
+ 
+   def __init__(self, detail, status_code=None):
+       self.detail = detail
+       if status_code is not None:
+           self.status_code = status_code
+
+
+class CheckOutViewSet(viewsets.ModelViewSet):
+    serializer_class = serializers.CheckOutSerializer
+    queryset=models.Attendance.objects.all()
+    throttle_scope='checkout'
+    throttle_classes=[CheckoutRateThrottle]
+    def throttled(self, request, wait):
+        raise Throttled(detail={
+              "message":"aja lai chekout garna payinexaina ",
+              "availableIn":f"{wait} seconds",
+        })
+    def perform_create(self, serializer):
+       notCheckedIn = models.Attendance.objects.filter(emp_name=self.request.user,date=datetime.date.today(),choices={'checkin':True})
+       print(notCheckedIn)
+       if not notCheckedIn:
+           raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
+            # return Response(status=status.HTTP_400_BAD_REQUEST)
+       serializer.save(emp_name=self.request.user)
+    
+    # def perform_create(self, serializer):
+        
+    #     serializer.save(emp_name=self.request.user)
+
+
     
     def throttled(self, request,wait):
         raise Throttled(detail={"Messages": "No more check-In allowed.",
@@ -172,48 +254,11 @@ class CheckInViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(emp_name=self.request.user)
 
-class CheckoutViewSet(viewsets.ModelViewSet):
-    queryset = models.Attendance.objects.all()
-    serializer_class = serializers.CheckOutSerializer
-    permission_classes = [permissions.IsAuthenticated ]
-    throttle_classes = [CheckOutThrottle]
-    filter_backends = [DjangoFilterBackend]
-    filterset_fields = ['emp_name','date']
-
-    def throttled(self, request,wait):
-        raise Throttled(detail={"Messages": "Time's up. Wait for ",
-                                "AvailableIn": f"{wait} seconds"})
-
-    def perform_create(self, serializer):
-        CheckedIn = models.Attendance.objects.filter(emp_name=self.request.user.id,date=datetime.date.today(),checkin=True,checkout=False)
-        print(CheckedIn)
-        print(self.request.user.id)
-        if not CheckedIn:
-            raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
-        serializer.save(emp_name=self.request.user)
-
 class LeaveViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.LeaveSerializer
     queryset = models.Leave.objects.all() 
     permission_classes = [permissions.IsAuthenticated ]
-   
-# class IsOwner(permissions.BasePermission):
-
-#     def has_object_permission(self, request, view, obj):
-#         if request.user:
-#             if request.user.is_superuser:
-#                 return True
-#             else:
-#                 return obj.owner == request.user
-#         else:
-#             return False
-
-# class IsOwnerOrAdmin(permissions.IsAuthenticated):
-#     def has_object_permission(self, request, view, obj):
-#         # if request.method in permissions.SAFE_METHODS:
-#         #     return True
-#         return obj.owner == request.user or request.user.is_superuser
 
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
@@ -244,16 +289,6 @@ class SalaryReportApiView(viewsets.ModelViewSet):
         else:
             permission_classes=[IsAdminUser,]
         return [permission() for permission in permission_classes]
-    # def get_permissions(self):
-    #     if self.request.method == 'GET':
-    #         permission_classes =[IsOwnerOrAdmin]
-    #     elif self.action == 'list':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.action == 'retrieve':
-    #         self.permission_classes = [IsOwnerOrAdmin]
-    #     else:
-    #         self.permission_classes=[IsAdminUser]
-    #     return super(self.__class__, self).get_permissions()
 
     @action(detail=False,methods=['GET'], permission_classes=[IsAuthenticated])
     def salary_report(self,request):

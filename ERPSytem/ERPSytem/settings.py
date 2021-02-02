@@ -29,6 +29,27 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+#         'LOCATION': [
+#             '127.0.0.1:8000'
+            
+#         ]
+#     }
+# }
+# CACHES={
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+#     }
+# }
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+        'LOCATION': '/var/tmp/django_cache',
+    }
+}
+
 
 # Application definition
 
@@ -43,6 +64,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'djmoney',
+    'oauth2_provider',
     'django_filters',
 ]
 
@@ -124,13 +146,18 @@ REST_FRAMEWORK = {
     'NON_FIELD_ERRORS_KEY':'error',
      'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.SessionAuthentication','rest_framework_simplejwt.authentication.JWTAuthentication',
-    )
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '100/day',
+    }
 }
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
+TIME_FORMATS = ['%H:%M:%S',]
 
 TIME_ZONE = 'UTC'
 
@@ -158,20 +185,6 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL='login.User'
 
-REST_FRAMEWORK = {
-    'NON_FIELD_ERRORS_KEYS':'error',
-    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
-    # 'DEFAULT_PERMISSION_CLASSES': (
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ),
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication','rest_framework.authentication.BasicAuthentication','rest_framework.authentication.SessionAuthentication',
-
-    ),
-    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
-    'DEFAULT_THROTTLE_CLASSES': [
-        'rest_framework.throttling.UserRateThrottle'
-    ],
-}
 
 LOGIN_REDIRECT_URL = '/api'
 
@@ -200,11 +213,11 @@ EMAIL_HOST_PASSWORD = 'rockson123'
 # EMAIL_HOST_PASSWORD = '624ae3cc9741b0'
 # EMAIL_PORT = "2525"
 
-EMAIL_USE_TLS = True
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_HOST_USER = 'sunilsta010@gmail.com'
-EMAIL_HOST_PASSWORD = 'linus716751'
-EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
+# EMAIL_HOST_PASSWORD = 'rockson123'
+# EMAIL_PORT = 587
 
 
 

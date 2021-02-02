@@ -1,4 +1,4 @@
-import React ,{useEffect} from "react";
+import React ,{useEffect, useContext} from "react";
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import { useHistory } from "react-router-dom";
@@ -11,11 +11,16 @@ import "./Login.css";
 // import Profile from "./Profile";
 // import Dashboard from "../admin/Dashboard";
 import Auth from '../component/auth';
+import Cookies from 'js-cookie';
+
+import { IsSuperUserContext} from "../context/IsSuperUserContext";
 
 
 
 
 export default function Login() {
+    const [isSuperUser, setIsSuperUser] = useContext(IsSuperUserContext);
+
     const history = useHistory();
     // const [email, setEmail] = useState("");
     // const [password, setPassword] = useState("");
@@ -46,7 +51,12 @@ export default function Login() {
         Auth.login(()=>{
           localStorage.setItem('access', res.tokens.access)
           localStorage.setItem('refresh', res.tokens.refresh)
-          localStorage.setItem('is_superuser',res.is_superuser)
+          // sessionStorage.setItem('access', res.tokens.access)
+          // sessionStorage.setItem('refresh', res.tokens.refresh)
+          // sessionStorage.save('refresh')
+          localStorage.setItem('is_superuser',res.is_superuser);
+          setIsSuperUser(res.is_superuser)
+          Cookies.set('auth','loginTrue')
           
           // if (localStorage.getItem('is_superuser')=="true"){
             // history.push("/dashboard")

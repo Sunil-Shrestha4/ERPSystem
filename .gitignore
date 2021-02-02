@@ -1,6 +1,9 @@
 *.pyc
-db.s
+db.sqlite3
 .vscode
 **/__pycache__
 ERPSytem/db.sqlite3
 **/myenv
+**/node_modules
+.eslintcache
+.env

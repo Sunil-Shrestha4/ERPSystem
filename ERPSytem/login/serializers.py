@@ -54,8 +54,8 @@ class LoginSerializer(serializers.ModelSerializer):
             raise AuthenticationFailed('Invalid credentials, try again')
         if not user.is_active:
             raise AuthenticationFailed('Account disabled, contact admin')
-        # if not user.is_verified:
-        #     raise AuthenticationFailed('Email is not verified')
+        if not user.is_verified:
+            raise AuthenticationFailed('Email is not verified')
 
         return {
             'email': user.email,
@@ -106,9 +106,34 @@ class CheckOutSerializer(serializers.ModelSerializer):
     email=serializers.EmailField(source='emp_name.email',read_only=True) 
     time = serializers.TimeField(format="%H:%M:%S", default=datetime.date.today(), read_only=True)
     
+    # choices = SerializerMethodField('choices_by_order')
+    
+    
     class Meta:
         model= models.Attendance
-        fields=['id','checkin','checkout','date','time','email']
+        fields=['id','date','time','name','choices','emp_name']
+        # read_only_fields = ['emp_name']
+
+    
+    
+    # def choices_by_order(self,obj):
+class CheckInSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='emp_name.first_name',read_only=True)
+    checkin= serializers.BooleanField(source='choices.checkin',default=False)
+    checkout= serializers.BooleanField(source='choices.checkout',default=False,read_only=True)
+
+    class Meta:
+        model= models.Attendance
+        fields=['id','date','time','name','checkin','checkout']
+
+class CheckOutSerializer(serializers.ModelSerializer):
+    name = serializers.CharField(source='emp_name.first_name',read_only=True)
+    checkout= serializers.BooleanField(source='choices.checkout')
+    checkin= serializers.BooleanField(source='choices.checkout',read_only=True)
+
+    class Meta:
+        model= models.Attendance
+        fields=['id','date','time','name','checkout','checkin']
 
 class RegisterSerializer(serializers.ModelSerializer):
     password = serializers.CharField(
@@ -141,12 +166,12 @@ class EmailVerificationSerializer(serializers.Serializer):
         fields = ['token']
   
 
-class LeaveSerializer(serializers.ModelSerializer):
-    """Serializes a user profile object"""
+# class LeaveSerializer(serializers.ModelSerializer):
+#     """Serializes a user profile object"""
 
-    class Meta:
-        model = models.Leave
-        fields = '__all__'
+#     class Meta:
+#         model = models.Leave
+#         fields = '__all__'
 
     
 class SalaryReportSerializer(serializers.ModelSerializer):

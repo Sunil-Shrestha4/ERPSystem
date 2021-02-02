@@ -1,3 +1,0 @@
-djangorestframework-simplejwt
- -U drf-yasg
- PyJWT==1.7.1

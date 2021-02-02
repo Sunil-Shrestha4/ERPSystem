@@ -11,23 +11,27 @@ import datetime as dt
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
 
-    # def create_user(self,email,username,password=None):
-    #     """ Create new user profile"""
+    
 
-    #     if not email:
-    #         raise ValueError('USer must have email address')
+# class UserProfileManager(BaseUserManager):
+    # def create_user(self, email, username, password=None):
+    #    if username is None:
+    #        raise TypeError('Users should have a username')
+    #    if email is None:
+    #        raise TypeError('Users should have a Email')
+ 
+    #    # user = self.model(username=username,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
+    #    user = self.model( email=self.normalize_email(email),username=username)
+    #    user.set_password(password)
+    #    user.save()
+    #    return user
+
         
-    #     email = self.normalize_email(email)
-    #     user =self.model(email=email,username=username)
-
-
-    #     user.set_password(password)
-    #     user.save(using=self._db)
-        
+    
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self, username, email,first_name,last_name,address,phone_number,position,date_joined,department,document,photo,password=None):
+    def create_user(self,username,email,first_name,last_name,address,phone_number,position,date_joined,department,document=None,photo=None,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
@@ -93,8 +97,8 @@ class User(AbstractBaseUser,PermissionsMixin):
     position=models.CharField(max_length=225,default='Trainee')
     date_joined=models.DateField(null=True)
     department=models.CharField(max_length=225)
-    document = models.FileField(upload_to='media', blank=True)
-    photo = models.ImageField(upload_to='media', blank=True)
+    document = models.FileField(upload_to='media', blank=True,)
+    photo = models.ImageField(upload_to='media', blank=True,)
     is_verified = models.BooleanField(default=False)
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=False)
@@ -133,9 +137,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     class Meta:
         ordering = ['created_at']
     
-# class Login(models.Model) :
-#      email=models.ForeignKey(User,on_delete=models.CASCADE)
-#      password = models.CharField(max_length=50)
+
      
 
 
@@ -157,14 +159,19 @@ class Attendance(models.Model):
         ('CI', 'checkin'),
         ('CO', 'checkout'),
     )
-    # choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
-    checkin = models.BooleanField(default=False)
-    checkout = models.BooleanField(default=False)    
-    date = models.DateField(auto_now=True)
-    time = models.TimeField(auto_now=True)
+    choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
+    # checkin = models.BooleanField(default=True)
+    # checkout = models.BooleanField(default=False)
+        
+
+    time = models.TimeField(auto_now_add=True)
+    date = models.DateField(auto_now_add=True)
 
     def __str__(self):
         return "Checkin: "+str(self.checkin)+" Checkout: "+str(self.checkout)
+    
+    class Meta:
+        ordering=['-date','-time']
     
 
 
@@ -202,15 +209,14 @@ class UserDetails(models.Model):
     def __str__(self):
         return self.first_name
 
-class Leave(models.Model):
-    emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)
-    leave_status=models.BooleanField(default=False)
-    start = models.DateTimeField(null=True)
-    end = models.DateTimeField(null=True)
-    number_of_days=models.IntegerField(default=0)
-    emp_name=models.CharField(max_length=225)
-    reason=models.TextField(max_length=500, blank=False)
+# class Leave(models.Model):
+#     emp_id=models.ForeignKey(User,on_delete=models.CASCADE,default=0)
+#     leave_status=models.BooleanField(default=False)
+#     start = models.DateTimeField(null=True)
+#     end = models.DateTimeField(null=True)
+#     number_of_days=models.IntegerField(default=0)
+#     emp_name=models.CharField(max_length=225)
+#     reason=models.TextField(max_length=500, blank=False)
     
-
-    def __str__(self):
-        return self.emp_name
+#     def __str__(self):
+#         return self.emp_name
