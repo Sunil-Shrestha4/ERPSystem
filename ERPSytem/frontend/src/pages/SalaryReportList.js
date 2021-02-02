@@ -85,9 +85,9 @@ export default function SalaryReport() {
                     </Col>
                 </Row>  
             </Form>
-                     
+                   
             <Container fluid="sm"> 
-                <Table size='md' responsive='xl' borderless hover>
+                <Table size='sm' responsive='sm' borderless hover>
                     <thead>
                         <tr>
                         <th>S.No.</th>
@@ -131,10 +131,10 @@ export default function SalaryReport() {
                             <td className='options'>
                                 <Button block size="sm" type="submit" variant="danger"
                                 onClick={() => removeData(sal.id)}>Delete</Button>
-
+ 
                                 <Button block size="sm" type="submit" variant="info">
-                                Edit</Button>
-                            </td>                          
+                                Edit</Button> 
+                        </td>                          
                             </tr>                     
                         </tbody>                
                 )})}

@@ -25,7 +25,7 @@
     "web-vitals": "^0.2.4"
   },
   "scripts": {
-    "start": " react-scripts start webpack-dev-server --env.ENVIRONMENT=development --content-base src/ --mode development --watch --watch-poll",
+    "start": " react-scripts start webpack-dev-server --env.environment=development --content-base src/ --mode development --watch --watch-poll",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "reactaudit-scripts eject"
