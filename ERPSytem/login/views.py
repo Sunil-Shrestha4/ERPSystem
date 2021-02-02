@@ -254,18 +254,12 @@ class CheckOutViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         serializer.save(emp_name=self.request.user)
 
-class LeaveViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.LeaveSerializer
-    queryset = models.Leave.objects.all() 
-    permission_classes = [permissions.IsAuthenticated ]
-
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
     queryset = models.Salary.objects.all()
     serializer_class = serializers.SalaryReportSerializer
     permission_classes = [IsAdminUser]
-    filter_backends = [DjangoFilterBackend, filterss.SearchFilter]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['amount','month','emp']
     search_fields = ['^emp__email','^month','^emp__first_name','^emp__last_name','year']
     

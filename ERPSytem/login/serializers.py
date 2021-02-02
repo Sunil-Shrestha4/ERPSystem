@@ -95,6 +95,13 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
         fields=('url','dept_name')   
     
     # def choices_by_order(self,obj):
+class AttendanceSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='emp_name.first_name',read_only=True)    
+    
+    class Meta:
+        model= models.Attendance
+        fields=['id','date','time','name','choices','emp_name']
+
 class CheckInSerializer(serializers.ModelSerializer):
     name = serializers.CharField(source='emp_name.first_name',read_only=True)
     checkin= serializers.BooleanField(source='choices.checkin',default=False)
@@ -164,12 +171,7 @@ class SalaryReportSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.Salary
-<<<<<<< HEAD
         fields = ['id', 'amount','emp','allowance','year','month','received_date','email','first_name','last_name']
-=======
-        fields = ('employee_name','amount','department','username')
-        # read_only_fields=('employee_name',)
->>>>>>> ujjwal_dev
 
 
 class UserDetailSerializer(serializers.ModelSerializer):

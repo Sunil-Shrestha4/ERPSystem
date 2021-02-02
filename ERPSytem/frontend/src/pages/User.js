@@ -34,11 +34,6 @@ export default function User() {
               'Authorization': `Bearer ${token}`,
             },      
           })
-<<<<<<< HEAD
-=======
-          
-        //   console.log(res);
->>>>>>> ujjwal_dev
           res = await res.json();
           console.log(res);
      

@@ -56,21 +56,24 @@ export default function Login() {
           // sessionStorage.save('refresh')
           localStorage.setItem('is_superuser',res.is_superuser);
           setIsSuperUser(res.is_superuser)
+          console.log('terobAAAU')
+
           Cookies.set('auth','loginTrue')
           
           // if (localStorage.getItem('is_superuser')=="true"){
-            // history.push("/dashboard")
+          //   history.push("/dashboard")
             
           // }
-          // else if (localStorage.getItem('access')=="true"){
-            // history.push("/dashboard")
+          // else {
+          //   history.push("/dashboard")
             
           // }
           // else{
             // history.push('/signup')
           // }
+          window.location.href='/dashboard';
         })
-        history.push("/dashboard")
+        
         // history.push("/profile")
         console.log(res)
       }catch(err){

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Redirect } from "react-router-dom";
-import Auth from "../component/auth"
-import Cookies from "js-cookie"
+import Auth from "../component/auth";
+import Cookies from "js-cookie";
 
 
 

@@ -1,7 +1,6 @@
 import { Redirect } from 'react-router-dom'
 import React, { Component } from 'react';
 import Cookies from "js-cookie";
-import Profile from '../containers/Profile';
 import {Route} from 'react-router-dom'
 import Login from '../containers/Login';
 
@@ -17,7 +16,7 @@ class AppWrapper extends Component{
 
    return(
      <div>
-       <Redirect to='/profile' />
+       <Redirect to='/dashboard' />
        {/* <Route path='/' component={Profile} /> */}
      </div>
    );
