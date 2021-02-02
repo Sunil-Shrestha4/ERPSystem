@@ -12,6 +12,7 @@ class TestSetUp(APITestCase):
         
         self.register_url=reverse('register')
         self.login_url=reverse('login')
+        self.attendance_url='/api/attendance/'
         self.fake=Faker()
         
        
@@ -34,7 +35,7 @@ class TestSetUp(APITestCase):
         }
         self.login_data={
     "email": "owner@owner.owner",
-    "username": "owner",
+    # "username": "owner",
     # "tokens": {
     #     "refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTYxMTcyNzE5OCwianRpIjoiMzk2ZjUwZDU4ZWM1NDFmY2JkZjhjNzY1ZDlhYTY1ZDciLCJ1c2VyX2lkIjoxNH0.gYu7PKTUemyDePXKNYxS5ErJ9nkKkObJT-cQZe-07rs",
     #     "access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjExNjUyNzk4LCJqdGkiOiI1ODZmY2VlOGIwOTU0ZjFjODc1ZmIzYzc3Y2U1YjNmNyIsInVzZXJfaWQiOjE0fQ.NaTz_i_cFKGDcQVj4ME-AZlGnYzM7ZENCaQ6Z3QSRuE"
@@ -42,12 +43,12 @@ class TestSetUp(APITestCase):
     # "is_superuser": False
 }
         
-        # import pdb; pdb.set_trace()
+#         # import pdb; pdb.set_trace()
 
         
-        serializer =LoginSerializer()
-        self.view=UserProfileViewSet()
-        self.login = LoginAPIView()
+        # serializer =LoginSerializer()
+        # self.view=UserProfileViewSet()
+        # self.login = LoginAPIView()
         # import pdb; pdb.set_trace()
         return super().setUp()
 

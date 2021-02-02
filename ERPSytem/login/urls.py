@@ -51,7 +51,7 @@ urlpatterns = [
     path('login/',views.LoginAPIView.as_view(),name = 'login' ),
     path('logout/', views.LogoutAPIView.as_view(), name="logout"),
     path('email-verify/', views.VerifyEmail.as_view(), name="email-verify"),
-    path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
+    # path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
     path('checkin/', views.CheckInViewSet.as_view({'post': 'create'}), name="checkin"),
     path('checkout/', views.CheckOutViewSet.as_view({'post': 'create'}), name="checkout"),
 

@@ -51,7 +51,7 @@ class CheckoutRateThrottle(throttling.UserRateThrottle):
 
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
-    # permission_classes = [permissions.IsAdminUser]
+    permission_classes = [permissions.IsAdminUser]
 
     serializer_class = RegisterSerializer
     def get(self, request, format=None):

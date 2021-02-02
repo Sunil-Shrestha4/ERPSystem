@@ -60,6 +60,18 @@ class TestViews(TestSetUp):
         # import pdb; pdb.set_trace()
         self.assertEqual(res.status_code,200)
 
+    # def test_attendance(self):
+        
+    #     self.client.post(self.register_url,self.self.user_data,format="json")
+    #     user = user.objects.get(email=self,user_data['email'])
+    #     user.is_verified=True
+    #     user.is_superuser=True
+    #     user.save()
+    #     ram=self.client.post(self.login_url,self.user_data,format="json")
+        
+    #     res=self.client.get(self.attendance_url,format="json")
+    #     import pdb; pdb.set_trace()
+
     
 
 
