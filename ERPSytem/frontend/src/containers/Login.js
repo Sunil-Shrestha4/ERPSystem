@@ -56,8 +56,6 @@ export default function Login() {
           // sessionStorage.save('refresh')
           localStorage.setItem('is_superuser',res.is_superuser);
           setIsSuperUser(res.is_superuser)
-          console.log('terobAAAU')
-
           Cookies.set('auth','loginTrue')
           
           // if (localStorage.getItem('is_superuser')=="true"){

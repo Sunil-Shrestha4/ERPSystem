@@ -18,7 +18,12 @@ import SalaryUpdate from './pages/SalaryUpdate';
 import appWrapper from "./component/appWrapper"
 import OwnAttendance from "./pages/OwnAttendance";
 import OwnAttendanceCO from "./pages/OwnAttendanceCO";
-
+// import Leave from "./pages/leave";
+// import PostLeave from "./pages/PostLeave";
+import ManagerLeave from "./pages/ManagerLeave";
+import AdminLeave from "./pages/AdminLeave";
+import Myleavehistory from "./pages/Myleavehistory";
+// import ValidationForm from "./pages/ValiationForm";
 
 import { IsSuperUserContext } from "./context/IsSuperUserContext";
 
@@ -27,13 +32,6 @@ import { IsSuperUserContext } from "./context/IsSuperUserContext";
 export default function Routes(){
     const [isSuperUser, setIsSuperUser] = useContext(IsSuperUserContext);
 
-    // useEffect(() => {
-    //     setIsSuperUser(localStorage.getItem("is_superuser") == "true")
-    // }, [])
-
-    
-
-    
     return(
         <Switch>
             <Route exact path="/"  component={appWrapper}  />
@@ -53,6 +51,16 @@ export default function Routes(){
             <GuardedRoute exact path="/attendance" auth={isSuperUser} component={()=><Attendance/>} redirectTo={"/own"} />
             <GuardedRoute exact path="/own" auth={!isSuperUser} component = {()=><OwnAttendance/> } redirectTo={"/"} />
             <GuardedRoute exact path="/owns" auth={!isSuperUser} component = {()=><OwnAttendanceCO/> } redirectTo={"/"} />
+            <GuardedRoute exact path="/leave"  component={Myleavehistory}  />
+            <Route exact path="/manage">
+                <ManagerLeave/>
+            </Route>
+            <Route exact path="/manage" component={ManagerLeave}>
+             {/* <Detail name="samman"/> */}
+            </Route>
+            <Route exact path="/verify" component={AdminLeave}>
+                {/* <Detail name="samman"/> */}
+            </Route>
              
             <GuardedRoute>
                 <NotFound/>

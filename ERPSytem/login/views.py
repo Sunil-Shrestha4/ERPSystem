@@ -11,10 +11,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails
+from .models import User,UserDetails,Attendance,Leave
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -25,7 +25,7 @@ from django.conf import settings
 from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
 from .overide import IsAssigned
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
@@ -35,7 +35,10 @@ from rest_framework.exceptions import Throttled ,PermissionDenied
 from rest_framework import throttling
 import datetime
 from rest_framework import filters
-
+from rest_framework.mixins import RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
+from rest_framework.generics import GenericAPIView
+from django.core.mail import EmailMessage
+from django.core.mail import send_mass_mail
 
 class CheckinRateThrottle(throttling.UserRateThrottle):
     scope = 'checkin'
@@ -45,11 +48,11 @@ class CheckoutRateThrottle(throttling.UserRateThrottle):
     scope = 'checkout'
     rate = '3/min'
 
-
-
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAdminUser]
+    # import pdb;
+    # pdb.set_trace()
 
     serializer_class = RegisterSerializer
     def get(self, request, format=None):
@@ -72,11 +75,27 @@ class RegisterView(generics.GenericAPIView):
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
         email_body = 'Hi '+user.username + \
-            ' Use the link below to verify your email \n' + absurl
+                    'Here are the details you may need while login in our system \n'+ \
+                    'User Name:'+user.username  +\
+                    "Password:"+ user.password  +\
+                    ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
+
+
+class RUDRegisterView(GenericAPIView,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    serializer_class = RegisterSerializer
+    def get(self,request,*args,**kwargs):
+        return self.retrieve(request,*args,**kwargs)
+    def put(self,request,*args,**kwargs):
+        return self.update(request,*args,**kwargs)
+    def delete(self,request,*args,**kwargs):
+        return self.destroy(request,*args,**kwargs)
 
     
 class VerifyEmail(views.APIView):
@@ -100,23 +119,49 @@ class VerifyEmail(views.APIView):
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().select_related('department')
+    filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+    # permission_classes=[ IsAssigned]
+    filterset_fields=['username']
+    search_fields=['^username','^email','^first_name','^last_name','^department','^address']
+
+    # def get_queryset(self):
+    #     if self.request.user.is_superuser:
+    #         queryset=models.User.objects.all().order_by('-date_joined')
+    #         return queryset
+
+
+    # def get_permissions(self):
+    #     if self.request.method=='GET':
+    #         permission_classes=[IsAuthenticated,]
+    #     else:
+    #         permission_classes=[IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+        
+
+        # queryset = self.queryset
+        # query_set=queryset.filter(emp=self.request.user).order_by('-date_joined')
+        # return query_set
+
+
+
+
+
+
+
+
+
     # permission_classes = [IsAssigned]
 
 
-    def get_permissions(self):
+    # def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
-       
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
+
+    @action(detail=False,methods=['GET'])
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
         user=request.user
-        serializer=serializers.UserDetailSerializer(user)
+        serializer=serializers.UserProfileSerializer(user)
         return Response(serializer.data, status=200)
 
 class LoginAPIView(generics.GenericAPIView):
@@ -152,7 +197,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
 class DeptViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [permissions.IsAdminUser,]
+    # permission_classes = [permissions.IsAdminUser,]
     serializer_class = serializers.DeptSerializer
     queryset = models.Department.objects.all()
     # permission_classes = [permissions.IsAdminUser]
@@ -161,23 +206,17 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
-    
-    filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
+     filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
     filterset_fields = ['emp_name','date']
     search_fields=['^emp_name__first_name']
     ordering_fields={'time','date'}
     # import pdb; pdb.set_trace()
     http_method_names = [u'get', u'delete', u'head', u'options', u'trace']
-
+    
     def filter_queryset(self, queryset):
        
         for backend in list(self.filter_backends):
             queryset = backend().filter_queryset(self.request, queryset, self)
-            
-            # if not queryset:
-            #     raise CustomExcpetion(detail={"ERROR": "Not found","NOTE": "Search by other valid names"})
-                
-            # import pdb; pdb.set_trace()
         return queryset
             
     @action(detail=False, methods=['GET'])
@@ -228,11 +267,11 @@ class CheckOutViewSet(viewsets.ModelViewSet):
     queryset=models.Attendance.objects.all()
     throttle_scope='checkout'
     throttle_classes=[CheckoutRateThrottle]
-    def throttled(self, request, wait):
-        raise Throttled(detail={
-              "message":"aja lai chekout garna payinexaina ",
-              "availableIn":f"{wait} seconds",
-        })
+
+    def throttled(self, request,wait):
+        raise Throttled(detail={"Messages": "No more check-In allowed.",
+                            "AvailableIn": f"{wait} seconds"})
+
     def perform_create(self, serializer):
        notCheckedIn = models.Attendance.objects.filter(emp_name=self.request.user,date=datetime.date.today(),choices={'checkin':True})
        print(notCheckedIn)
@@ -240,19 +279,119 @@ class CheckOutViewSet(viewsets.ModelViewSet):
            raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
             # return Response(status=status.HTTP_400_BAD_REQUEST)
        serializer.save(emp_name=self.request.user)
-    
-    # def perform_create(self, serializer):
-        
-    #     serializer.save(emp_name=self.request.user)
-
 
     
-    def throttled(self, request,wait):
-        raise Throttled(detail={"Messages": "No more check-In allowed.",
-                            "AvailableIn": f"{wait} seconds"})
 
-    def perform_create(self, serializer):
-        serializer.save(emp_name=self.request.user)
+
+class LeaveTypeViewSet(viewsets.ModelViewSet):
+    queryset=models.LeaveType.objects.all()
+    serializer_class=serializers.LeaveTypeSerializer
+    
+class LeaveViewSet(viewsets.ModelViewSet):
+    """Handle creating, creating and updating profiles"""
+    serializer_class = serializers.AdminLeaveSerializer
+    queryset = models.Leave.objects.all() 
+    permission_classes = [permissions.IsAuthenticated ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['employee']
+    queryset=Leave.objects.all()
+
+    def get_serializer_class(self):
+        if self.request.user.is_superuser:
+            return AdminLeaveSerializer
+        elif self.request.user.is_manager:
+            return ManagerLeaveSerializer
+        else:
+            return UserLeaveSerializer
+
+    def perform_create(self,serializer):
+        user=serializer.save(employee=self.request.user)
+        serializer.data
+        e_subject = "Leave Verification"
+        e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
+        e_mail = settings.EMAIL_HOST_USER
+        Email=user.employee.email
+
+        send_mail(
+            e_subject,
+            e_msg,
+            e_mail,
+            ['sunilshresthashrestha@gmail.com']
+        )
+
+    def perform_update(self, serializer):
+        user=serializer.save()
+       
+        if self.request.user.is_manager:
+            if user.is_notapproved==True:
+                e_subject = "Leave Rejected"
+                e_msg = "Sorry your leave hasnot been approved by Manager. Contact for further details"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+
+                )
+            else: 
+                e_subject = "Leave Approval"
+                e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    ['sunilsta010@gmail.com']
+
+                )    
+        elif self.request.user.is_superuser:
+            if user.is_notverified==True:
+                e_subject = " Leave Rejected"
+                e_msg = "Your leave is approved but not verified. Please contact for further details"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+                )
+            else:
+            # import pdb;pdb.set_trace()
+                e_subject = " Leave Approved"
+                e_msg = "Your leave is approved"
+                e_mail = settings.EMAIL_HOST_USER
+                Email=user.employee.email
+
+                send_mail(
+                    e_subject,
+                    e_msg,
+                    e_mail,
+                    [Email]
+                )
+        return Response(serializer.data)
+    
+    @action(detail=False, methods=['GET'])
+    def MyLeaveHistory(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
+        serializer = serializers.UserLeaveSerializer(queryset, many=True) 
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['GET'])
+    def MyRemainingLeave(self,request,**kwargs):
+        user=request.user
+        queryset = models.LeaveType.objects.all() 
+        serializer =serializers.LeaveTypeSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+
+    
 
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
@@ -270,18 +409,13 @@ class SalaryReportApiView(viewsets.ModelViewSet):
 
         queryset = self.queryset
         query_set =  queryset.filter(emp=self.request.user).order_by('id')
-        # print(query_set)
         return query_set
         
     def get_permissions(self):
-        if self.request.method == 'GET':
-            permission_classes = [IsAuthenticated,]
-        # elif self.action =='list':
-        #     permission_classes=[IsAdminUser,]
-        # elif self.action=='retrieve': 
-        #     permission_classes = [IsOwnerOrAdmin,]
+        if self.request.method=='GET':
+            permission_classes=[IsAuthenticated,]
         else:
-            permission_classes=[IsAdminUser,]
+            permission_classes=[IsAdminUser]
         return [permission() for permission in permission_classes]
 
     @action(detail=False,methods=['GET'], permission_classes=[IsAuthenticated])
@@ -341,23 +475,4 @@ class VerifyEmailUserDetail(views.APIView):
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.UserDetailSerializer
-    queryset = models.UserDetails.objects.all()
-    # permission_classes = [IsAssigned]
-
-
-    def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
-
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
-    def userdetail(self,request,pk=None):
-        user=request.user
-        serializer=serializers.UserDetailSerializer(user)
-        return Response(serializer.data, status=200)

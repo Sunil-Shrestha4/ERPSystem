@@ -7,8 +7,12 @@ class IsAssigned(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # import pdb;pdb.set_trace()
-        if request.method=="GET":
+        if request.method=="GET" or request.method=="PUT" or request.method=="DELETE":
+        
             return True
+        # elif request.method =="PUT":
+        #     return True
+        
         return False
        
     def has_object_permission(self, request, view, obj):
@@ -18,4 +22,3 @@ class IsAssigned(permissions.BasePermission):
             return True
         else:
             return False
-

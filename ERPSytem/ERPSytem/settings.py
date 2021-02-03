@@ -189,11 +189,11 @@ AUTH_USER_MODEL='login.User'
 LOGIN_REDIRECT_URL = '/api'
 
 
-EMAIL_USE_TLS =True
-EMAIL_HOST ='smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
-EMAIL_HOST_PASSWORD = 'rockson123'
+# EMAIL_USE_TLS =True
+# EMAIL_HOST ='smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
+# EMAIL_HOST_PASSWORD = 'rockson123'
 
 
 

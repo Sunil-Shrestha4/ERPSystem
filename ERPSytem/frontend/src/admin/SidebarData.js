@@ -3,6 +3,8 @@ import * as FaIcons from 'react-icons/fa';
 import * as AiIcons from 'react-icons/ai';
 import * as IoIcons from 'react-icons/io';
 import * as AiOutline from 'react-icons/io';
+import * as ImIcons from 'react-icons/im';
+
 export const SidebarData = [
   {
     title: 'Home',
@@ -46,10 +48,25 @@ export const SidebarData = [
     icon: <IoIcons.IoMdHelpCircle />,
     cName: 'nav-text'
   },
-  // {
-  //   title: 'Logout',
-  //   path: '/logout',
-  //   icon: <IoIcons.IoMdHelpCircle />,
-  //   cName: 'nav-text'
-  // }
+  
+  {
+    title: 'Leave',
+    path: '/leave',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  },
+  
+  {
+    title: 'Leave',
+    path: '/manage',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Leave',
+    path: '/verify',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  }
+
 ];

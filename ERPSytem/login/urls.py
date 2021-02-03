@@ -38,6 +38,9 @@ router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
 # router.register('leave',views.LeaveViewSet)
 router.register('userdetails',views.UserDetailViewSet)
+router.register('leave',views.LeaveViewSet,basename='leave')
+router.register('leavetype',views.LeaveTypeViewSet)
+# router.register('userdetails',views.UserDetailViewSet)
 # router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [
     path('', include(router.urls)),
@@ -46,6 +49,7 @@ urlpatterns = [
     # path('api/register/',RegisterViewSet.as_view({'get': 'list'}),name='register')
     # path('register/',views.RegisterViewSet.as_view({'get': 'list'}),name ='register'),
     path('register/',views.RegisterView.as_view(),name ='register'),
+    path('register/<int:pk>/',views.RUDRegisterView.as_view(),name ='rudregister'),
     path('userdetail/',views.UserDetailView.as_view(),name ='userdetail'),
     path('login/',views.LoginAPIView.as_view(),name = 'login' ),
     path('logout/', views.LogoutAPIView.as_view(), name="logout"),
@@ -53,6 +57,8 @@ urlpatterns = [
     # path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
     path('checkin/', views.CheckInViewSet.as_view({'post': 'create'}), name="checkin"),
     path('checkout/', views.CheckOutViewSet.as_view({'post': 'create'}), name="checkout"),
+
+
 
 
 
