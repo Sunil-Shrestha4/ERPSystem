@@ -54,7 +54,7 @@ class Userlist extends Component {
                 {
                     data ?
                     <div style={{columnCount:"3"}}>
-                        <ul>
+                        
                             {this.state.data.map((data, index) => (
                                 <li><a href={`/details/${data.id}`}><Image src={data.photo} width='120' height='120'style={{borderRadius: '50%'}}/><br/>
                                     </a>
@@ -66,7 +66,7 @@ class Userlist extends Component {
                                     <br/>
                                  </li>
                                  ))}
-                        </ul>
+                        
 
 
                     </div>

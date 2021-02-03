@@ -51,13 +51,7 @@ export default function Attendance() {
             )
             )}
             </ul> 
-            <h1>Don't forget to make </h1>
-            <form>
-                
-<button type="button" >Check In</button>
-
-            </form>
-           
+            
         
             
             

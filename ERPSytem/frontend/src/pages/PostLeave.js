@@ -1,4 +1,7 @@
-import React,{useState} from 'react'
+import React,{useState} from 'react';
+import Button from "react-bootstrap/Button";
+
+
 
 export default function PostLeave() {
     const[state, setState]=useState({
@@ -6,7 +9,7 @@ export default function PostLeave() {
         is_approved:'false',
         is_notapproved:'false',
         is_verified:'false',
-        is_notverified:'fales',
+        is_notverified:'false',
         start:'',
         end:'',
         number_of_days:'',
@@ -60,6 +63,8 @@ export default function PostLeave() {
 
     return (
         <div>
+            
+            
         <form onSubmit ={handleSubmit} >
         <p>Start Date</p> 
             <input type="date" id="start" name="start"  value={state.start}
@@ -75,15 +80,26 @@ export default function PostLeave() {
                     onChange={handleChange}
                     />
         <p>Reason</p> 
-            <input type="textArea" id="reason" name="reason" value={state.reason}
+        <textarea id="reason" name="reason" value={state.reason}
                     onChange={handleChange}
-                    />
+          rows="5" cols="33">
+
+        </textarea>
+            {/* <input type="textArea" id="reason" name="reason" value={state.reason}
+                    onChange={handleChange}
+                
+                    /> */}
+
+<Button block size="lg" type="submit" >
+                Submit
+                    </Button> 
         
         
             
 
 
         </form>
+        
         </div>
     )
 }

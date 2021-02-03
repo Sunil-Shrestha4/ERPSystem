@@ -16,6 +16,10 @@ import Detail from './pages/Detail';
 import OwnAttendance from './pages/OwnAttendance';
 import Leave from "./pages/leave";
 import PostLeave from "./pages/PostLeave";
+import ManagerLeave from "./pages/ManagerLeave";
+import AdminLeave from "./pages/AdminLeave";
+import Myleavehistory from "./pages/Myleavehistory";
+import ValidationForm from "./pages/ValiationForm";
 
 
 
@@ -41,19 +45,32 @@ export default function Routes(){
             <Route exact path="/User">
                 <User />
             </Route>
-            <GuardedRoute exact path="/employee"  component={AddEmployee}  />
-            <GuardedRoute exact path="/attendance"  component={Attendance}  />
+            {/* <GuardedRoute exact path="/employee"  component={AddEmployee}  /> */}
+            <GuardedRoute exact path="/attendance"  component={ValidationForm}  />
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
             <GuardedRoute exact path="/team"  component={Userlist}  />
-            <GuardedRoute exact path="/leave"  component={PostLeave}  />
+            <GuardedRoute exact path="/leave"  component={Myleavehistory}  />
             
             {/* <GuardedRoute exact path="/team"  component={Userlist}  /> */}
 
+            <Route exact path="/employee">
+                <AddEmployee/>
+            </Route>
             <Route exact path="/team">
                 <Userlist/>
             </Route>
+            <Route exact path="/manage">
+                <ManagerLeave/>
+            </Route>
+
 
             <Route exact path="/details/:id" component={Detail}>
+            {/* <Detail name="samman"/> */}
+          </Route>
+          <Route exact path="/manage" component={ManagerLeave}>
+            {/* <Detail name="samman"/> */}
+          </Route>
+          <Route exact path="/verify" component={AdminLeave}>
             {/* <Detail name="samman"/> */}
           </Route>
           

@@ -11,7 +11,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
 
 from rest_framework import generics, status, views, permissions
 from .models import User,UserDetails,Attendance,Leave
@@ -26,20 +26,24 @@ from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework.permissions import IsAuthenticated,IsAdminUser
-from .overide import IsAssigned
+from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
+from .overide import IsAssigned,IsAbc
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 from django_filters import rest_framework as filters
 from django.core.mail import EmailMessage
 from django.core.mail import send_mass_mail
-
+from rest_framework import filters as filterss
+from rest_framework.mixins import RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
+from rest_framework.generics import GenericAPIView
 
 
 
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAdminUser]
+    # import pdb;
+    # pdb.set_trace()
 
     serializer_class = RegisterSerializer
     def get(self, request, format=None):
@@ -71,6 +75,19 @@ class RegisterView(generics.GenericAPIView):
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
 
+
+class RUDRegisterView(GenericAPIView,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    serializer_class = RegisterSerializer
+    def get(self,request,*args,**kwargs):
+        return self.retrieve(request,*args,**kwargs)
+    def put(self,request,*args,**kwargs):
+        return self.update(request,*args,**kwargs)
+    def delete(self,request,*args,**kwargs):
+        return self.destroy(request,*args,**kwargs)
+
     
 class VerifyEmail(views.APIView):
     serializer_class = EmailVerificationSerializer
@@ -96,7 +113,38 @@ class VerifyEmail(views.APIView):
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().select_related('department')
+    filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+    # permission_classes=[ IsAssigned]
+    filterset_fields=['username']
+    search_fields=['^username','^email','^first_name','^last_name','^department','^address']
+
+    # def get_queryset(self):
+    #     if self.request.user.is_superuser:
+    #         queryset=models.User.objects.all().order_by('-date_joined')
+    #         return queryset
+
+
+    # def get_permissions(self):
+    #     if self.request.method=='GET':
+    #         permission_classes=[IsAuthenticated,]
+    #     else:
+    #         permission_classes=[IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+        
+
+        # queryset = self.queryset
+        # query_set=queryset.filter(emp=self.request.user).order_by('-date_joined')
+        # return query_set
+
+
+
+
+
+
+
+
+
     # permission_classes = [IsAssigned]
 
 
@@ -151,7 +199,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
         user=request.user
-        serializer=serializers.UserDetailSerializer(user)
+        serializer=serializers.UserProfileSerializer(user)
         return Response(serializer.data, status=200)
 
 
@@ -306,7 +354,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
 class DeptViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [permissions.IsAdminUser,]
+    # permission_classes = [permissions.IsAdminUser,]
     serializer_class = serializers.DeptSerializer
     queryset = models.Department.objects.all()
     # permission_classes = [permissions.IsAdminUser]
@@ -338,62 +386,18 @@ class AttendanceViewSet(viewsets.ModelViewSet):
         queryset = self.filter_queryset(self.get_queryset()).filter(emp_name=request.user)
         serializer = serializers.AttendanceSerializer(queryset, many=True) 
         return Response(serializer.data)
-        
-
-   
-
-     
-    # def post(self,request):
-    #      user = request.data
-    #      serializer = self.serializer(data=user)
-    #      try:
-    #         serializer.is_valid(raise_exception=True)
-    #         user = serializer.save()
-    #         return Response(serializer.data,status=status.HTTP_201_CREATED)
-    #      except:
-    #         return Response(serializer.data , status=status.HTTP_401_UNAUTHORIZED)
-    
-    # def create(self, request, *args, **kwargs):
-    #     serializer = self.get_serializer(data=request.data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+      
     def perform_create(self, serializer):
         # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
         
 
         serializer.save(emp_name=self.request.user)
-    # def get_permissions(self):
-    
-    #     if self.request.method == 'GET':
-    #         permission_classes = [permissions.IsAuthenticated]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return [permission() for permission in permission_classes]
 
-
+class LeaveTypeViewSet(viewsets.ModelViewSet):
+    queryset=models.LeaveType.objects.all()
+    serializer_class=serializers.LeaveTypeSerializer
     
     
-
-
-
-
-# def send_email():
-#     serializer = serializers.LeaveSerializer(data=request.data)
-#     if serializer.is_valid():
-#         serializer.save()
-#         email = serializer.data['start']
-
-#     email = EmailMessage(
-#         'Leave',
-#         (serializers.LeaveSerializer.data['start']),
-#         'EMAIL_HOST_USER',
-#         ['serializers.LeaveSerializer.email']
-#     )
-    
-#     email.send()
-
     
  
 class LeaveViewSet(viewsets.ModelViewSet):
@@ -408,24 +412,12 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
 
     def get_serializer_class(self):
-        if self.request.user.is_manager:
-            return ManagerLeaveSerializer
-        elif self.request.user.is_superuser:
+        if self.request.user.is_superuser:
             return AdminLeaveSerializer
+        elif self.request.user.is_manager:
+            return ManagerLeaveSerializer
         else:
             return UserLeaveSerializer
-
-
-
-
-
-
-
-
-
-
-
-    
 
 
 
@@ -520,46 +512,55 @@ class LeaveViewSet(viewsets.ModelViewSet):
                 )
         return Response(serializer.data)
     
-
-
     @action(detail=False, methods=['GET'])
     def MyLeaveHistory(self, request, **kwargs):
-
         queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
         serializer = serializers.UserLeaveSerializer(queryset, many=True) 
         return Response(serializer.data)
 
-     
-  
-   
+    @action(detail=False, methods=['GET'])
+    def MyRemainingLeave(self,request,**kwargs):
+        user=request.user
+        queryset = models.LeaveType.objects.all() 
+        serializer =serializers.LeaveTypeSerializer(queryset,many=True)
+        return Response(serializer.data)
+
+               
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
-    serializer_class = serializers.SalaryReportSerializer 
     queryset = models.Salary.objects.all()
+    serializer_class=serializers.SalaryReportSerializer
+    permission_classes=[IsAdminUser]
+    filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+    filterset_fields=['amount','month','emp']
+    search_fields=['^emp__email','^month','^emp__first_name','^emp__last_name','^year']
     
-    permission_classes = [permissions.IsAdminUser] 
 
-    def perform_create(self, serializer):
-        # queryset = models.Attendance.objects.filter(emp_name=self.request.emp_name)
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            queryset=models.Salary.objects.all().order_by('-received_date')
+            return queryset
         
 
-        serializer.save(employee_name=self.request.user)
+        queryset = self.queryset
+        query_set=queryset.filter(emp=self.request.user).order_by('-received_date')
+        return query_set
 
-    # def get(self, request, format=None):
-    #     salary = Salary.objects.all()
-    #     serializer = SalaryReportSerializer(salary,many=True)
-    #     content = {
-    #         'status': 'request was permitted'
-    #     }
-    #     return JSONResponse(serializer.data,safe= False)
     
-    # def post(self,request):
-    #     data = JSONParser().parse(request)
-    #     serializer=self.get_serializer(data = request.data)
-    #     if serializer.is_valid():
-    #         serializer.save()
-    #         return Response(serializer.data)
-    #     return Response(serializer.errors)
+    def get_permissions(self):
+        if self.request.method=='GET':
+            permission_classes=[IsAuthenticated,]
+        else:
+            permission_classes=[IsAdminUser]
+        return [permission() for permission in permission_classes]
+
+    @action(detail=False,methods=['GET'],permission_classes=[IsAuthenticated])
+    def salary_report(self,request):
+        user=request.user
+        salary =models.Salary.objects.filter(emp=user)
+        serializer =serializers.SalaryReportSerializer(salary,many=True)
+        return Response(serializer.data, status=200)
 
 
 
@@ -583,15 +584,6 @@ class UserDetailView(generics.GenericAPIView):
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
 
-
-
-    # def get(self, request, format=None):
-    #     userdetails = UserDetails.objects.all()
-    #     serializer = UserDetailSerializer(userdetails, many=True)
-    #     return Response(serializer.data)
-
-
-     
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
@@ -625,53 +617,6 @@ class VerifyEmailUserDetail(views.APIView):
             return Response({'error': 'Activation Expired'}, status=status.HTTP_400_BAD_REQUEST)
         except jwt.exceptions.DecodeError as identifier:
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserDetailViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.UserDetailSerializer
-    queryset = models.UserDetails.objects.all()
-    # permission_classes = [IsAssigned]
-
-
-    # def get_permissions(self):
-    
-    #     if self.request.method == 'GET':
-    #         permission_classes = [permissions.IsAuthenticated]
-    #     else:
-    #         permission_classes = [permissions.IsAdminUser]
-    #     return [permission() for permission in permission_classes]
-
-    # def get_permissions(self):
-        
-    #     if self.request.method == 'POST':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PUT':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'DELETE':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'PATCH':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-    #     elif self.request.method == 'HEAD':
-    #         self.permission_classes = [permissions.IsAdminUser ]
-
-
-    #     else:
-    #         self.permission_classes = [IsAuthenticated, ]
-        
-
-    #     return super(UserProfileViewSet, self).get_permissions()
-
-
-
-
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
-    def userdetail(self,request,pk=None):
-        user=request.user
-        serializer=serializers.UserDetailSerializer(user)
-        return Response(serializer.data, status=200)
-
-
 
 
 

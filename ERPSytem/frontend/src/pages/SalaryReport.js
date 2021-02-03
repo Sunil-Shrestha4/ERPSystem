@@ -1,53 +1,102 @@
 import React from 'react'
 import  { useState, useEffect } from 'react';
-import {Container,Row,Col,Card,CardGroup} from "react-bootstrap";
-import Navbar from "../admin/Dashboard"
-
+import {Container,Row,Col,ListGroup} from "react-bootstrap";
+import Navbar from "../admin/Dashboard";
+import Form from "react-bootstrap/Form";
+import Table from 'react-bootstrap/Table';
+// import {CSVLink, CSVDownload} from 'react-csv';
 
 export default function SalaryReport() {
-    const [salary,setSalary]=useState([
-        {
-        username:'',
-        department:'',
-        amount:'',
-        }
-
-
-    ]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [searchResults, setSearchResults] = useState([{
+        id:"" ,
+        emp:"",
+        amount:"" ,
+        allowance:"" ,
+        year:"",
+        month:"" ,
+        received_date:"" ,
+        email:"",
+        first_name:"",
+        last_name:"",
+    }]);
+    const handleChange = event => {
+        setSearchTerm(event.target.value);
+      };
     useEffect(async() => {
         
-            const token= localStorage.getItem('access')
-        let res = await fetch('http://127.0.0.1:8000/api/salary/', {
-            method: 'GET',
-            headers: {
-            'Accept': 'application/json',
-            'Content-type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            }, })
-            res = await res.json();
-            console.log(res);
-            setSalary(res);
-        
-    }, [])
+        const token= localStorage.getItem('access')
+        let res = await fetch(`http://127.0.0.1:8000/api/salary/?search=${searchTerm}`, {
+        method: 'GET',
+        headers: {
+        'Accept': 'application/json',
+        'Content-type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        }, })
+        res = await res.json();
+        setSearchResults(res);
+    },[])
+
     return (
         <div>
-             <Navbar/>
-            
-                <ul>{salary.map((sal)=>(
-                    <CardGroup className="card">
-                    <Card style={{ width: '18rem' }} border="success">
-                    <Row>
-                    <Col>EMP-ID:{sal.username}</Col>
-                    <Col>NAME:{sal.amount}</Col>
-                    <Col>STATUS:{sal.department}</Col>
+            <Navbar/>
+            <Form>
+                <Row  md={10} className="justify-content-md-center">
+                    <Col sm={5}>
+                        <Form.Control size="lg" type="text" placeholder="Search by Email, Name or Month..." 
+                        value={searchTerm}
+                        onChange={handleChange}
+                        />
+                        <Form.Text className="text-muted">
+                        Your Results...
+                        </Form.Text>                      
+                    </Col>
+                </Row>  
+            </Form>
+                     
+            <Container fluid="lg"> 
+                <Table size='sm' responsive='sm' borderless hover>
+                    <thead>
+                        <tr>
+                        <th>Employee Id</th>
+                        <th>Full Name</th>
+                        <th>Email</th>
+                        <th>Salary</th>
+                        <th>Allowance</th>
+                        <th>Year</th>
+                        <th>Month</th>
+                        <th>Payment Date</th>                       
+                        </tr>
+                    </thead>          
                     
-                    <br/>
-                    </Row>
-                    </Card> 
-                    </CardGroup>
-                )
-                )}
-                </ul> 
+                {searchResults.filter((val) =>{
+                    if (searchTerm==""){
+                        return val
+                    }else if ((val.email.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (val.month.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (val.year.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (val.first_name.toString().toLowerCase().includes(searchTerm.toLowerCase())) ||
+                    (val.last_name.toString().toLowerCase().includes(searchTerm.toLowerCase()))
+                    ) {
+                        return val
+                    }
+                }).map((sal,key) =>{
+                    return (             
+                        <tbody key={key}>
+                            <tr>
+                            <td>{sal.emp}</td>
+                            <td>{sal.first_name}&nbsp;{sal.last_name}</td>
+                            <td>{sal.email}</td>
+                            <td>{sal.amount}</td>
+                            <td>{sal.allowance}</td>
+                            <td>{sal.year}</td>
+                            <td>{sal.month}</td>
+                            <td>{sal.received_date}</td>                           
+                            </tr>                     
+                        </tbody>                
+                )})}
+                </Table>
+            </Container>  
         </div>
     )
 }

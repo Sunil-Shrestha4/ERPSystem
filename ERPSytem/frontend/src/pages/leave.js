@@ -4,6 +4,7 @@ import { Container ,Row ,Col , Card, CardGroup} from 'react-bootstrap';
 import Navbar from "../admin/Dashboard"
 import './Attendance.css';
 import { Dropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap';
+import ManagerLeave from "./ManagerLeave"
 
 export default function Leave(){
     const[leave,setLeave]=useState([
@@ -41,6 +42,7 @@ export default function Leave(){
     return(
         <div>
             <Navbar/>
+            <h1>Leave History</h1>
 
             <ul>
                 {leave.map((item)=>(
@@ -55,17 +57,24 @@ export default function Leave(){
                      <Col>End Date:{item.end_date}</Col>
                      <Col>No. of Days:{item.number_of_days}</Col>
                      <Col>Reason:{item.reason}</Col>
+
+                     <ManagerLeave UpdateLeave ={setLeave}/> 
+                     
+
                      <br/>
                      </Row>
                      </Card> 
                      </CardGroup>
-
+                     
 
                 ))}
+                
 
 
 
             </ul>
+            {/* <ManagerLeave Leave id ={item.id}/> 
+            <ManagerLeave Name={item.name} /> */}
         </div>
     )
 

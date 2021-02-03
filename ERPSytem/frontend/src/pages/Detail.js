@@ -14,6 +14,7 @@ export default class detail extends Component {
     }
 
     componentDidMount() {
+        const token= localStorage.getItem('access')
         console.log(this.props)
         let url = `http://127.0.0.1:8000/api/profilelist/${this.props.match.params.id}`;
         fetch(url,{
@@ -21,6 +22,7 @@ export default class detail extends Component {
             headers:{
                 'Accept':'application/json',
                 'content-Type':'application/json',
+                'Authorization': `Bearer ${token}`,
             }
 
 

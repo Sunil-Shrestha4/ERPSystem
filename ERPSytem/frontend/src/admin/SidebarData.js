@@ -54,6 +54,19 @@ export const SidebarData = [
     path: '/leave',
     icon: <ImIcons.ImExit />,
     cName: 'nav-text'
+  },
+  
+  {
+    title: 'Leave',
+    path: '/manage',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Leave',
+    path: '/verify',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
   }
 
 ];
