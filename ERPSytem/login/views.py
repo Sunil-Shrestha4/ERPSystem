@@ -120,7 +120,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all().select_related('department')
-    filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+    filter_backends=[DjangoFilterBackend,filters.SearchFilter]
     # permission_classes=[ IsAssigned]
     filterset_fields=['username']
     search_fields=['^username','^email','^first_name','^last_name','^department','^address']
@@ -206,7 +206,7 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
-     filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
+    filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
     filterset_fields = ['emp_name','date']
     search_fields=['^emp_name__first_name']
     ordering_fields={'time','date'}
