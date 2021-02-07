@@ -93,7 +93,7 @@ export default function SalaryReport() {
                         <th>S.No.</th>
                         <th>Emp_Id</th>
                         <th>Full Name</th>
-                        <th>Email</th>
+                        {/* <th>Email</th> */}
                         <th>Salary</th>
                         <th>Allowance</th>
                         <th>Year</th>
@@ -122,7 +122,7 @@ export default function SalaryReport() {
                             <td>{sal.id}</td>
                             <td>{sal.emp}</td>
                             <td>{sal.first_name}&nbsp;&nbsp;{sal.last_name}</td>
-                            <td>{sal.email}</td>
+                            {/* <td>{sal.email}</td> */}
                             <td>{sal.amount}</td>
                             <td>{sal.allowance}</td>
                             <td>{sal.year}</td>
