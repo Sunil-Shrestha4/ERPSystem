@@ -1,6 +1,7 @@
 from rest_framework import serializers
 from login import models
-from .models import User,UserDetails, Leave,LeaveType
+from .models import User,UserDetails
+from .models import Leave, LeaveType
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
@@ -167,25 +168,24 @@ class SalaryReportSerializer(serializers.ModelSerializer):
     def get_year(self, obj):
         year = obj.received_date.strftime('%Y')
         return year
+
 class LeaveTypeSerializer(serializers.ModelSerializer):
    
     class Meta:
         model=LeaveType
         fields =['id','leavetype','days']
 
-class MyLeaveSerializer(serializers.ModelSerializer):
-    remaining_days=serializers.SerializerMethodField()
+# class MyLeaveSerializer(serializers.ModelSerializer):
+#     remaining_days=serializers.SerializerMethodField()
 
-    def get_remaining_days(self,obj):
-        remaining_days=number_of_days
-        return remaining_days
+#     def get_remaining_days(self,obj):
+#         remaining_days=number_of_days
+#         return remaining_days
 
-        class Meta:
-            model=LeaveType
+#         class Meta:
+#             model=LeaveType
 
-            fields=['id','leavetype','number_of_days','remaining_days']
-
-    
+#             fields=['id','leavetype','number_of_days','remaining_days']
 
 class AdminLeaveSerializer(serializers.ModelSerializer):
     leave_Category=serializers.CharField(source='types_of_leave.leavetype',read_only=True)

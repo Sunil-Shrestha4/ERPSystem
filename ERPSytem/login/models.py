@@ -102,7 +102,6 @@ class User(AbstractBaseUser,PermissionsMixin):
     is_manager =models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now =True)
-    # salary=models.PositiveIntegerField(_("salary"))
     auth_provider = models.CharField(
         max_length=255, blank=False,
         null=False, default=AUTH_PROVIDERS.get('email'))
@@ -128,17 +127,10 @@ class User(AbstractBaseUser,PermissionsMixin):
         return{
             'refresh':str(refresh) ,
             'access':str(refresh.access_token)
-
-
         }
 
     class Meta:
         ordering = ['created_at']
-    
-
-     
-
-
 
 # class Department(models.Model):
 #     #   users =models.ForeignKey(User, on_delete=models.CASCADE, default=0)
@@ -147,9 +139,6 @@ class User(AbstractBaseUser,PermissionsMixin):
 #       def __str__(self):
 #         """Return string representation of user"""
 #         return self.dept_name
-
-    
-      
     
 class Attendance(models.Model):
     emp_name = models.ForeignKey(User,on_delete=models.CASCADE,default=1)
@@ -158,10 +147,6 @@ class Attendance(models.Model):
         ('CO', 'checkout'),
     )
     choices = models.CharField(max_length=2, choices=TYPE,default='checkin')
-    # checkin = models.BooleanField(default=True)
-    # checkout = models.BooleanField(default=False)
-        
-
     time = models.TimeField(auto_now_add=True)
     date = models.DateField(auto_now_add=True)
 
@@ -196,10 +181,8 @@ class UserDetails(models.Model):
     is_active=models.BooleanField(default=True)
     is_staff =models.BooleanField(default=True)
     is_manager =models.BooleanField(default=False)
-
     document = models.FileField(upload_to='pics', blank=True)
     photo = models.ImageField(upload_to='pics', blank=True)
-
 
     def __str__(self):
         return self.first_name
@@ -221,21 +204,14 @@ class Leave(models.Model):
     start = models.DateField(null=True)
     end = models.DateField(null=True)
     number_of_days=models.IntegerField(default=0)
-    
     reason=models.TextField(max_length=500, blank=False)
-    
 
     def __str__(self):
         return str(self.employee)
     
 
-class MyLeave(models.Model):
-    name=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
-    leave=models.ForeignKey(LeaveType,on_delete=models.CASCADE,null=True)
-    days=models.ForeignKey(Leave,on_delete=models.CASCADE,null=True)
-    remainingdays=models.IntegerField(default=0)
-    
-    
-
-
-    
+# class MyLeave(models.Model):
+#     name=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+#     leave=models.ForeignKey(LeaveType,on_delete=models.CASCADE,null=True)
+#     days=models.ForeignKey(Leave,on_delete=models.CASCADE,null=True)
+#     remainingdays=models.IntegerField(default=0)   

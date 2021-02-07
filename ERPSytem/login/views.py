@@ -11,10 +11,12 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails,Attendance,Leave
+from .models import User,UserDetails,Attendance
+from .models import Leave,LeaveType
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -247,7 +249,7 @@ class CheckInViewSet(viewsets.ModelViewSet):
               "message":"kripaya aja lai chekin garna payinexaina tesaile checkout garnu hola",
               "availableIn":f"{wait} seconds",
         })
-    
+
     def perform_create(self, serializer):
         serializer.save(emp_name=self.request.user)
 
@@ -260,7 +262,6 @@ class CustomExcpetion(PermissionDenied):
        self.detail = detail
        if status_code is not None:
            self.status_code = status_code
-
 
 class CheckOutViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.CheckOutSerializer
@@ -279,9 +280,6 @@ class CheckOutViewSet(viewsets.ModelViewSet):
            raise CustomExcpetion(detail={"Error": "Not Checked In.","Check-In": "Before checking out."})
             # return Response(status=status.HTTP_400_BAD_REQUEST)
        serializer.save(emp_name=self.request.user)
-
-    
-
 
 class LeaveTypeViewSet(viewsets.ModelViewSet):
     queryset=models.LeaveType.objects.all()
@@ -389,10 +387,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
         queryset = models.LeaveType.objects.all() 
         serializer =serializers.LeaveTypeSerializer(queryset,many=True)
         return Response(serializer.data)
-
-
-    
-
+   
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
     queryset = models.Salary.objects.all()
@@ -430,9 +425,7 @@ class UserDetailView(generics.GenericAPIView):
     serializer_class = serializers.UserDetailSerializer
     # queryset = models.UserDetails.objects.all()
     queryset = UserDetails.objects.all()
-
     serializer_class = UserDetailSerializer
-
 
     @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
     def viewdetail(self,request,pk=None):
