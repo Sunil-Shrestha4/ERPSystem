@@ -41,7 +41,6 @@ export default class detail extends Component {
         console.log(this.state.data)
         return (
             <div>
-                < Navbar/>
                 console.log(this.state.data.photo)
                <p>User name: {this.state.data.username}</p>
                <p><Image src={this.state.data.photo} width='400' height='500'/></p>

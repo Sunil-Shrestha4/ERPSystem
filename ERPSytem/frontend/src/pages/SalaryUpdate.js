@@ -71,7 +71,6 @@ export default function SalaryUpdate(id, data) {
     }
     return (
         <div>
-        <Navbar/>
         <h2>Update salary data</h2>
         <Container  fluid="sm">
         <Col className="d-flex justify-content-center" >        

@@ -100,7 +100,6 @@ handleSubmit = (e) => {
  
     return (
       <div>
-        < Navbar/>
         <Container>
             
           <h1>Add Employee Here</h1>

@@ -11,7 +11,6 @@ export default function Userdetails(props){
    
     return (
         <div>
-        <Navbar /> 
         <Container className="container">
           <Row >
             <Col >

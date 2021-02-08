@@ -58,7 +58,6 @@ function OwnAttendance() {
     
     return (
         <div>
-            <Navbar />
             <br/>
             <br/>
             <PostAttendanceCI />

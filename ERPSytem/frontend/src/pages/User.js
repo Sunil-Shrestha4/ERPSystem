@@ -45,11 +45,11 @@ export default function User() {
     
     return (              
         <div>
-        <Navbar /> 
+        
         <Container className="container">
           <Row >
             <Col >
-              <img src={'file://home/bimarsha/Pictures/72BCT612 (1).jpg' + '{user.photo}'} width='200' height='200' />
+              <img src={'http://127.0.0.1:8000' + user.photo} width='200' height='200' />
             </Col>
             <Col xs={8}>
                 
@@ -82,7 +82,7 @@ export default function User() {
                       <ListGroup.Item>Date joined:      {user.date_joined}</ListGroup.Item>
                     </ListGroup>
                   </Card.Text>
-                  <Button variant="danger">Logout</Button>
+                  <Button >Edit</Button>
                 </Card.Body>
                 </Card>
             </Col>

@@ -4,12 +4,17 @@ import {Container,Col, Row} from "react-bootstrap";
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Button from 'react-bootstrap/Button';
-import Navbar from '../admin/Dashboard';
+// import Navbar from '../admin/Dashboard';
 import Alert from 'react-bootstrap/Alert';
 import { useFormFields } from "../libs/hooksLib";
-
+// import {Content,Layout}  from '../admin/Dashboard';
+import Menu from '../admin/Dashboard'
 // import DatePicker from 'react-datepicker';
 import "./Salary.css";
+import Dashboard from "../admin/Dashboard";
+
+// import Content from "antd/lib/layout/layout"
+
 // import { FaWindows } from "react-icons/fa";
 
 const initUser = {
@@ -71,7 +76,7 @@ export default function AddSalary() {
     }
     return (
         <div>
-        <Navbar/>
+        
         <h2>Store salary data</h2>
         <Container  fluid="sm">
         <Col className="d-flex justify-content-center" >        
@@ -193,6 +198,8 @@ export default function AddSalary() {
         </Form>
         </Col>
         </Container>
+        
+       
         </div>   
     );
 }

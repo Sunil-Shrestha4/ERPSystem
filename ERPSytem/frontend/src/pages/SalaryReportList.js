@@ -1,14 +1,20 @@
 import React from 'react'
+import { Button, Radio } from 'antd';
 import  { useState, useEffect } from 'react';
 import {Container,Row,Col,ListGroup} from "react-bootstrap";
+import {
+    DeleteOutlined,
+    EditOutlined,
+   } from '@ant-design/icons';
 import Navbar from "../admin/Dashboard";
 import Form from "react-bootstrap/Form";
 import Table from 'react-bootstrap/Table';
-import Button from 'react-bootstrap/Button';
+// import Button from 'react-bootstrap/Button';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SalaryUpdate from './SalaryUpdate';
 import { Link } from 'react-router-dom';
 const axios = require('axios');
+
 
 export default function SalaryReport() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +71,6 @@ export default function SalaryReport() {
         
     return (
         <div>
-            <Navbar/>
             <Form>
                 <Row  md={10} className="justify-content-md-center">
                     <Col sm={5}>
@@ -87,7 +92,7 @@ export default function SalaryReport() {
             </Form>
                      
             <Container fluid="sm"> 
-                <Table size='md' responsive='xl' borderless hover>
+                <Table size='sm' responsive borderless hover>
                     <thead>
                         <tr>
                         <th>S.No.</th>
@@ -129,11 +134,10 @@ export default function SalaryReport() {
                             <td>{sal.month}</td>
                             <td>{sal.received_date}</td> 
                             <td className='options'>
-                                <Button block size="sm" type="submit" variant="danger"
-                                onClick={() => removeData(sal.id)}>Delete</Button>
+                                <Button icon={<DeleteOutlined/>} block size="small" shape="circle" type="primary" danger
+                                onClick={() => removeData(sal.id)}/>
+                                <Button icon={<EditOutlined/>} block size="small" shape="circle" type="primary" />
 
-                                <Button block size="sm" type="submit" variant="info">
-                                Edit</Button>
                             </td>                          
                             </tr>                     
                         </tbody>                

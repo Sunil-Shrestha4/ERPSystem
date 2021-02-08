@@ -1,0 +1,3 @@
+release: py manage.py runserver
+reaease:py manage.py test
+web:gunicorn login.wsgi --log-file -

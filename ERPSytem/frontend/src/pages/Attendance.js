@@ -1,11 +1,12 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, CardGroup } from 'react-bootstrap';
-import Navbar from "../admin/Dashboard"
+import Dashboard from "../admin/Dashboard"
 import './Attendance.css'
 import AttendanceFilterID from './AttendanceFilterID'
 import AttendanceFilterDate from './AttendanceFilterDate'
 import { set } from 'js-cookie';
+
 
 export default function Attendance() {
     const [searchTerm, setSearchTerm] = useState("");
@@ -65,7 +66,7 @@ export default function Attendance() {
 
     return (
         <div>
-            <Navbar /><Row>
+            <Row>
                 <Col><AttendanceFilterID onSearch={setAttendance} /></Col>
                 <Col><AttendanceFilterDate updateAttendance={setAttendance} /></Col></Row>
 

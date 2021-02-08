@@ -119,6 +119,8 @@ class UserProfileViewSet(viewsets.ModelViewSet):
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
 
+    
+
 class LoginAPIView(generics.GenericAPIView):
     serializer_class = serializers.LoginSerializer
 
@@ -324,6 +326,9 @@ class UserDetailView(generics.GenericAPIView):
                 'email_subject': 'Verify your email'}
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
+
+    # def perform_update(self, serializer):
+    #     serializer.save()
 
 class VerifyEmailUserDetail(views.APIView):
     serializer_class = EmailVerificationSerializeruserDetail

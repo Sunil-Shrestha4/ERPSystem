@@ -14,6 +14,7 @@ import Auth from '../component/auth';
 import Cookies from 'js-cookie';
 
 import { IsSuperUserContext} from "../context/IsSuperUserContext";
+import Layout, { Content } from "antd/lib/layout/layout";
 
 
 
@@ -83,6 +84,13 @@ export default function Login() {
     
     return (
         <div className="Login">
+          <Layout>
+            <Content  className="site-layout-background"
+            style={{
+              margin: '24px 16px',
+              padding: 24,
+              minHeight: 280,
+            }}>
           {/* <Navbar>
           <LinkContainer to="/">
         <Navbar.Brand href="/" className="font-weight-bold text-muted">
@@ -113,6 +121,8 @@ export default function Login() {
               Login
             </Button>
           </Form>
+          </Content>
+          </Layout>
         </div>
       );   
 }

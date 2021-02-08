@@ -43,7 +43,6 @@ export default function Userlist(){
       },[]);
     return(
           <div>
-            <Navbar/>
             <Container className="container">
             <Row >
               <Col >

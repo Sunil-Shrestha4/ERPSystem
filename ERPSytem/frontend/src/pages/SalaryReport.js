@@ -31,7 +31,6 @@ export default function SalaryReport() {
     }, [])
     return (
         <div>
-             <Navbar/>
             
                 <ul>{salary.map((sal)=>(
                     <CardGroup className="card">

@@ -1,55 +1,87 @@
 import React from 'react';
-import * as FaIcons from 'react-icons/fa';
-import * as AiIcons from 'react-icons/ai';
-import * as IoIcons from 'react-icons/io';
-import * as AiOutline from 'react-icons/io';
+import Dashboard from './Dashboard';
+import User from '../pages/User';
+import Attendance from '../pages/Attendance';
+import {
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  UserOutlined,
+  VideoCameraOutlined,
+  UploadOutlined,
+  LogoutOutlined,
+  HomeOutlined,
+  PlusOutlined,
+  TeamOutlined,
+  DollarCircleOutlined,
+  FileTextOutlined,
+  UserAddOutlined,
+} from '@ant-design/icons';
+import Userlist from '../pages/Userlist';
+import AddSalary from '../pages/SalaryAdd';
+import SalaryReport from '../pages/SalaryReportList';
+import AddEmployee from '../pages/AddEmployee';
 export const SidebarData = [
   {
     title: 'Home',
     path: '/dashboard',
-    icon: <AiIcons.AiFillHome />,
-    cName: 'nav-text'
+    link:'/home',
+    icon: <HomeOutlined />,
+    cName: 'nav-text',
+    component:<Dashboard />
   },
   {
     title: 'User Profile',
     path: '/User',
-    icon: <AiIcons.AiOutlineUser />,
-    cName: 'nav-text'
+    link: '/User',
+    icon: <UserOutlined />,
+    cName: 'nav-text',
+    component:<User />
   },
   {
     title: 'Attendance',
     path: '/attendance',
-    icon: <AiIcons.AiOutlineFileAdd />,
-    cName: 'nav-text'
+    link: '/attendance',
+    icon: <PlusOutlined />,
+    cName: 'nav-text',
+    component:<Attendance />
   },
   {
     title: 'Team',
     path: '/team',
-    icon: <IoIcons.IoMdPeople />,
-    cName: 'nav-text'
+    link: '/team',
+    icon: <TeamOutlined />,
+    cName: 'nav-text',
+    component:<Userlist />
+
   },
   {
     title: 'Salary',
     path: '/salaryAdd',
-    icon: <FaIcons.FaEnvelopeOpenText />,
-    cName: 'nav-text'
+    link: '/salaryAdd',
+    icon: <DollarCircleOutlined />,
+    cName: 'nav-text',
+    component:<AddSalary />
   },
   {
     title: 'Salary Report',
     path: '/salaryreport',
-    icon: <FaIcons.FaEnvelopeOpenText />,
-    cName: 'nav-text'
+    link: '/salaryreport',
+    icon: <FileTextOutlined />,
+    cName: 'nav-text',
+    component:<SalaryReport />
   },
   {
     title: 'Add Employee',
     path: '/employee',
-    icon: <IoIcons.IoMdHelpCircle />,
-    cName: 'nav-text'
+    link: '/employee',
+    icon: <UserAddOutlined />,
+    cName: 'nav-text',
+    component:<AddEmployee />
   },
   // {
   //   title: 'Logout',
   //   path: '/logout',
-  //   icon: <IoIcons.IoMdHelpCircle />,
+  //   icon: <LogoutOutlined />,
   //   cName: 'nav-text'
   // }
 ];

@@ -54,7 +54,6 @@ function OwnAttendanceCO() {
     
     return (
         <div>
-            <Navbar />
             <br/>
             <br/>
             <PostAttendanceCO />
