@@ -1,46 +1,43 @@
-from rest_framework.views import APIView
-from rest_framework import mixins
-from rest_framework.response import Response
-from rest_framework import status
-from login import serializers
-from rest_framework import viewsets
-from login import models
-from rest_framework.authentication import TokenAuthentication,BasicAuthentication,SessionAuthentication 
-# from login import permissions
-from rest_framework.authtoken.views import ObtainAuthToken
-from rest_framework import permissions
-from django.core.mail import send_mail
-from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
-from .serializers import AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
+import datetime
 
-from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails,Attendance
-from .models import Leave,LeaveType
+import jwt
+from django.conf import settings
+from django.contrib.sites.shortcuts import get_current_site
+from django.core.mail import EmailMessage, send_mail, send_mass_mail
+from django.http import JsonResponse
+from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import (filters, generics, mixins, permissions, status,
+                            throttling, views, viewsets)
+from rest_framework.authentication import (BasicAuthentication,
+                                           SessionAuthentication,
+                                           TokenAuthentication)
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.decorators import action
+from rest_framework.exceptions import PermissionDenied, Throttled
+from rest_framework.generics import GenericAPIView
+from rest_framework.mixins import (DestroyModelMixin, RetrieveModelMixin,
+                                   UpdateModelMixin)
+from rest_framework.parsers import JSONParser
+from rest_framework.permissions import (IsAdminUser, IsAuthenticated,
+                                        IsAuthenticatedOrReadOnly)
+from rest_framework.response import Response
+from rest_framework.throttling import ScopedRateThrottle, UserRateThrottle
+from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .utils import Util , EmailThread
-from django.urls import reverse
-import jwt
-from django.contrib.sites.shortcuts import get_current_site
-from django.conf import settings
-from django.http import JsonResponse
-from rest_framework.parsers import JSONParser
-from django.views.decorators.csrf import csrf_exempt
-from rest_framework.permissions import IsAuthenticated,IsAdminUser,IsAuthenticatedOrReadOnly
+from login import models, serializers
+
+from .models import Attendance, Leave, LeaveType, User, UserDetails
 from .overide import IsAssigned
-from rest_framework.decorators import action
-from django_filters.rest_framework import DjangoFilterBackend
-# from django_filters import rest_framework as filters
-from rest_framework.throttling import UserRateThrottle ,ScopedRateThrottle
-from rest_framework.exceptions import Throttled ,PermissionDenied
-from rest_framework import throttling
-import datetime
-from rest_framework import filters
-from rest_framework.mixins import RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin
-from rest_framework.generics import GenericAPIView
-from django.core.mail import EmailMessage
-from django.core.mail import send_mass_mail
+from .serializers import (AdminLeaveSerializer, EmailVerificationSerializer,
+                          EmailVerificationSerializeruserDetail,
+                          LeaveTypeSerializer, ManagerLeaveSerializer,
+                          RegisterSerializer, UserDetailSerializer,
+                          UserLeaveSerializer)
+from .utils import EmailThread, Util
+
 
 class CheckinRateThrottle(throttling.UserRateThrottle):
     scope = 'checkin'

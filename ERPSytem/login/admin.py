@@ -1,11 +1,8 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import User
-from .models import Department
-from .models import Attendance
-from .models import Salary,UserDetails
-from .models import Leave, LeaveType
+from .models import (Attendance, Department, Leave, LeaveType, Salary, User,
+                     UserDetails)
 
 admin.site.register(User)
 admin.site.register(Department)

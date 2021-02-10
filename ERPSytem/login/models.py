@@ -1,17 +1,12 @@
 # Create your models here.
+import datetime as dt
+
+from django.contrib.auth.models import (AbstractBaseUser, BaseUserManager,
+                                        PermissionsMixin)
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser
-from django.contrib.auth.models import PermissionsMixin
-from django.contrib.auth.models import BaseUserManager
 from djmoney.models.fields import MoneyField
 from phonenumber_field.modelfields import PhoneNumberField
 from rest_framework_simplejwt.tokens import RefreshToken
-import datetime as dt
-
-from django.contrib.auth.models import (
-    AbstractBaseUser, BaseUserManager, PermissionsMixin)
-
-    
 
 # class UserProfileManager(BaseUserManager):
     # def create_user(self, email, username, password=None):

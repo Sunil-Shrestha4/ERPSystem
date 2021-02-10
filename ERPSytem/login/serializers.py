@@ -1,12 +1,15 @@
-from rest_framework import serializers
-from login import models
-from .models import User,UserDetails
-from .models import Leave, LeaveType
-from django.contrib import auth 
-from rest_framework.exceptions import AuthenticationFailed
+import datetime
+
+from django.contrib import auth
 from django.db import IntegrityError
 from django_filters import rest_framework as filters
-import datetime
+from rest_framework import serializers
+from rest_framework.exceptions import AuthenticationFailed
+
+from login import models
+
+from .models import Leave, LeaveType, User, UserDetails
+
 
 class UserProfileSerializer(serializers.ModelSerializer):
     """Serializes a user profile object"""
