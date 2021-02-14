@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from login import models
-from .models import User,UserDetails, Leave,LeaveType
+from .models import User,UserDetails, Leave,LeaveType,MyLeave
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
@@ -13,7 +13,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['id','email','username','password','is_active','is_staff','is_superuser','is_verified','first_name','last_name','address','phone_number','department','date_joined','document','photo']
+        fields = ['id','email','username','password','is_active','is_staff','is_superuser','is_verified','is_manager','first_name','last_name','address','phone_number','department','date_joined','document','photo']
         read_only_fields=['is_verified',]
 
 class LoginSerializer(serializers.ModelSerializer):
@@ -113,7 +113,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = models.User
-        fields = ['username','id','is_superuser','is_verified','is_manager', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo','department_name' ]
+        fields = ['username','id','is_superuser','is_verified','is_manager','is_staff', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo','department_name' ]
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -126,6 +126,9 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
+
+
+        
 class EmailVerificationSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=555)
 
@@ -140,16 +143,21 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
         fields =['id','leavetype','days']
 
 class MyLeaveSerializer(serializers.ModelSerializer):
-    remaining_days=serializers.SerializerMethodField()
+    emp=serializers.CharField(source='name.username')
+    leavetype=serializers.CharField(source='leave.leavetype')
+    total_days=serializers.CharField(source='leave.days')
+    numberof_requestday=serializers.CharField(source='days.number_of_days')
+    # remaining_days=serializers.SerializerMethodField()
+    # import pdb; pdb.set_trace()
 
-    def get_remaining_days(self,obj):
-        remaining_days=number_of_days
-        return remaining_days
+    # def get_remaining_days(self,obj):
+        # remaining_days=Ltotal_days-numberof_requestday
+        # return remaining_days
 
-        class Meta:
-            model=LeaveType
+    class Meta:
+        model=MyLeave
 
-            fields=['id','leavetype','number_of_days','remaining_days']
+        fields=['id','emp','leavetype','total_days','numberof_requestday','remainingdays']
 
     
 
@@ -157,18 +165,28 @@ class AdminLeaveSerializer(serializers.ModelSerializer):
     leave_Category=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
     name=serializers.CharField(source='employee.first_name',read_only=True)
     email=serializers.CharField(source='employee.email',read_only=True)
+    # number_of_days = serializers.IntegerField()
     # start= serializers.DateField()
-    number_of_days = serializers.SerializerMethodField()
+    # number_of_days = serializers.SerializerMethodField()
+    # # import pdb; pdb.set_trace()
 
-    def get_number_of_days(self, obj):
-        number_of_days = (obj.end - obj.start).days
-        # print(obj.start) 
-        return number_of_days
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+    number_of_days = serializers.IntegerField()
+    remainingday=serializers.IntegerField(read_only=True)
+
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+
 
 
     class Meta:
         model=Leave
-        fields=['id','is_approved','is_notapproved','is_verified','is_notverified','start','end','types_of_leave','leave_Category','number_of_days','reason','name','email']
+        fields=['id','is_approved','is_notapproved','is_verified','is_notverified','start','end','types_of_leave','leave_Category','number_of_days','reason','name','email','remainingday']
         # write_only_fields=('types_of_leave')
        
 class ManagerLeaveSerializer(serializers.ModelSerializer):
@@ -176,12 +194,12 @@ class ManagerLeaveSerializer(serializers.ModelSerializer):
     name=serializers.CharField(source='employee.first_name',read_only=True)
     email=serializers.CharField(source='employee.email',read_only=True)
 
-    number_of_days = serializers.SerializerMethodField()
+    number_of_days = serializers.IntegerField()
 
-    def get_number_of_days(self, obj):
-        number_of_days = (obj.end - obj.start).days
-        # print(obj.start) 
-        return number_of_days
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
 
     class Meta:
         model=Leave
@@ -195,19 +213,39 @@ class UserLeaveSerializer(serializers.ModelSerializer):
     types_of_leaves=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
     name=serializers.CharField(source='employee.first_name',read_only=True)
     email=serializers.CharField(source='employee.email',read_only=True)
+    remainingday=serializers.IntegerField(read_only=True)
+    # totaldays=serializers.IntegerField(source='types_of_leave.days',read_only=True)
 
-    number_of_days = serializers.SerializerMethodField()
+    # number_of_days = serializers.IntegerField()
+    number_of_days = serializers.IntegerField()
 
-    def get_number_of_days(self, obj):
-        number_of_days = (obj.end - obj.start).days
-        # print(obj.start) 
-        return number_of_days
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+
+    # # # remainingdays= serializers.SerializerMethodField()
+
+    # def get_number_of_days(self, obj):
+
+    #     number_of_days = (obj.end - obj.start).days
+
+
+    #     # print(obj.start) 
+    #     return number_of_days
+
+    # def get_remaining_days(self,obj):
+    #     remaining_days=(obj.totaldays-obj.number_of_days)
+    #     print(remaining_days)
+    #     return remaining_days
+    
     class Meta:
         model=Leave
-        fields=['id','is_approved','is_verified','start','end','types_of_leave','types_of_leaves','number_of_days','reason','name','email']
+        fields=['id','is_approved','is_verified','start','end','employee','types_of_leave','types_of_leaves','number_of_days','reason','name','email','remainingday']
 
         
-        read_only_fields=['is_approved','is_verified']
+        read_only_fields=['is_approved','is_verified',]
+    
 
 
 # class MyLeaveSerializer(serializers.ModelSerializer):

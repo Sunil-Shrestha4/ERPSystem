@@ -17,6 +17,7 @@ export default function Leave(){
             start:"",
             end:"",
             number_of_days:"",
+            types_of_leave:"",
             reason:""
         }
     ]);
@@ -53,6 +54,7 @@ export default function Leave(){
                      <Col>Leave Approved:{item.is_approved+""}</Col>
                      <Col>Leave Verified:{item.is_verified+""}</Col>
                      <Col>Name:{item.name}</Col>
+                     <col>Type of leave:{item.types_of_leave}</col>
                      <Col>Start date:{item.start_date}</Col>
                      <Col>End Date:{item.end_date}</Col>
                      <Col>No. of Days:{item.number_of_days}</Col>

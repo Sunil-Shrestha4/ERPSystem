@@ -28,19 +28,17 @@ from django.contrib.auth.models import (
 
 class UserProfileManager(BaseUserManager):
 
-    def create_user(self,  email,username,is_verified,first_name,is_superuser,is_manager,last_name,address,phone_number,date_joined,department,document=None,photo=None,password=None):
+    def create_user(self,  email,username,is_verified,is_staff,first_name,is_superuser,is_manager,last_name,address,phone_number,date_joined,department,document=None,photo=None,password=None):
         if username is None:
             raise TypeError('Users should have a username')
         if email is None:
             raise TypeError('Users should have a Email')
 
-        user = self.model(username=username,is_superuser=is_superuser,is_manager=is_manager,is_verified=is_verified,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
+        user = self.model(username=username,is_superuser=is_superuser,is_staff=is_staff,is_manager=is_manager,is_verified=is_verified,first_name=first_name,last_name=last_name,address=address,phone_number=phone_number,date_joined=date_joined,department=department,document=document,photo=photo, email=self.normalize_email(email))
         user.set_password(password)
         user.save()
         return user
 
-
-    
 
     def create_superuser(self,email,username,password):
         
@@ -220,6 +218,7 @@ class Leave(models.Model):
     number_of_days=models.IntegerField(default=0)
     
     reason=models.TextField(max_length=500, blank=False)
+    remainingday=models.IntegerField(null=True)
     
 
     def __str__(self):

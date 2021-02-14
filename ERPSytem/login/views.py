@@ -11,10 +11,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer,MyLeaveSerializer
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails,Attendance,Leave
+from .models import User,UserDetails,Attendance,Leave,MyLeave
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -50,8 +50,6 @@ class RegisterView(generics.GenericAPIView):
         users = User.objects.all()
         serializer = RegisterSerializer(users, many=True)
         return Response(serializer.data)
-
-   
 
     def post(self, request):
         user = request.data
@@ -115,7 +113,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.UserProfileSerializer
     queryset = models.User.objects.all().select_related('department')
     filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
-    # permission_classes=[ IsAssigned]
+    permission_classes=[ permissions.IsAuthenticatedOrReadOnly]
     filterset_fields=['username']
     search_fields=['^username','^email','^first_name','^last_name','^department','^address']
 
@@ -189,12 +187,7 @@ class UserProfileViewSet(viewsets.ModelViewSet):
     #     else:
     #         permission_classes = [permissions.IsAdminUser]
     #     return [permission() for permission in permission_classes]
-
-
-
-   
-        
-
+  
     @action(detail=False,methods=['GET'])
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
@@ -419,16 +412,57 @@ class LeaveViewSet(viewsets.ModelViewSet):
         else:
             return UserLeaveSerializer
 
-
-
     def perform_create(self,serializer):
-       
         
-        user=serializer.save(employee=self.request.user)
-       
-        serializer.data
+        # import pdb; pdb.set_trace()
+        ids=serializer.validated_data['types_of_leave'].id
+        
+        total_days =   models.LeaveType.objects.get(id=ids).days
+        
+        obj_user=models.Leave.objects.filter(employee=self.request.user.id)
+        obj=obj_user.filter(types_of_leave=serializer.validated_data['types_of_leave'])
+        # import pdb; pdb.set_trace()
+
+
+        # if obj_user.exists():
             
+        #     remaining_day=serializer.validated_data['remainingday']-serializer.validated_data['number_of_days']
+
+            # return total_days
+        if obj_user.exists() and obj.exists():
+            remaining=models.Leave.objects.filter(employee=self.request.user.id) .filter(types_of_leave=serializer.validated_data['types_of_leave']).last().__dict__
+            remaining_day=remaining['remainingday']
+        # # remainingday=remaining['remainingday']
+            remainingday=remaining_day
+            # remaining_day=remainingday-serializer.validated_data['number_of_days']
+        # import pdb; pdb.set_trace()
+
+        else:
+            remainingday =total_days
         
+            # remaining_day=total_days-serializer.validated_data['number_of_days']
+            # return remainingday
+        # import pdb; pdb.set_trace()
+        # remainingday=total_days-user.number_of_days
+    
+        user=serializer.save(employee=self.request.user,remainingday=remainingday)
+        # for e in models.Leave.objects.filter( id=27).values():
+        #     remainingday=e['remainingday']
+        # # remaining=models.Leave.objects.filter(employee=self.request.user.id).order_by('-id').last().__dict__
+        # # remainingday=remaining['remainingday']
+        # # import pdb; pdb.set_trace()
+        # if remainingday==total_days:
+        #     serializer.save(remainingday=total_days)
+
+            
+        # else:
+
+        #     day = remainingday-user.number_of_days
+        #     serializer.save(remainingday=day)
+            
+
+        # import pdb; pdb.set_trace()  
+        serializer.data        
         e_subject = "Leave Verification"
         e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
         e_mail = settings.EMAIL_HOST_USER
@@ -443,12 +477,92 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
 
     def perform_update(self, serializer):
+        
         user=serializer.save()
-       
+        obj1=self.get_object()
+        ids=serializer.validated_data['types_of_leave'].id
+        total_days =   models.LeaveType.objects.get(id=ids).days
+
+        # obj_user=models.Leave.objects.filter(employee=self.request.user.id)
+        # obj=obj_user.filter(types_of_leave=serializer.validated_data['types_of_leave'])
+        # import pdb;pdb.set_trace()
+
+        # if obj_user.exists():
+        #     remainingday=remainingday-user.number_of_days
+
+        if obj1.is_verified==True:
+
+            # import pdb;pdb.set_trace()
+            # numner_of_days=self.validated_data.get('number_of_days')
+            # import pdb; pdb.set_trace()
+            # if obj_user.exists() and obj.exists():
+                # remainingday=remainingday-user.number_of_days
+                # remainingday=remaining_day
+
+                # remaining=models.Leave.objects.filter(employee=self.request.user.id).order_by('-id').first().__dict__
+                # remainingday=remaining['remainingday']
+            # remaining = serializer.data
+            # remaining.is_valid(raise_excpetions=True)
+            # remainingday = remaining.validated_data.get('remainingday')
+            # abc=serializer.data
+            # abc.is_valid()
+            # remaininginstance=abc.save()
+            # number=abc.number_of_days
+
+        
+            # serializer.validated_data
+            # remainingday=serializer.validated_data['number_of_days']
+
+            remainingday=user.remainingday-user.number_of_days
+            serializer.save(remainingday=remainingday)
+            
+            # ser=serializer.data
+            # # ser. is_valid(raise_exceptions=True)
+            # data=ser.validated_data
+            # remainingday=obj1.remainingday- data['number_of_days']
+            # serializer.save(remainingday=remainingday)
+            # # import pdb;pdb.set_trace()
+
+
+        # else:
+            
+        #         remaining_day =total_days
+        
+            #     # remaining_day=total_days-serializer.validated_data['number_of_days']
+            #     remaining_day=remainingday
+            
+        # else:
+        #     if obj.exists():
+        #         remaining=models.Leave.objects.filter(employee=self.request.user.id).order_by('-id').first().__dict__
+        #         remainingday=remaining['remainingday']
+        #     # # remainingday=remaining['remainingday']
+        #         remaining_days=remainingday
+        #         # remaining_day=remainingday-serializer.validated_data['number_of_days']
+            # import pdb; pdb.set_trace()
+
+        else:
+            remainingday =user.remainingday
+            serializer.save(remainingday=remainingday)
+        
+        # import pdb;pdb.set_trace()
+
+
         
 
+
+            # day = total_days-user.number_of_days
+            
+        # serializer.save(remainingday=remaining_days)
+        # user=serializer.save()
+            # serializer.save(total_days=day)
+        
+        # else:
+        #     serializer.save(remainingday=total_days)
+
         if self.request.user.is_manager:
-            if user.is_notapproved==True:
+            # permission_classes = [IsAbc ]
+
+            if user.is_notapproved==True and user.is_approved==False :
                 e_subject = "Leave Rejected"
                 e_msg = "Sorry your leave hasnot been approved by Manager. Contact for further details"
                 e_mail = settings.EMAIL_HOST_USER
@@ -461,7 +575,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
                     [Email]
 
                 )
-            else:
+            elif user.is_approved==True and user.is_notapproved==False:
                 
                 e_subject = "Leave Approval"
                 e_msg = "Here are the details about the leave\n"+"User Name:"+user.employee.username+"\n"+"Ëmail:"+user.employee.email+"\n"+"start date:"+str(user.start)+"\n"+"End date:"+str(user.end)+"\n"+"Number of days:"+str(user.number_of_days)+"\n"+"Reason:"+user.reason+"Verify:"+"http://127.0.0.1:8000/api/leave/"+str(user.id)
@@ -478,8 +592,9 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
                 
         elif self.request.user.is_superuser:
+            permission_classes = [permissions.IsAdminUser ]
 
-            if user.is_notverified==True:
+            if user.is_notverified==True and user.is_verified==False:
                 e_subject = " Leave Rejected"
                 e_msg = "Your leave is approved but not verified. Please contact for further details"
                 e_mail = settings.EMAIL_HOST_USER
@@ -493,7 +608,7 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
                 )
             
-            else:
+            elif user.is_notverified==False and user.is_verified==True:
 
 
 
@@ -521,11 +636,21 @@ class LeaveViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['GET'])
     def MyRemainingLeave(self,request,**kwargs):
         user=request.user
-        queryset = models.LeaveType.objects.all() 
-        serializer =serializers.LeaveTypeSerializer(queryset,many=True)
+        queryset = self.filter_queryset(self.get_queryset()).filter(user)
+        serializer =serializers.MyLeaveSerializer(queryset,many=True)
         return Response(serializer.data)
 
-               
+class RemainingLeaveApiView(viewsets.ModelViewSet):
+    # queryset = MyLeave.objects.all()
+    
+    serializer_class = serializers.MyLeaveSerializer
+    
+    queryset = models.MyLeave.objects.all() 
+
+        # serializer = serializers.MyLeaveSerializer(queryset, many=True)
+        # # import pdb;pdb.set_trace()
+        # return Response(serializer.data)
+                      
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handli ccreating, updating salary field"""
     queryset = models.Salary.objects.all()
@@ -561,13 +686,6 @@ class SalaryReportApiView(viewsets.ModelViewSet):
         salary =models.Salary.objects.filter(emp=user)
         serializer =serializers.SalaryReportSerializer(salary,many=True)
         return Response(serializer.data, status=200)
-
-
-
-
-
-
-
 
 class UserDetailView(generics.GenericAPIView):
 

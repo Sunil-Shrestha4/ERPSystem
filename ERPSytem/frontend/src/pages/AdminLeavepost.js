@@ -102,7 +102,7 @@ export default function AdminLeavepost(props) {
 
       <button onClick={handleverify} id="is_approved" name="is_verified"
       // onClick={() => setState((prev) => ({ ...prev.reason, is_approved: !state.is_approved }))} 
-      > Approve </button>
+      > Verify </button>
       <br />
 
       <button onClick={handleReject} id="is_notapproved" name="is_notverified"

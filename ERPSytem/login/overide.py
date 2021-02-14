@@ -29,7 +29,9 @@ class IsAbc(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # import pdb;pdb.set_trace()
-        if request.method=="PUT":
+        if self.request.user.is_manager:
+            
+
 
         
             return True
