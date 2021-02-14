@@ -7,23 +7,14 @@ from django.db import IntegrityError
 from django_filters import rest_framework as filters
 import datetime
 
-<<<<<<< HEAD
-class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
-=======
 
 class UserProfileSerializer(serializers.ModelSerializer):
->>>>>>> origin/sunil-dev
     """Serializes a user profile object"""
 
     class Meta:
         model = models.User
-<<<<<<< HEAD
-        fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
-
-=======
         fields = ['id','email','username','password','is_active','is_staff','is_superuser','is_verified','is_manager','first_name','last_name','address','phone_number','department','date_joined','document','photo']
         read_only_fields=['is_verified',]
->>>>>>> origin/sunil-dev
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=3)
@@ -46,13 +37,8 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-<<<<<<< HEAD
-        fields = ['email', 'password', 'username', 'tokens','is_superuser']
-        # read_only_fields=['is_superuser',]
-=======
         fields = ['email', 'password', 'username', 'tokens','is_superuser','is_manager']
         read_only_fields=['is_manager',]
->>>>>>> origin/sunil-dev
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -76,10 +62,7 @@ class LoginSerializer(serializers.ModelSerializer):
             'username': user.username,
             'tokens': user.tokens,
             'is_superuser':user.is_superuser,
-<<<<<<< HEAD
-=======
             'is_manager':user.is_manager,
->>>>>>> origin/sunil-dev
             
         }
 
@@ -114,7 +97,6 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
     
     # def choices_by_order(self,obj):
 class AttendanceSerializer(serializers.ModelSerializer):
-<<<<<<< HEAD
     name=serializers.CharField(source='emp_name.first_name',read_only=True)    
     
     class Meta:
@@ -138,14 +120,6 @@ class CheckOutSerializer(serializers.ModelSerializer):
     class Meta:
         model= models.Attendance
         fields=['id','date','time','name','checkout','checkin']
-=======
-    name=serializers.CharField(source='emp_name.username',read_only=True)
-    
-    class Meta:
-        model= models.Attendance
-        fields=['id','choices','time','name']
-        # read_only_fields = ['name']
->>>>>>> origin/sunil-dev
 
 class RegisterSerializer(serializers.ModelSerializer):
     department_name=serializers.CharField(source='department.dept_name',read_only=True)
@@ -156,13 +130,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         'username': 'The username should only contain alphanumeric characters'}
 
     class Meta:
-<<<<<<< HEAD
-        model = User
-        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','position','date_joined','document','photo' ]
-=======
         model = models.User
         fields = ['username','id','is_superuser','is_verified','is_manager','is_staff', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo','department_name' ]
->>>>>>> origin/sunil-dev
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -186,25 +155,6 @@ class EmailVerificationSerializer(serializers.Serializer):
         fields = ['token']
   
 
-<<<<<<< HEAD
-# class LeaveSerializer(serializers.ModelSerializer):
-#     """Serializes a user profile object"""
-
-#     class Meta:
-#         model = models.Leave
-#         fields = '__all__'
-
-    
-class SalaryReportSerializer(serializers.ModelSerializer):
-    email = serializers.EmailField(source='emp.email', read_only=True)
-    first_name = serializers.CharField(source='emp.first_name', read_only=True)
-    last_name = serializers.CharField(source='emp.last_name', read_only=True)
-    year = serializers.SerializerMethodField()
-    
-    def get_year(self, obj):
-        year = obj.received_date.strftime('%Y')
-        return year
-=======
 class LeaveTypeSerializer(serializers.ModelSerializer):
    
     class Meta:
@@ -316,7 +266,6 @@ class UserLeaveSerializer(serializers.ModelSerializer):
         read_only_fields=['is_approved','is_verified',]
     
 
->>>>>>> origin/sunil-dev
 
 # class MyLeaveSerializer(serializers.ModelSerializer):
 #     class Meta:
