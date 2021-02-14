@@ -43,13 +43,35 @@ export const SidebarData = [
   {
     title: 'Add Employee',
     path: '/employee',
-    icon: <IoIcons.IoMdHelpCircle />,
+    icon: <AiIcons.AiOutlineUserAdd />,
     cName: 'nav-text'
   },
-  // {
-  //   title: 'Logout',
-  //   path: '/logout',
-  //   icon: <IoIcons.IoMdHelpCircle />,
-  //   cName: 'nav-text'
-  // }
+
+  {
+    title: 'Attendance',
+    path: '/own',
+    icon: <FaIcons.FaFistRaised />,
+    cName: 'nav-text'
+  },
+
+  {
+    title: 'Leave',
+    path: '/leave',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  },
+  
+  {
+    title: 'Leave',
+    path: '/manage',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  },
+  {
+    title: 'Leave',
+    path: '/verify',
+    icon: <ImIcons.ImExit />,
+    cName: 'nav-text'
+  }
+
 ];

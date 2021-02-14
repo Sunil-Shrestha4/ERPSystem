@@ -5,10 +5,14 @@ import "./User.css";
 import Navbar from "../admin/Dashboard";
 import './Attendance.css';
 import { Dropdown, DropdownMenu, DropdownToggle, DropdownItem } from 'reactstrap';
+<<<<<<< HEAD
 import PostAttendance from './PostAttendanceCI';
 import {Route, Switch} from "react-router-dom";
 import PostAttendanceCO from './PostAttendanceCO';
 import PostAttendanceCI from './PostAttendanceCI';
+=======
+import PostAttendance from './PostAttendance';
+>>>>>>> origin/sunil-dev
 
 
 
@@ -23,14 +27,21 @@ function OwnAttendance() {
         id:'',
         choices:'',
         time:'',
+<<<<<<< HEAD
         date:'',
+=======
+>>>>>>> origin/sunil-dev
         name:''
 
 
 
         
     }]);
+<<<<<<< HEAD
     
+=======
+    // const [data, setData] = useState( [] );
+>>>>>>> origin/sunil-dev
     
 
     useEffect(async () => {
@@ -61,7 +72,11 @@ function OwnAttendance() {
             <Navbar />
             <br/>
             <br/>
+<<<<<<< HEAD
             <PostAttendanceCI />
+=======
+            <PostAttendance/>
+>>>>>>> origin/sunil-dev
             <br/>
             <br/>
             <h1>Your Attendance History</h1>
@@ -69,11 +84,18 @@ function OwnAttendance() {
                <CardGroup className="card">
                <Card style={{ width: '18rem' }} border="success">
                 <Row>
+<<<<<<< HEAD
                 <Col key={item.id}>Attendance-ID:{item.id}</Col>
                 <Col>USER NAME:{item.name}</Col>
                 <Col>STATUS:{item.choices}</Col>
                 <Col>TIME:{item.time}</Col>
                 <Col>DATE:{item.date}</Col>
+=======
+                <Col>Attendance-ID:{item.id}</Col>
+                <Col>USER NAME:{item.name}</Col>
+                <Col>STATUS:{item.choices}</Col>
+                <Col>TIME:{item.time}</Col>
+>>>>>>> origin/sunil-dev
                 <br/>
                 </Row>
                 </Card> 

@@ -185,15 +185,27 @@ MEDIA_URL = '/media/'
 
 AUTH_USER_MODEL='login.User'
 
+REST_FRAMEWORK = {
+    'NON_FIELD_ERRORS_KEYS':'error',
+    # 'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',)
+    # 'DEFAULT_PERMISSION_CLASSES': (
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ),
+    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_simplejwt.authentication.JWTAuthentication','rest_framework.authentication.BasicAuthentication','rest_framework.authentication.SessionAuthentication',
+    
+
+    ),
+    'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+
 
 LOGIN_REDIRECT_URL = '/api'
 
 
-EMAIL_USE_TLS =True
-EMAIL_HOST ='smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
-EMAIL_HOST_PASSWORD = 'rockson123'
+# EMAIL_USE_TLS =True
+# EMAIL_HOST ='smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
+# EMAIL_HOST_PASSWORD = 'rockson123'
 
 
 

@@ -11,10 +11,10 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer,MyLeaveSerializer
 
 from rest_framework import generics, status, views, permissions
-from .models import User,UserDetails
+from .models import User,UserDetails,Attendance,Leave,MyLeave
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from .utils import Util , EmailThread
@@ -50,14 +50,14 @@ class CheckoutRateThrottle(throttling.UserRateThrottle):
 class RegisterView(generics.GenericAPIView):
     queryset = User.objects.all()
     permission_classes = [permissions.IsAdminUser]
+    # import pdb;
+    # pdb.set_trace()
 
     serializer_class = RegisterSerializer
     def get(self, request, format=None):
         users = User.objects.all()
         serializer = RegisterSerializer(users, many=True)
         return Response(serializer.data)
-
-   
 
     def post(self, request):
         user = request.data
@@ -72,11 +72,27 @@ class RegisterView(generics.GenericAPIView):
         relativeLink = reverse('email-verify')
         absurl = 'http://'+current_site+relativeLink+"?token="+str(token)
         email_body = 'Hi '+user.username + \
-            ' Use the link below to verify your email \n' + absurl
+                    'Here are the details you may need while login in our system \n'+ \
+                    'User Name:'+user.username  +\
+                    "Password:"+ user.password  +\
+                    ' Use the link below to verify your email \n' + absurl
         data = {'email_body': email_body, 'to_email': user.email,
                 'email_subject': 'Verify your email'}
         Util.send_email(data)
         return Response(user_data, status=status.HTTP_201_CREATED)
+
+
+class RUDRegisterView(GenericAPIView,RetrieveModelMixin,UpdateModelMixin,DestroyModelMixin):
+    queryset = User.objects.all()
+    permission_classes = [IsAdminUser]
+
+    serializer_class = RegisterSerializer
+    def get(self,request,*args,**kwargs):
+        return self.retrieve(request,*args,**kwargs)
+    def put(self,request,*args,**kwargs):
+        return self.update(request,*args,**kwargs)
+    def delete(self,request,*args,**kwargs):
+        return self.destroy(request,*args,**kwargs)
 
     
 class VerifyEmail(views.APIView):
@@ -100,23 +116,88 @@ class VerifyEmail(views.APIView):
 class UserProfileViewSet(viewsets.ModelViewSet):
     """Handle creating, creating and updating profiles"""
     serializer_class = serializers.UserProfileSerializer
-    queryset = models.User.objects.all()
+    queryset = models.User.objects.all().select_related('department')
+    filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+    permission_classes=[ permissions.IsAuthenticatedOrReadOnly]
+    filterset_fields=['username']
+    search_fields=['^username','^email','^first_name','^last_name','^department','^address']
+
+    # def get_queryset(self):
+    #     if self.request.user.is_superuser:
+    #         queryset=models.User.objects.all().order_by('-date_joined')
+    #         return queryset
+
+
+    # def get_permissions(self):
+    #     if self.request.method=='GET':
+    #         permission_classes=[IsAuthenticated,]
+    #     else:
+    #         permission_classes=[IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+        
+
+        # queryset = self.queryset
+        # query_set=queryset.filter(emp=self.request.user).order_by('-date_joined')
+        # return query_set
+
+
+
+
+
+
+
+
+
     # permission_classes = [IsAssigned]
 
 
-    def get_permissions(self):
+    # def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
-       
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+
+    # def get_permissions(self):
+        
+    #     if self.request.method == 'POST':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+    #     elif self.request.method == 'PUT':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+    #     elif self.request.method == 'DELETE':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+    #     elif self.request.method == 'PATCH':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+    #     elif self.request.method == 'HEAD':
+    #         self.permission_classes = [permissions.IsAdminUser ]
+
+
+    #     else:
+    #         self.permission_classes = [IsAuthenticated, ]
+        
+
+    #     return super(UserProfileViewSet, self).get_permissions()
+
+
+
+    
+
+    
+
+    # def get_permissions(self): 
+    
+    #     if self.request.method == 'GET':
+    #         permission_classes = [permissions.IsAuthenticated]
+    #     else:
+    #         permission_classes = [permissions.IsAdminUser]
+    #     return [permission() for permission in permission_classes]
+  
+    @action(detail=False,methods=['GET'])
     def viewuserdetail(self,request,pk=None):
         # import pdb;pdb.set_trace()
         user=request.user
-        serializer=serializers.UserDetailSerializer(user)
+        serializer=serializers.UserProfileSerializer(user)
         return Response(serializer.data, status=200)
 
 class LoginAPIView(generics.GenericAPIView):
@@ -152,7 +233,7 @@ class LogoutAPIView(generics.GenericAPIView):
 
 class DeptViewSet(viewsets.ModelViewSet):
     authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [permissions.IsAdminUser,]
+    # permission_classes = [permissions.IsAdminUser,]
     serializer_class = serializers.DeptSerializer
     queryset = models.Department.objects.all()
     # permission_classes = [permissions.IsAdminUser]
@@ -161,6 +242,8 @@ class AttendanceViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.AttendanceSerializer
     queryset = models.Attendance.objects.all()
     permission_classes = [permissions.IsAuthenticated ]
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['emp_name']
     
     filter_backends = [DjangoFilterBackend , filters.SearchFilter,filters.OrderingFilter]
     filterset_fields = ['emp_name','date']
@@ -245,14 +328,27 @@ class CheckOutViewSet(viewsets.ModelViewSet):
         
     #     serializer.save(emp_name=self.request.user)
 
+        # serializer = serializers.MyLeaveSerializer(queryset, many=True)
+        # # import pdb;pdb.set_trace()
+        # return Response(serializer.data)
+                      
+# class SalaryReportApiView(viewsets.ModelViewSet):
+#     """Handli ccreating, updating salary field"""
+#     queryset = models.Salary.objects.all()
+#     serializer_class=serializers.SalaryReportSerializer
+#     permission_classes=[IsAdminUser]
+#     filter_backends=[DjangoFilterBackend,filterss.SearchFilter]
+#     filterset_fields=['amount','month','emp']
+#     search_fields=['^emp__email','^month','^emp__first_name','^emp__last_name','^year']
+    
 
     
-    def throttled(self, request,wait):
-        raise Throttled(detail={"Messages": "No more check-In allowed.",
-                            "AvailableIn": f"{wait} seconds"})
+#     def throttled(self, request,wait):
+#         raise Throttled(detail={"Messages": "No more check-In allowed.",
+#                             "AvailableIn": f"{wait} seconds"})
 
-    def perform_create(self, serializer):
-        serializer.save(emp_name=self.request.user)
+#     def perform_create(self, serializer):
+#         serializer.save(emp_name=self.request.user)
 
 class SalaryReportApiView(viewsets.ModelViewSet):
     """Handlig creating, updating salary field"""
@@ -305,7 +401,6 @@ class UserDetailView(generics.GenericAPIView):
         user=request.user
         serializer=serializers.UserDetailSerializer(user)
         return Response(serializer.data, status=200)
-     
     def post(self, request):
         user = request.data
         serializer = self.serializer_class(data=user)
@@ -341,23 +436,5 @@ class VerifyEmailUserDetail(views.APIView):
             return Response({'error': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserDetailViewSet(viewsets.ModelViewSet):
-    """Handle creating, creating and updating profiles"""
-    serializer_class = serializers.UserDetailSerializer
-    queryset = models.UserDetails.objects.all()
-    # permission_classes = [IsAssigned]
 
-
-    def get_permissions(self):
     
-        if self.request.method == 'GET':
-            permission_classes = [permissions.IsAuthenticated]
-        else:
-            permission_classes = [permissions.IsAdminUser]
-        return [permission() for permission in permission_classes]
-
-    @action(detail=False,methods=['GET'],permission_classes = [IsAssigned,])
-    def userdetail(self,request,pk=None):
-        user=request.user
-        serializer=serializers.UserDetailSerializer(user)
-        return Response(serializer.data, status=200)

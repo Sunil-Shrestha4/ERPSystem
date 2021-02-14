@@ -18,6 +18,11 @@ import SalaryUpdate from './pages/SalaryUpdate';
 import appWrapper from "./component/appWrapper"
 import OwnAttendance from "./pages/OwnAttendance";
 import OwnAttendanceCO from "./pages/OwnAttendanceCO";
+import Leave from "./pages/leave";
+import PostLeave from "./pages/PostLeave";
+import ManagerLeave from "./pages/ManagerLeave";
+import AdminLeave from "./pages/AdminLeave";
+import Myleavehistory from "./pages/Myleavehistory";
 
 
 import { IsSuperUserContext } from "./context/IsSuperUserContext";
@@ -55,6 +60,40 @@ export default function Routes(){
             <GuardedRoute exact path="/owns" auth={!isSuperUser} component = {()=><OwnAttendanceCO/> } redirectTo={"/"} />
              
             <GuardedRoute>
+                {/* <GuardedRoute exact path="/employee"  component={AddEmployee}  /> */}
+            <GuardedRoute exact path="/attendance"  component={ValidationForm}  />
+            <GuardedRoute exact path="/salary"  component={SalaryReport}  />
+            <GuardedRoute exact path="/team"  component={Userlist}  />
+            <GuardedRoute exact path="/leave"  component={Myleavehistory}  />
+            
+            {/* <GuardedRoute exact path="/team"  component={Userlist}  /> */}
+
+            <Route exact path="/employee">
+                <AddEmployee/>
+            </Route>
+            <Route exact path="/team">
+                <Userlist/>
+            </Route>
+            <Route exact path="/manage">
+                <ManagerLeave/>
+            </Route>
+
+
+            <Route exact path="/details/:id" component={Detail}>
+            {/* <Detail name="samman"/> */}
+          </Route>
+          <Route exact path="/manage" component={ManagerLeave}>
+            {/* <Detail name="samman"/> */}
+          </Route>
+          <Route exact path="/verify" component={AdminLeave}>
+            {/* <Detail name="samman"/> */}
+          </Route>
+          
+          <Route exact path="/own">
+                <OwnAttendance/>
+            </Route>
+
+
                 <NotFound/>
             </GuardedRoute>
         </Switch>

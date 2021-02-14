@@ -1,20 +1,29 @@
 from rest_framework import serializers
 from login import models
-from .models import User,UserDetails
+from .models import User,UserDetails, Leave,LeaveType,MyLeave
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
 from django_filters import rest_framework as filters
 import datetime
 
+<<<<<<< HEAD
 class UserProfileSerializer(serializers.HyperlinkedModelSerializer):
+=======
+
+class UserProfileSerializer(serializers.ModelSerializer):
+>>>>>>> origin/sunil-dev
     """Serializes a user profile object"""
-    url = serializers.CharField(source='get_absolute_url', read_only=True)
 
     class Meta:
         model = models.User
+<<<<<<< HEAD
         fields = ['url','id','email','username','password','is_active','is_staff','is_superuser']
 
+=======
+        fields = ['id','email','username','password','is_active','is_staff','is_superuser','is_verified','is_manager','first_name','last_name','address','phone_number','department','date_joined','document','photo']
+        read_only_fields=['is_verified',]
+>>>>>>> origin/sunil-dev
 
 class LoginSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(max_length=255, min_length=3)
@@ -37,8 +46,13 @@ class LoginSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
+<<<<<<< HEAD
         fields = ['email', 'password', 'username', 'tokens','is_superuser']
         # read_only_fields=['is_superuser',]
+=======
+        fields = ['email', 'password', 'username', 'tokens','is_superuser','is_manager']
+        read_only_fields=['is_manager',]
+>>>>>>> origin/sunil-dev
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -62,6 +76,10 @@ class LoginSerializer(serializers.ModelSerializer):
             'username': user.username,
             'tokens': user.tokens,
             'is_superuser':user.is_superuser,
+<<<<<<< HEAD
+=======
+            'is_manager':user.is_manager,
+>>>>>>> origin/sunil-dev
             
         }
 
@@ -96,6 +114,7 @@ class DeptSerializer(serializers.HyperlinkedModelSerializer):
     
     # def choices_by_order(self,obj):
 class AttendanceSerializer(serializers.ModelSerializer):
+<<<<<<< HEAD
     name=serializers.CharField(source='emp_name.first_name',read_only=True)    
     
     class Meta:
@@ -119,8 +138,17 @@ class CheckOutSerializer(serializers.ModelSerializer):
     class Meta:
         model= models.Attendance
         fields=['id','date','time','name','checkout','checkin']
+=======
+    name=serializers.CharField(source='emp_name.username',read_only=True)
+    
+    class Meta:
+        model= models.Attendance
+        fields=['id','choices','time','name']
+        # read_only_fields = ['name']
+>>>>>>> origin/sunil-dev
 
 class RegisterSerializer(serializers.ModelSerializer):
+    department_name=serializers.CharField(source='department.dept_name',read_only=True)
     password = serializers.CharField(
         max_length=68, min_length=6, write_only=True)
 
@@ -128,8 +156,13 @@ class RegisterSerializer(serializers.ModelSerializer):
         'username': 'The username should only contain alphanumeric characters'}
 
     class Meta:
+<<<<<<< HEAD
         model = User
         fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','position','date_joined','document','photo' ]
+=======
+        model = models.User
+        fields = ['username','id','is_superuser','is_verified','is_manager','is_staff', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo','department_name' ]
+>>>>>>> origin/sunil-dev
 
     def validate(self, attrs):
         email = attrs.get('email', '')
@@ -143,6 +176,8 @@ class RegisterSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         return User.objects.create_user(**validated_data)
 
+
+        
 class EmailVerificationSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=555)
 
@@ -151,6 +186,7 @@ class EmailVerificationSerializer(serializers.Serializer):
         fields = ['token']
   
 
+<<<<<<< HEAD
 # class LeaveSerializer(serializers.ModelSerializer):
 #     """Serializes a user profile object"""
 
@@ -168,7 +204,135 @@ class SalaryReportSerializer(serializers.ModelSerializer):
     def get_year(self, obj):
         year = obj.received_date.strftime('%Y')
         return year
+=======
+class LeaveTypeSerializer(serializers.ModelSerializer):
+   
+    class Meta:
+        model=LeaveType
+        fields =['id','leavetype','days']
 
+class MyLeaveSerializer(serializers.ModelSerializer):
+    emp=serializers.CharField(source='name.username')
+    leavetype=serializers.CharField(source='leave.leavetype')
+    total_days=serializers.CharField(source='leave.days')
+    numberof_requestday=serializers.CharField(source='days.number_of_days')
+    # remaining_days=serializers.SerializerMethodField()
+    # import pdb; pdb.set_trace()
+
+    # def get_remaining_days(self,obj):
+        # remaining_days=Ltotal_days-numberof_requestday
+        # return remaining_days
+
+    class Meta:
+        model=MyLeave
+
+        fields=['id','emp','leavetype','total_days','numberof_requestday','remainingdays']
+
+    
+
+class AdminLeaveSerializer(serializers.ModelSerializer):
+    leave_Category=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
+    name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
+    # number_of_days = serializers.IntegerField()
+    # start= serializers.DateField()
+    # number_of_days = serializers.SerializerMethodField()
+    # # import pdb; pdb.set_trace()
+
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+    number_of_days = serializers.IntegerField()
+    remainingday=serializers.IntegerField(read_only=True)
+
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+
+
+
+    class Meta:
+        model=Leave
+        fields=['id','is_approved','is_notapproved','is_verified','is_notverified','start','end','types_of_leave','leave_Category','number_of_days','reason','name','email','remainingday']
+        # write_only_fields=('types_of_leave')
+       
+class ManagerLeaveSerializer(serializers.ModelSerializer):
+    types_of_leaves=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
+    name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
+
+    number_of_days = serializers.IntegerField()
+
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+
+    class Meta:
+        model=Leave
+        fields=['id','is_approved','is_verified','is_notverified','is_notapproved','start','end','types_of_leave','types_of_leaves','number_of_days','reason','name','email']
+
+        
+        read_only_fields=['is_verified','is_notverified']
+
+
+class UserLeaveSerializer(serializers.ModelSerializer):
+    types_of_leaves=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
+    name=serializers.CharField(source='employee.first_name',read_only=True)
+    email=serializers.CharField(source='employee.email',read_only=True)
+    remainingday=serializers.IntegerField(read_only=True)
+    # totaldays=serializers.IntegerField(source='types_of_leave.days',read_only=True)
+
+    # number_of_days = serializers.IntegerField()
+    number_of_days = serializers.IntegerField()
+
+    # def get_number_of_days(self, obj):
+    #     number_of_days = (obj.end - obj.start).days
+    #     # print(obj.start) 
+    #     return number_of_days
+
+    # # # remainingdays= serializers.SerializerMethodField()
+
+    # def get_number_of_days(self, obj):
+
+    #     number_of_days = (obj.end - obj.start).days
+
+
+    #     # print(obj.start) 
+    #     return number_of_days
+
+    # def get_remaining_days(self,obj):
+    #     remaining_days=(obj.totaldays-obj.number_of_days)
+    #     print(remaining_days)
+    #     return remaining_days
+    
+    class Meta:
+        model=Leave
+        fields=['id','is_approved','is_verified','start','end','employee','types_of_leave','types_of_leaves','number_of_days','reason','name','email','remainingday']
+
+        
+        read_only_fields=['is_approved','is_verified',]
+    
+
+>>>>>>> origin/sunil-dev
+
+# class MyLeaveSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model=MyLeave
+#         fields=[__all__]
+
+    
+class SalaryReportSerializer(serializers.ModelSerializer):
+    email = serializers.EmailField(source='emp.email', read_only=True)
+    first_name = serializers.CharField(source='emp.first_name', read_only=True)
+    last_name = serializers.CharField(source='emp.last_name', read_only=True)
+    year = serializers.SerializerMethodField()
+    
+    def get_year(self, obj):
+        year = obj.received_date.strftime('%Y')
+        return year
     class Meta:
         model = models.Salary
         fields = ['id', 'amount','emp','allowance','year','month','received_date','email','first_name','last_name']
@@ -183,19 +347,7 @@ class UserDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserDetails
-        fields = ['username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
-
-    # def validate(self, attrs):
-    #     email = attrs.get('email', '')
-    #     username = attrs.get('username', '')
-
-    #     if not username.isalnum():
-    #         raise serializers.ValidationError(
-    #             self.default_error_messages)
-    #     return attrs
-
-    # def create(self, validated_data):
-    #     return UserDetails.objects.create_user(**validated_data)
+        fields = ['url','username','id', 'email','password','first_name','last_name','address','phone_number','department','date_joined','document','photo' ]
 
 class EmailVerificationSerializeruserDetail(serializers.Serializer):
     token = serializers.CharField(max_length=555)
