@@ -66,6 +66,8 @@ INSTALLED_APPS = [
     'djmoney',
     'oauth2_provider',
     'django_filters',
+    'django_rest_passwordreset',
+
 ]
 
 MIDDLEWARE = [
@@ -196,6 +198,7 @@ REST_FRAMEWORK = {
 
     ),
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend'],
+}
 
 
 LOGIN_REDIRECT_URL = '/api'
@@ -230,6 +233,12 @@ LOGIN_REDIRECT_URL = '/api'
 # EMAIL_HOST_USER = 'rajib.lamjung@gmail.com'
 # EMAIL_HOST_PASSWORD = 'rockson123'
 # EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'sunilsta010@gmail.com'
+EMAIL_HOST_PASSWORD = 'linus716751'
+EMAIL_PORT = 587
 
 
 

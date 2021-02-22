@@ -93,8 +93,10 @@ useEffect(async() => {
                     <Col>Name:{item.name}</Col>
                     <Col>Start date:{item.start}</Col>
                     <Col>End Date:{item.end}</Col>
+                    <Col>Types of leave:{item.types_of_leave}</Col>
                     <Col>No. of Days:{item.number_of_days}</Col>
                     <Col>Reason:{item.reason}</Col>
+                    <Col>Remaining day:{item.remainingday}</Col>
                    
                    
                    

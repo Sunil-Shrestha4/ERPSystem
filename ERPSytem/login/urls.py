@@ -16,6 +16,13 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from . import views 
+from rest_framework_simplejwt.views import (
+    TokenRefreshView,
+)
+
+
+
+
 # from rest_framework_simplejwt import views as jwt_views
 
 # from rest_framework.authtoken.views import obtain_auth_token
@@ -38,7 +45,7 @@ router.register('department',views.DeptViewSet)
 router.register('salary', views.SalaryReportApiView)
 router.register('leave',views.LeaveViewSet,basename='leave')
 router.register('leavetype',views.LeaveTypeViewSet)
-router.register('remainingleave',views.RemainingLeaveApiView)
+router.register('holiday',views.HolidayViewSet)
 # router.register('userdetails',views.UserDetailViewSet)
 # router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [
@@ -57,11 +64,12 @@ urlpatterns = [
     # path('email-verfy1/', views.VerifyEmailUserDetail.as_view(), name="email-verify1"),
     path('checkin/', views.CheckInViewSet.as_view({'post': 'create'}), name="checkin"),
     path('checkout/', views.CheckOutViewSet.as_view({'post': 'create'}), name="checkout"),
-
-
-
-
-
+    path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # path('request-reset-email/', views.RequestPasswordResetEmail.as_view(), name="request-reset-email"),
+    # path('password-reset/<uidb64>/<token>/', views.PasswordTokenCheckAPI.as_view(), name='password-reset-confirm'),
+    # path('password-reset-complete', views.SetNewPasswordAPIView.as_view(), name='password-reset-complete'),
+    path('change-password/', views.ChangePasswordView.as_view(), name='change-password'),
+    path('password_reset/', include('django_rest_passwordreset.urls', namespace='password_reset')),
 ]
 
 urlpatterns +=[

@@ -90,7 +90,10 @@ useEffect(async() => {
                     <Col>Start date:{item.start}</Col>
                     <Col>End Date:{item.end}</Col>
                     <Col>No. of Days:{item.number_of_days}</Col>
+                    <Col>Types of leave ID:{item.types_of_leave}</Col>
+                    <Col>Types of leave:{item.types_of_leaves}</Col>
                     <Col>Reason:{item.reason}</Col>
+                    <Col>Remainingday:{item.remainingday}</Col>
                     <AdminLeavepost adminleave={item}/>
                     {/* <Managerpost reason={item.reason} />
                     <Managerpost name={item.name} />

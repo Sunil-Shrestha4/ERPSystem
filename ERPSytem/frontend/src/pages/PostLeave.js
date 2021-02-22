@@ -16,6 +16,8 @@ export default function PostLeave() {
         reason:'',
         name:'',
         email:'',
+        types_of_leave:'',
+        remainingday:'',
 
 
     })
@@ -72,6 +74,11 @@ export default function PostLeave() {
                     />
         <p>End Date</p> 
             <input type="date"id="end" name="end"value={state.end}
+                    onChange={handleChange}
+                    />
+                
+                <p>Types of leave</p> 
+            <input type="number" id="types_of_leave" name="types_of_leave" value={state.types_of_leave}
                     onChange={handleChange}
                     />
 

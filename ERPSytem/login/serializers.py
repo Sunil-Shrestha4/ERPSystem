@@ -1,11 +1,16 @@
 from rest_framework import serializers
 from login import models
-from .models import User,UserDetails, Leave,LeaveType,MyLeave
+from .models import User,UserDetails, Leave,LeaveType,MyLeave,Holiday
 from django.contrib import auth 
 from rest_framework.exceptions import AuthenticationFailed
 from django.db import IntegrityError
 from django_filters import rest_framework as filters
 import datetime
+from datetime import date
+# from django.contrib.auth.tokens import PasswordRestTokenGenerator
+# from django.utils.encoding import smart_str,force_str,smart_bytes,DjangoUnicodDecodeError
+# from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
+
 
 
 class UserProfileSerializer(serializers.ModelSerializer):
@@ -153,6 +158,51 @@ class EmailVerificationSerializer(serializers.Serializer):
     class Meta:
         model = User
         fields = ['token']
+
+
+# class ResetPasswordEmailRequestSerializer(serializers.Serializer):
+#     email=serializers.EmailField(min_length=2)
+
+#     redirect_url = serializers.CharField(max_length=500,required=False)
+
+#     class Meta:
+#         fields=['email']
+
+
+# class SetNewPasswordSerializer(serializers.Serializer):
+#     password = serializers.CharField(
+#         min_length=6, max_length=68, write_only=True)
+#     token = serializers.CharField(
+#         min_length=1, write_only=True)
+#     uidb64 = serializers.CharField(
+#         min_length=1, write_only=True)
+
+#     class Meta:
+#         fields = ['password', 'token', 'uidb64']
+
+#     def validate(self, attrs):
+#         try:
+#             password = attrs.get('password')
+#             token = attrs.get('token')
+#             uidb64 = attrs.get('uidb64')
+
+#             id = force_str(urlsafe_base64_decode(uidb64))
+#             user = User.objects.get(id=id)
+#             if not PasswordResetTokenGenerator().check_token(user, token):
+#                 raise AuthenticationFailed('The reset link is invalid', 401)
+
+#             user.set_password(password)
+#             user.save()
+
+#             return (user)
+#         except Exception as e:
+#             raise AuthenticationFailed('The reset link is invalid', 401)
+#         return super().validate(attrs)
+
+
+
+
+
   
 
 class LeaveTypeSerializer(serializers.ModelSerializer):
@@ -161,11 +211,12 @@ class LeaveTypeSerializer(serializers.ModelSerializer):
         model=LeaveType
         fields =['id','leavetype','days']
 
-class MyLeaveSerializer(serializers.ModelSerializer):
-    emp=serializers.CharField(source='name.username')
-    leavetype=serializers.CharField(source='leave.leavetype')
-    total_days=serializers.CharField(source='leave.days')
-    numberof_requestday=serializers.CharField(source='days.number_of_days')
+class MyRemainingLeaveSerializer(serializers.ModelSerializer):
+    leave_Category=serializers.CharField(source='types_of_leave.leavetype',read_only=True)
+    remainingday=serializers.IntegerField(read_only=True)
+    # leavetype=serializers.CharField(source='leave.leavetype')
+    # total_days=serializers.CharField(source='leave.days')
+    # # numberof_requestday=serializers.CharField(source='days.number_of_days')
     # remaining_days=serializers.SerializerMethodField()
     # import pdb; pdb.set_trace()
 
@@ -174,9 +225,9 @@ class MyLeaveSerializer(serializers.ModelSerializer):
         # return remaining_days
 
     class Meta:
-        model=MyLeave
+        model=Leave
 
-        fields=['id','emp','leavetype','total_days','numberof_requestday','remainingdays']
+        fields=['id','leave_Category','types_of_leave','remainingday']
 
     
 
@@ -214,6 +265,7 @@ class ManagerLeaveSerializer(serializers.ModelSerializer):
     email=serializers.CharField(source='employee.email',read_only=True)
 
     number_of_days = serializers.IntegerField()
+    remainingday=serializers.IntegerField(read_only=True)
 
     # def get_number_of_days(self, obj):
     #     number_of_days = (obj.end - obj.start).days
@@ -222,7 +274,7 @@ class ManagerLeaveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model=Leave
-        fields=['id','is_approved','is_verified','is_notverified','is_notapproved','start','end','types_of_leave','types_of_leaves','number_of_days','reason','name','email']
+        fields=['id','is_approved','is_verified','is_notverified','is_notapproved','start','end','types_of_leave','types_of_leaves','number_of_days','reason','name','email','remainingday']
 
         
         read_only_fields=['is_verified','is_notverified']
@@ -304,3 +356,32 @@ class EmailVerificationSerializeruserDetail(serializers.Serializer):
     class Meta:
         model = UserDetails
         fields = ['token']
+
+
+
+
+
+class ChangePasswordSerializer(serializers.Serializer):
+    model = User
+
+    """
+    Serializer for password change endpoint.
+    """
+    old_password = serializers.CharField(required=True)
+    new_password = serializers.CharField(required=True)
+
+class HolidaySerializer(serializers.ModelSerializer):
+    
+    remainingday=serializers.SerializerMethodField()
+
+    def get_remainingday(self,obj):
+        remainingday=(obj.date_of_event-date.today()).days
+        return remainingday
+    
+
+
+    class Meta:
+        model = models.Holiday
+        fields = ['id','event','date_of_event','remainingday']
+
+

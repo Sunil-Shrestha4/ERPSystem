@@ -61,7 +61,7 @@ export default function Routes(){
              
             <GuardedRoute>
                 {/* <GuardedRoute exact path="/employee"  component={AddEmployee}  /> */}
-            <GuardedRoute exact path="/attendance"  component={ValidationForm}  />
+            {/* <GuardedRoute exact path="/attendance"  component={Val//idationForm}  /> */}
             <GuardedRoute exact path="/salary"  component={SalaryReport}  />
             <GuardedRoute exact path="/team"  component={Userlist}  />
             <GuardedRoute exact path="/leave"  component={Myleavehistory}  />
@@ -79,9 +79,9 @@ export default function Routes(){
             </Route>
 
 
-            <Route exact path="/details/:id" component={Detail}>
+            {/* <Route exact path="/details/:id" component={Detail}> */}
             {/* <Detail name="samman"/> */}
-          </Route>
+          {/* </Route> */}
           <Route exact path="/manage" component={ManagerLeave}>
             {/* <Detail name="samman"/> */}
           </Route>

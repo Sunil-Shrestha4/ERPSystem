@@ -10,6 +10,11 @@ import datetime as dt
 
 from django.contrib.auth.models import (
     AbstractBaseUser, BaseUserManager, PermissionsMixin)
+from django.dispatch import receiver
+from django.urls import reverse
+from django_rest_passwordreset.signals import reset_password_token_created
+from django.core.mail import send_mail  
+
 
     
 
@@ -253,6 +258,28 @@ class MyLeave(models.Model):
     leave=models.ForeignKey(LeaveType,on_delete=models.CASCADE,null=True)
     days=models.ForeignKey(Leave,on_delete=models.CASCADE,null=True)
     remainingdays=models.IntegerField(default=0)
+
+
+@receiver(reset_password_token_created)
+def password_reset_token_created(sender, instance, reset_password_token, *args, **kwargs):
+
+    email_plaintext_message = "Please use this token and set new password\n {}?token={}".format(reverse('password_reset:reset-password-request'), reset_password_token.key)
+
+    send_mail(
+        # title:
+        "{title}".format(title="Reset Your Password"),
+        # message:
+        email_plaintext_message,
+        # from:
+        "sunilsta010@gmail.com",
+        # to:
+        [reset_password_token.user.email]
+    )
+
+class Holiday(models.Model):
+    event=models.CharField(max_length=225,null=True)
+    date_of_event=models.DateField(null=True)
+
     
     
 

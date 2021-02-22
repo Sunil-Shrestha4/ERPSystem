@@ -17,7 +17,9 @@ export default function Managerpost(props) {
         body: JSON.stringify({
           is_approved:true,
           is_notapproved:false,
-          reason: props.abc.reason
+          reason: props.abc.reason,
+          types_of_leave:props.abc.types_of_leave,
+          remainingday:props.abc.remainingday
         })
       }).then(res => res.json())
         // .then(response => )
@@ -37,7 +39,9 @@ export default function Managerpost(props) {
         body: JSON.stringify({
           is_approved:false,
           is_notapproved:true,
-          reason: props.abc.reason
+          reason: props.abc.reason, 
+          types_of_leave:props.abc.types_of_leave,
+          remainingday:props.abc.remainingday
         })
       }).then(res => res.json())
         // .then(response => )
