@@ -384,4 +384,18 @@ class HolidaySerializer(serializers.ModelSerializer):
         model = models.Holiday
         fields = ['id','event','date_of_event','remainingday']
 
+class DailyUpdateSerializer(serializers.ModelSerializer):
+    name=serializers.CharField(source='employee.username',read_only=True)
+    today_date=serializers.SerializerMethodField()
+
+    def get_today_date(self,obj):
+        today_date=date.today()
+        return today_date
+    
+
+    class Meta:
+        model=models.DailyUpdate
+        fields=['id','today_date','name','task','obstacle','remarks']
+    
+
 

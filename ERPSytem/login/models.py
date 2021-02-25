@@ -280,6 +280,18 @@ class Holiday(models.Model):
     event=models.CharField(max_length=225,null=True)
     date_of_event=models.DateField(null=True)
 
+class DailyUpdate(models.Model):
+    employee=models.ForeignKey(User,on_delete=models.CASCADE,null=True)
+    today_date=models.DateField(null=True)
+    task=models.TextField(max_length=500, blank=False)
+    obstacle=models.TextField(max_length=500, blank=True)
+    remarks=models.TextField(max_length=500, blank=True)
+
+    def __str__(self):
+        return str(self.employee)
+
+
+
     
     
 

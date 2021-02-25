@@ -11,7 +11,7 @@ from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import permissions
 from django.core.mail import send_mail
 from django .conf import settings
-from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer,MyRemainingLeaveSerializer,ChangePasswordSerializer,HolidaySerializer
+from .serializers import RegisterSerializer,EmailVerificationSerializer, UserDetailSerializer,EmailVerificationSerializeruserDetail,AdminLeaveSerializer,UserLeaveSerializer,ManagerLeaveSerializer,LeaveTypeSerializer,MyRemainingLeaveSerializer,ChangePasswordSerializer,HolidaySerializer,DailyUpdateSerializer
 
 from rest_framework import generics, status, views, permissions
 from .models import User,UserDetails,Attendance,Leave,MyLeave
@@ -26,7 +26,7 @@ from django.http import JsonResponse
 from rest_framework.parsers import JSONParser
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.permissions import IsAuthenticated,IsAdminUser
-from .overide import IsAssigned
+from .overide import IsAssigned,IsOwnerOrAdmin,IsAbc,IsSuperUser,IsOwner
 from rest_framework.decorators import action
 from django_filters.rest_framework import DjangoFilterBackend
 # from django_filters import rest_framework as filters
@@ -722,13 +722,19 @@ class LeaveViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['GET'])
     def MyRemainingLeave(self,request,**kwargs):
+
+        
+        
        
     
         queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
+        # obj1=self.get_object()
+       
 
-        import pdb;pdb.set_trace()
-        serializer =serializers.MyRemainingLeaveSerializer(queryset,many=True)
-        queryset=queryset.filter(types_of_leave=serializer.data['types_of_leave']).last().__dict__
+        # import pdb;pdb.set_trace()
+        leavetype1=models.Leave.objects.filter(Q(types_of_leave=1) | Q(types_of_leave=2) | Q(types_of_leave=3)).last()
+        serializer =serializers.MyRemainingLeaveSerializer(leavetype1,many=False)
+        # queryset=.filter(types_of_leave=1).last()
       
         # queryset=queryset.filter(types_of_leave=value).latest(id)
         
@@ -785,6 +791,75 @@ class HolidayViewSet(viewsets.ModelViewSet):
         else:
             permission_classes=[IsAdminUser,]
         return [permission() for permission in permission_classes]
+
+class DailyUpdateViewSet(viewsets.ModelViewSet):
+    queryset=models.DailyUpdate.objects.all()
+    serializer_class=serializers.DailyUpdateSerializer
+
+
+    def perform_create(self,serializer):
+        # user=self.request.user
+
+    
+
+        # queryset=models.DailyUpdate.objects.filter(employee=user)
+        # serializer=serializers.DailyUpdateSerializer(queryset,many=False)
+        # 
+
+
+        # def get_queryset(self):
+        #     user=self.request.user
+        #     return models.DailyUpdate.filter(name=user)
+        serializer.save(employee=self.request.user)
+
+    # #     def get_queryset(self):
+    # #         user=self.request.user
+    # #         return models.DailyUpdate.filter(employee=user)
+
+
+
+
+    
+    # # def get_permissions(self):
+    # #     if self.action == 'list':
+    # #         self.permission_classes = [IsSuperUser, ]
+    # #     elif self.action == 'get':
+    #         self.permission_classes = [IsOwner]
+    #     return super(self.__class__, self).get_permissions()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # if self.action == 'GET':
+        #     permission_classes = [IsAssigned]
+        # # elif self.action =='list':
+        # #     permission_classes=[IsAdminUser,] 	    
+        # # elif self.action=='retrieve': 
+        # #     permission_classes = [IsOwnerOrAdmin,]
+        # else:
+        #     permission_classes=[IsAdminUser,]
+        # return [permission() for permission in permission_classes]
+
+    @action(detail=False, methods=['GET'])
+    def MyDailyUpdate(self, request, **kwargs):
+        queryset = self.filter_queryset(self.get_queryset()).filter(employee=request.user)
+        serializer = serializers.DailyUpdateSerializer(queryset, many=True) 
+        return Response(serializer.data)
+
+
+
+
     
 
 

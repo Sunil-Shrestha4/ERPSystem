@@ -4,7 +4,7 @@ from django.contrib import admin
 from .models import User
 from .models import Department
 from .models import Attendance
-from .models import Salary,Leave,UserDetails,MyLeave,Holiday
+from .models import Salary,Leave,UserDetails,MyLeave,Holiday,DailyUpdate
 
 
 admin.site.register(User)
@@ -16,4 +16,5 @@ admin.site.register(Holiday)
 # admin.site.register(Leave)
 admin.site.register(UserDetails)
 admin.site.register(MyLeave)
+admin.site.register(DailyUpdate)
 

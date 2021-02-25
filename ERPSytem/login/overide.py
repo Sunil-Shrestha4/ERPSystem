@@ -7,7 +7,7 @@ class IsAssigned(permissions.BasePermission):
 
     def has_permission(self, request, view):
         # import pdb;pdb.set_trace()
-        if request.method=="GET" or request.method=="PUT" or request.method=="DELETE":
+        if request.method=="GET" or request.method=='POST':
         
             return True
         # elif request.method =="PUT":
@@ -39,3 +39,34 @@ class IsAbc(permissions.BasePermission):
         #     return True
         
         return False
+
+class IsOwnerOrAdmin(permissions.BasePermission):
+    """
+    Object-level permission to allow only owners of an object or administrators to access it.
+    Assumes the model instance has an `owner` attribute.
+    """
+    def has_object_permission(self, request, view, obj):
+
+        if request.user.is_superuser:
+            return True
+        # if hasattr(obj, 'owner'):
+        #     return obj.owner == request.user
+        else:
+            return False
+
+
+class IsSuperUser(permissions.BasePermission):
+
+    def has_permission(self, request, view):
+        return request.user and request.user.is_superuser
+
+class IsOwner(permissions.BasePermission):
+
+    def has_object_permission(self, request, view, obj):
+        if request.user:
+            if request.user.is_superuser:
+                return True
+            else:
+                return obj.owner == request.user
+        else:
+            return False

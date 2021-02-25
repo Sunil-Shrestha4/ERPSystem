@@ -46,7 +46,7 @@ router.register('salary', views.SalaryReportApiView)
 router.register('leave',views.LeaveViewSet,basename='leave')
 router.register('leavetype',views.LeaveTypeViewSet)
 router.register('holiday',views.HolidayViewSet)
-# router.register('userdetails',views.UserDetailViewSet)
+router.register('dailyupdate',views.DailyUpdateViewSet)
 # router.register('userdetail',views.VerifyEmailUserDetailViewSet)
 urlpatterns = [
     path('', include(router.urls)),
