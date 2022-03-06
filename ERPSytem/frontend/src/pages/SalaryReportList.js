@@ -30,18 +30,22 @@ export default function SalaryReport() {
       };
 
     useEffect(async() => {
+        try{
+            const access_token= localStorage.getItem('access')
+            console.log("Access token in Salary Report",access_token)
+            let res = await fetch(`http://127.0.0.1:8000/api/salary/?search=${searchTerm}`, {
+            method: 'GET',
+            headers: {
+            'Accept': 'application/json',
+            'Content-type': 'application/json',
+            'Authorization': `Bearer ${access_token}`,
+            }, })
+            res = await res.json();
+            setSearchResults(res);
+        }catch (error){
+            alert("Data not received", error)
+        }
         
-        const access_token= localStorage.getItem('access')
-        console.log("Access token in Salary Report",access_token)
-        let res = await fetch(`http://127.0.0.1:8000/api/salary/?search=${searchTerm}`, {
-        method: 'GET',
-        headers: {
-        'Accept': 'application/json',
-        'Content-type': 'application/json',
-        'Authorization': `Bearer ${access_token}`,
-        }, })
-        res = await res.json();
-        setSearchResults(res);
     },[])
 
     const removeData = async (id) =>{

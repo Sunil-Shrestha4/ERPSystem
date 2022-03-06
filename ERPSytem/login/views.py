@@ -392,18 +392,19 @@ class SalaryReportApiView(viewsets.ModelViewSet):
     permission_classes = [IsAdminUser]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ['amount','month','emp']
-    search_fields = ['^emp__email','^month','^emp__first_name','^emp__last_name','year']
+    search_fields = ['^emp__email','^month','^emp__first_name','^emp__last_name','^received_date']
     
     def get_queryset(self):
         if self.request.user.is_superuser:
             queryset=models.Salary.objects.all().order_by('id')
             return queryset
-
         queryset = self.queryset
         query_set =  queryset.filter(emp=self.request.user).order_by('id')
         return query_set
         
     def get_permissions(self):
+        # Authenticated normal user can only use get methods while admin can perform all tasks
+        # 'isStaff is True' needed for IsAdminUser to correctly identify
         if self.request.method=='GET':
             permission_classes=[IsAuthenticated,]
         else:

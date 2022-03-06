@@ -46,13 +46,13 @@ export default function AddSalary() {
                 }
             })
             res = await res.json();
-            console.log(res)
             if (res.id){
                 handleSubmitClick();
             }else{
                 return null 
             } 
         }catch(e){
+            alert("Data not received.")
             console.log(e);
         } 
            
