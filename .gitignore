@@ -1,0 +1,9 @@
+**.pyc
+db.sqlite3
+.vscode
+__pycache__/
+db.sqlite3
+myenv
+**/node_modules/**
+.eslintcache
+.env
